@@ -1,6 +1,6 @@
 # go2-nav2-wifi — Unitree Go2 Edu · SLAM + Nav2 over Wi‑Fi
 
-**SLAM mapping and Nav2 point-to-point navigation on a laptop over Wi‑Fi** — Docker ROS 2 Humble, no Ethernet cable, no WebRTC, no CycloneDDS patch on the robot.
+**SLAM mapping and Nav2 on a laptop over Wi‑Fi** — built-in Unitree lidar, no external sensors, Docker ROS 2 Humble, no Ethernet cable, no WebRTC, no CycloneDDS patch on the robot.
 
 Robot (left) + RViz (right) in the demos below.
 
@@ -20,7 +20,9 @@ https://github.com/user-attachments/assets/16ffa9da-6469-4384-a56e-00d0343bb375
 
 ## What this is
 
-- **Wi‑Fi relay** on the Go2 Jetson — lidar, odom, IMU, legs, camera, `/cmd_vel` over TCP
+- **Built-in utlidar** on Go2 Edu (`/utlidar/cloud_deskewed`) — no external LiDAR, RealSense, or RPLidar
+- **Laptop over Wi‑Fi** (USB dongle is fine) — robot and laptop on the same network; set `GO2_HOST_IP` / `GO2_ROBOT_IP` in `.env`
+- **Wi‑Fi relay** on the Jetson — lidar, odom, IMU, legs, camera, `/cmd_vel` over TCP
 - **Docker** on the laptop — reproducible Humble + Nav2 + slam_toolbox
 - **Workflow:** map the room → save map → **2D Pose Estimate** → **Goal Pose** → robot drives
 
@@ -77,8 +79,8 @@ ros2 launch go2_nav2 sport_bridge.launch.py
 
 ## Requirements
 
-- Unitree **Go2 Edu**
-- Laptop: Ubuntu + Docker, same Wi‑Fi as robot
+- Unitree **Go2 Edu** (onboard **utlidar** — stock sensor, nothing to mount)
+- Laptop: Ubuntu + Docker, **same Wi‑Fi as the robot** (router or hotspot; laptop USB Wi‑Fi dongle works)
 - Optional: Ethernet `192.168.123.x` instead of Wi‑Fi
 
 ---

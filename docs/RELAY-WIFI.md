@@ -1,6 +1,9 @@
 # Wi‑Fi setup (Go2 Edu)
 
-Jetson relay: lidar, odom, IMU, sport, leg joints, camera, teleop/nav over TCP. **No** `cyclonedds.xml` patch on the robot.  
+Jetson relay: **built-in utlidar**, odom, IMU, sport, leg joints, camera, teleop/nav over TCP. **No** external LiDAR. **No** `cyclonedds.xml` patch on the robot.
+
+Laptop connects over **Wi‑Fi** (USB dongle on the laptop is fine) — robot and laptop must be on the **same subnet** (`GO2_HOST_IP`, `GO2_ROBOT_IP` in `.env`).
+
 Mapping and Nav2: [NAVIGATION.md](NAVIGATION.md).
 
 ---
