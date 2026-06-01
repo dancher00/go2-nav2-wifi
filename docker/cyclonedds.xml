@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain>
+    <General>
+      <Interfaces>
+        <!-- Laptop Wi-Fi IP (huawei wlp2s0). Override: source /ws/scripts/setup-robot-wifi.sh -->
+        <NetworkInterface address="192.168.1.90" priority="default" multicast="default" />
+      </Interfaces>
+      <AllowMulticast>false</AllowMulticast>
+    </General>
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>120</MaxAutoParticipantIndex>
+      <Peers>
+        <Peer address="192.168.1.58"/>
+      </Peers>
+    </Discovery>
+  </Domain>
+</CycloneDDS>

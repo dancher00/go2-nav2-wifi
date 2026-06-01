@@ -1,0 +1,5 @@
+# Go2 — auto source ROS + network (interactive docker exec shells)
+if [[ $- == *i* ]] && [[ "${GO2_AUTO_ENV:-1}" == "1" ]] && [[ -f /ws/scripts/go2-env.sh ]]; then
+  # shellcheck source=/dev/null
+  source /ws/scripts/go2-env.sh
+fi

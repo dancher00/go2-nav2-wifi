@@ -1,0 +1,34 @@
+services:
+  go2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: go2-humble:local
+    container_name: go2-humble
+    network_mode: host
+    ipc: host
+    pid: host
+    stdin_open: true
+    tty: true
+    environment:
+      - ROS_DOMAIN_ID=0   # robot default: empty = 0. Do not use 37.
+      - DISPLAY=${DISPLAY:-:0}
+      - GO2_AUTO_ENV=${GO2_AUTO_ENV:-1}
+      - GO2_NET=${GO2_NET:-wifi}
+      - GO2_ROBOT_IP=${GO2_ROBOT_IP:-192.168.1.58}
+      - GO2_HOST_IP=${GO2_HOST_IP:-192.168.1.90}
+      - GO2_ODOM_SOURCE=${GO2_ODOM_SOURCE:-utlidar}
+      - GO2_CMD_VEL_HZ=${GO2_CMD_VEL_HZ:-20}
+      - LIBGL_ALWAYS_SOFTWARE=${LIBGL_ALWAYS_SOFTWARE:-1}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ../ws:/ws
+      - ../go2_nav2:/ws/src/go2_nav2:rw
+      - ../go2_description:/ws/src/go2_description:rw
+      - ../debs:/ws/debs
+      - go2-history:/root/history
+    working_dir: /ws
+    command: sleep infinity
+
+volumes:
+  go2-history:

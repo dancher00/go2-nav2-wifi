@@ -2,6 +2,8 @@ ws/build/
 ws/install/
 ws/log/
 ws/src/
+ws/maps/*.pgm
+ws/maps/*.yaml
 ws/maps/*.posegraph
 ws/maps/*.data
 ws/maps/*.db

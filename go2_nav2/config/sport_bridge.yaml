@@ -1,0 +1,9 @@
+sport_bridge:
+  ros__parameters:
+    cmd_vel_topic: /cmd_vel
+    rate_hz: 20.0
+    max_linear: 0.0   # 0 = no clamp; set e.g. 0.5 to cap m/s
+    max_angular: 0.0
+    cmd_timeout_sec: 1.5
+    stand_mode: balance
+    stand_on_start: true

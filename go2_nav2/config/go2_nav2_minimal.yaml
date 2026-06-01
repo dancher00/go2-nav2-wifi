@@ -1,0 +1,142 @@
+# Nav2 on Go2 — main knobs:
+#   max_vel_x, max_vel_theta  — speed / turn rate
+#   xy_goal_tolerance, yaw_goal_tolerance
+# Planner: Smac 2D (8-connected grid, straight segments); DWB turns at corners.
+
+controller_server:
+  ros__parameters:
+    use_sim_time: false
+    controller_frequency: 15.0
+    transform_tolerance: 5.0
+    progress_checker_plugin: "progress_checker"
+    goal_checker_plugins: ["general_goal_checker"]
+    controller_plugins: ["FollowPath"]
+    progress_checker:
+      plugin: "nav2_controller::SimpleProgressChecker"
+      required_movement_radius: 0.08
+      movement_time_allowance: 60.0
+    general_goal_checker:
+      stateful: False
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.40
+      yaw_goal_tolerance: 3.14
+    FollowPath:
+      plugin: "dwb_core::DWBLocalPlanner"
+      debug_trajectory_details: False
+      min_vel_x: -0.15
+      max_vel_x: 0.45
+      max_vel_y: 0.30
+      max_vel_theta: 1.15
+      max_speed_xy: 0.45
+      min_speed_xy: 0.0
+      min_speed_theta: 0.0
+      acc_lim_x: 2.5
+      acc_lim_theta: 3.5
+      decel_lim_x: -2.0
+      decel_lim_theta: -3.5
+      vx_samples: 16
+      vy_samples: 5
+      vtheta_samples: 24
+      sim_time: 1.4
+      transform_tolerance: 5.0
+      xy_goal_tolerance: 0.40
+      trans_stopped_velocity: 0.08
+      short_circuit_trajectory_evaluation: True
+      stateful: False
+      critics: ["Oscillation", "BaseObstacle", "PathDist", "GoalDist"]
+      BaseObstacle.scale: 0.02
+      PathDist.scale: 22.0
+      GoalDist.scale: 24.0
+      Oscillation.scale: 1.0
+      Oscillation.oscillation_reset_dist: 0.15
+      Oscillation.oscillation_reset_angle: 0.5
+      Oscillation.x_only_threshold: 0.08
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      update_frequency: 8.0
+      publish_frequency: 2.0
+      global_frame: odom
+      robot_base_frame: base_link
+      use_sim_time: false
+      transform_tolerance: 5.0
+      rolling_window: true
+      width: 5
+      height: 5
+      resolution: 0.05
+      robot_radius: 0.22
+      plugins: ["voxel_layer", "inflation_layer"]
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.30
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: True
+        publish_voxel_map: False
+        origin_z: 0.0
+        z_resolution: 0.05
+        z_voxels: 16
+        max_obstacle_height: 2.0
+        mark_threshold: 0
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.35
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.40
+      always_send_full_costmap: True
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      global_frame: map
+      robot_base_frame: base_link
+      use_sim_time: false
+      robot_radius: 0.22
+      resolution: 0.05
+      track_unknown_space: true
+      plugins: ["static_layer", "inflation_layer"]
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.30
+      always_send_full_costmap: True
+
+map_server:
+  ros__parameters:
+    use_sim_time: false
+    yaml_filename: ""
+
+planner_server:
+  ros__parameters:
+    expected_planner_frequency: 10.0
+    use_sim_time: false
+    planner_plugins: ["GridBased"]
+    GridBased:
+      plugin: "nav2_smac_planner/SmacPlanner2D"
+      tolerance: 0.35
+      downsample_costmap: false
+      downsampling_factor: 1
+      allow_unknown: true
+      max_iterations: 1000000
+      max_on_approach_iterations: 1000
+      max_planning_time: 5.0
+      cost_travel_multiplier: 1.5
+      use_final_approach_orientation: false
+      smoother:
+        max_iterations: 500
+        w_smooth: 0.2
+        w_data: 0.4
+        do_refinement: false

@@ -1,0 +1,9 @@
+# Full pose from /utlidar/robot_odom -> odom->base_link.
+go2_odom_tf:
+  ros__parameters:
+    odom_topic: /utlidar/robot_odom
+    odom_frame: odom
+    base_frame: base_link
+    smooth_alpha: 1.0
+    max_jump_xy: 0.5
+    max_jump_yaw: 0.8
