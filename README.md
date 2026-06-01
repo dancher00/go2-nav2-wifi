@@ -30,6 +30,20 @@ Tested on **Go2 Edu** (Unitree onboard ROS 2 Foxy + laptop Docker Humble).
 
 ---
 
+## Stack
+
+| Layer | Choice |
+|-------|--------|
+| **LiDAR** | Built-in Unitree **utlidar** → `pointcloud_to_laserscan` → `/scan` |
+| **Mapping** | [slam_toolbox](https://github.com/SteveMacenski/slam_toolbox) (async mode) |
+| **Localization** | slam_toolbox on saved map + RViz **2D Pose Estimate** (not AMCL) |
+| **Navigation** | [Nav2](https://navigation.ros.org/) — **SmacPlanner2D** + **DWB** controller |
+| **Odometry** | `utlidar` or **sport** via `GO2_ODOM_SOURCE` — same for map and nav |
+| **Wi‑Fi** | Jetson **topic relay** + TCP `/cmd_vel` (no WebRTC, no CycloneDDS patch) |
+| **Laptop** | **Docker** ROS 2 **Humble** · robot onboard **Foxy** |
+
+---
+
 ## Quick start (Wi‑Fi)
 
 Full setup: **[docs/RELAY-WIFI.md](docs/RELAY-WIFI.md)** · Mapping & nav: **[docs/NAVIGATION.md](docs/NAVIGATION.md)**
