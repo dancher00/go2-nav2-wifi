@@ -1,6 +1,23 @@
 # go2-nav2-wifi — Unitree Go2 Edu · SLAM + Nav2 over Wi‑Fi
 
+[![CI](https://github.com/dancher00/go2-nav2-wifi/actions/workflows/ci.yml/badge.svg)](https://github.com/dancher00/go2-nav2-wifi/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/dancher00/go2-nav2-wifi)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/dancher00/go2-nav2-wifi)](https://github.com/dancher00/go2-nav2-wifi/releases)
+
 **SLAM mapping and Nav2 on a laptop over Wi‑Fi** — built-in Unitree lidar, no external sensors, Docker ROS 2 Humble, no Ethernet cable, no WebRTC, no CycloneDDS patch on the robot.
+
+## How this compares
+
+| | **go2-nav2-wifi** (this repo) | [go2_ros2_sdk](https://github.com/abizovnuralem/go2_ros2_sdk) | [go2_ros2_toolbox](https://github.com/andy-zhuo-02/go2_ros2_toolbox) |
+|---|-------------------------------|---------------------------------------------------------------|----------------------------------------------------------------------|
+| **Robot** | Go2 **Edu** (stock **utlidar**) | Go2 AIR / PRO / **Edu** | Go2 **Edu** + expansion dock |
+| **Extra sensors** | None | Often external LiDAR / depth (config-dependent) | Dock LiDAR stack |
+| **Wi‑Fi to laptop** | Jetson **TCP topic relay** | **WebRTC** | Usually not the focus (onboard Foxy) |
+| **Robot DDS patch** | Not required | CycloneDDS setup for Ethernet; WebRTC for Wi‑Fi | On dock / official stack |
+| **Unitree mobile app** | Can stay connected | Close app when using WebRTC | N/A |
+| **SLAM / nav** | slam_toolbox + Nav2 (Smac + DWB) | slam_toolbox + Nav2 | slam_toolbox + Nav2 |
+| **Where Nav2 runs** | **Laptop** (Docker Humble) | Laptop (typical) | **On robot** (dock) |
+| **Scope** | Wi‑Fi/Ethernet Nav2 recipe + relay scripts | Full ROS2 SDK (teleop, Foxglove, detection, multi-robot, …) | Dock-native toolbox |
 
 Robot (left) + RViz (right) in the demos below.
 

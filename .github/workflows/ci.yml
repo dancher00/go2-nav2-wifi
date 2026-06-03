@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docker-image:
+    name: Docker image
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build go2-humble image
+        run: docker build -t go2-humble:ci -f Dockerfile .
+        working-directory: docker
+
+  colcon-build:
+    name: Colcon workspace
+    runs-on: ubuntu-latest
+    needs: docker-image
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build go2-humble image
+        run: docker build -t go2-humble:ci -f Dockerfile .
+        working-directory: docker
+
+      - name: Fetch unitree_ros2 messages
+        run: |
+          mkdir -p ws/src debs
+          git clone --depth 1 https://github.com/unitreerobotics/unitree_ros2.git ws/src/unitree_ros2
+
+      - name: Build go2_nav2 and go2_description
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/ws:/ws" \
+            -v "${{ github.workspace }}/go2_nav2:/ws/src/go2_nav2" \
+            -v "${{ github.workspace }}/go2_description:/ws/src/go2_description" \
+            go2-humble:ci \
+            bash -lc '/ws/scripts/build-unitree-msgs.sh && /ws/scripts/build.sh'
