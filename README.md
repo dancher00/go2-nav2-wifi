@@ -6,7 +6,7 @@
 
 **SLAM mapping and Nav2 on a laptop over Wi‑Fi** — built-in Unitree lidar, no external sensors, Docker ROS 2 Humble, no Ethernet cable, no WebRTC, no CycloneDDS patch on the robot.
 
-Robot (left) + RViz (right) in the demos below.
+Robot + RViz in the demos below.
 
 ### Nav A → B
 
