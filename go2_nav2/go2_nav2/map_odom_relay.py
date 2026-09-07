@@ -133,7 +133,10 @@ class MapOdomRelay(Node):
         """Dead-reckoning in map from last SLAM anchor + odom delta."""
         dx = bx - self._anchor_ox
         dy = by - self._anchor_oy
-        mx, my = _rotate2d(dx, dy, self._anchor_yaw_map)
+        # The displacement is in odom axes, so rotate by map<-odom,
+        # not by the robot's heading in the map frame.
+        yaw_map_odom = self._anchor_yaw_map - self._anchor_yaw_odom
+        mx, my = _rotate2d(dx, dy, yaw_map_odom)
         px = self._anchor_px + mx
         py = self._anchor_py + my
         dyaw = yaw_odom - self._anchor_yaw_odom

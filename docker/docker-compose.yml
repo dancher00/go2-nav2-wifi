@@ -19,6 +19,7 @@ services:
       - GO2_HOST_IP=${GO2_HOST_IP:-192.168.1.90}
       - GO2_ODOM_SOURCE=${GO2_ODOM_SOURCE:-utlidar}
       - GO2_CMD_VEL_HZ=${GO2_CMD_VEL_HZ:-20}
+      - GO2_CMD_SOURCE_TIMEOUT=${GO2_CMD_SOURCE_TIMEOUT:-0.5}
       - LIBGL_ALWAYS_SOFTWARE=${LIBGL_ALWAYS_SOFTWARE:-1}
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw

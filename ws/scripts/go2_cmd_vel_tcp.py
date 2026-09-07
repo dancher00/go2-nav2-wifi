@@ -3,15 +3,17 @@
 
 Binary vx, vy, vyaw (12 bytes). Robot: --role server. Laptop: --role client.
 Client sends at 20 Hz (heartbeat) so the link and sport_bridge stay alive.
+Heartbeats send zero once the source is silent for GO2_CMD_SOURCE_TIMEOUT seconds
+(default 0.5); only a new ROS command refreshes that deadline.
 """
 
 from __future__ import annotations
 
 import argparse
+import math
 import os
 import socket
 import struct
-import sys
 import threading
 import time
 
@@ -35,6 +37,13 @@ DEFAULT_PORT = 17999
 def _cmd_vel_hz() -> float:
     raw = os.environ.get("GO2_CMD_VEL_HZ", os.environ.get("GO2_CMD_TCP_HZ", "20"))
     return max(1.0, min(100.0, float(raw)))
+
+
+def _cmd_source_timeout() -> float:
+    timeout = float(os.environ.get("GO2_CMD_SOURCE_TIMEOUT", "0.5"))
+    if not math.isfinite(timeout) or timeout <= 0.0:
+        raise ValueError("GO2_CMD_SOURCE_TIMEOUT must be finite and greater than zero")
+    return timeout
 
 
 def _sock_keepalive(sock: socket.socket) -> None:
@@ -160,6 +169,7 @@ def run_server(bind_host: str, port: int) -> None:
 
 
 def run_client(robot_host: str, port: int) -> None:
+    source_timeout = _cmd_source_timeout()
     rclpy.init()
     hz = _cmd_vel_hz()
     node = Node("go2_cmd_vel_tcp_client")
@@ -167,6 +177,7 @@ def run_client(robot_host: str, port: int) -> None:
     sock: socket.socket | None = None
     stop = threading.Event()
     last_vel = [0.0, 0.0, 0.0]
+    last_vel_time: float | None = None
     vel_lock = threading.Lock()
     last_status_log = 0.0
     connected_once = False
@@ -187,9 +198,11 @@ def run_client(robot_host: str, port: int) -> None:
         for _ in range(120):
             if stop.is_set():
                 raise ConnectionError("shutdown")
+            s: socket.socket | None = None
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 _sock_keepalive(s)
+                s.settimeout(1.0)
                 s.connect((robot_host, port))
                 sock = s
                 now = time.monotonic()
@@ -199,6 +212,8 @@ def run_client(robot_host: str, port: int) -> None:
                 connected_once = True
                 return
             except OSError as exc:
+                if s is not None:
+                    s.close()
                 last_err = exc
                 time.sleep(0.25)
         raise ConnectionError(str(last_err))
@@ -209,15 +224,24 @@ def run_client(robot_host: str, port: int) -> None:
         fail_streak = 0
         while not stop.is_set():
             t0 = time.monotonic()
-            with vel_lock:
-                vx, vy, vyaw = last_vel
-            payload = VEL_PACK.pack(vx, vy, vyaw)
             try:
                 with sock_lock:
                     if sock is None:
                         connect()
+                    if stop.is_set():
+                        break
                     assert sock is not None
-                    sock.sendall(payload)
+                    # Connecting can take longer than the source timeout. Sample
+                    # the latest command and its age only after it completes.
+                    with vel_lock:
+                        if (
+                            last_vel_time is None
+                            or time.monotonic() - last_vel_time >= source_timeout
+                        ):
+                            velocity = (0.0, 0.0, 0.0)
+                        else:
+                            velocity = tuple(last_vel)
+                    sock.sendall(VEL_PACK.pack(*velocity))
                 fail_streak = 0
             except (ConnectionError, OSError):
                 fail_streak += 1
@@ -236,10 +260,12 @@ def run_client(robot_host: str, port: int) -> None:
             time.sleep(max(0.0, period - dt))
 
     def on_vel(msg: Twist) -> None:
+        nonlocal last_vel_time
         with vel_lock:
             last_vel[0] = float(msg.linear.x)
             last_vel[1] = float(msg.linear.y)
             last_vel[2] = float(msg.angular.z)
+            last_vel_time = time.monotonic()
 
     reliable_qos = QoSProfile(
         depth=10,
@@ -261,9 +287,10 @@ def run_client(robot_host: str, port: int) -> None:
         with sock_lock:
             if sock is not None:
                 try:
-                    sock.close()
+                    sock.sendall(VEL_PACK.pack(0.0, 0.0, 0.0))
                 except OSError:
                     pass
+                _close_sock()
         node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()

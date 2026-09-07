@@ -89,6 +89,18 @@ Then [NAVIGATION.md](NAVIGATION.md): mapping (`slam_mapping` + `teleop-slam.sh`)
 
 `/cmd_vel`: laptop → robot over **TCP :17999** (`teleop-slam.sh` / `nav-to-point.sh` start the client).
 
+The laptop sends zero velocity after **0.5 seconds without a new `/cmd_vel`**.
+Set `GO2_CMD_SOURCE_TIMEOUT` to a positive, finite number of seconds in `docker/.env`
+and recreate the container with `docker compose up -d` to change it. TCP heartbeats
+continue while stopped; new source commands resume motion. The client checks command
+age again after reconnecting and attempts to send zero on orderly shutdown.
+
+Keyboard teleop publishes on keypresses: hold the movement key for repeated commands;
+releasing it lets the source timeout stop motion. If the keyboard's initial repeat
+delay exceeds the timeout, motion may briefly pause before repeating. Nav2 publishes
+continuously while driving. The robot's `GO2_CMD_TIMEOUT` remains a separate watchdog
+for loss of the TCP stream.
+
 ---
 
 ## Troubleshooting
