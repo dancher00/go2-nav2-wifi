@@ -6,6 +6,8 @@ from __future__ import annotations
 import math
 import sys
 
+import signal
+
 import rclpy
 from geometry_msgs.msg import PoseStamped
 from rclpy.node import Node
@@ -60,6 +62,9 @@ def main() -> None:
         node.get_logger().info('Usage: --ros-args -p pose:="1.0 2.0 0.5"')
         ok = False
     finally:
+        # Launchers can forward a second signal while cleanup is in progress.
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
         node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()

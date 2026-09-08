@@ -6,6 +6,8 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
+import signal
+
 import rclpy
 from rclpy.executors import ExternalShutdownException
 import yaml
@@ -85,6 +87,9 @@ def main() -> None:
     except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
+        # Launchers can forward a second signal while cleanup is in progress.
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
         node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()

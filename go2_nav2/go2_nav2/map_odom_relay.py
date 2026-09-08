@@ -11,6 +11,8 @@ from __future__ import annotations
 import math
 import time
 
+import signal
+
 import rclpy
 from geometry_msgs.msg import PoseWithCovarianceStamped, TransformStamped
 from rclpy.duration import Duration
@@ -233,6 +235,9 @@ def main() -> None:
     except KeyboardInterrupt:
         pass
     finally:
+        # Launchers can forward a second signal while cleanup is in progress.
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
         node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
