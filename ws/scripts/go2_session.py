@@ -75,7 +75,7 @@ def stop_children(children):
         child.wait()
 
 
-def supervise(root, mode, commands, preflight=None):
+def supervise(root, mode, commands, preflight=None, owner=None, normal_exit_command=None):
     locks = acquire_locks(root, mode)
     server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     path = root / (mode + '.sock')
@@ -98,7 +98,7 @@ def supervise(root, mode, commands, preflight=None):
         server.bind(str(path))
         bound = True
         server.listen(4)
-        for sig in (signal.SIGINT, signal.SIGTERM):
+        for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
             handlers[sig] = signal.signal(sig, stop_signal)
         pending = list(commands)
         state = 'preflight' if preflight else 'running'
@@ -120,6 +120,8 @@ def supervise(root, mode, commands, preflight=None):
                     state = 'running'
                     continue
                 print(f'{mode}: child exited; stopping owned session', flush=True)
+                if child.args == normal_exit_command and info.si_code == os.CLD_EXITED and info.si_status == 0:
+                    return 0
                 return 1
             readable, _, _ = select.select([server], [], [], .1)
             if readable:
@@ -127,9 +129,11 @@ def supervise(root, mode, commands, preflight=None):
                 client.settimeout(.5)
                 try:
                     action = client.recv(64).decode()
-                    if action == 'stop':
+                    if action == 'stop' or (owner is not None and action == 'stop:' + owner):
                         stop_client = client
                         stopping = True
+                    elif action.startswith('stop:'):
+                        client.sendall(json.dumps({'mode': mode, 'state': 'owner-mismatch'}).encode())
                     else:
                         client.sendall(json.dumps({'mode': mode, 'state': state,
                                                    'pid': os.getpid(), 'children': [p.pid for p in children]}).encode())
@@ -187,6 +191,8 @@ def main():
     parser.add_argument('action', choices=('start', 'stop', 'status'))
     parser.add_argument('mode', nargs='?', choices=MODES)
     parser.add_argument('--map', default='/ws/maps/my_room.yaml')
+    parser.add_argument('--rviz', action='store_true', help='Open RViz in the owned mapping session')
+    parser.add_argument('--owner', help='Scope automated stop to this launcher token')
     args = parser.parse_args()
     try:
         root = runtime_dir()
@@ -196,11 +202,17 @@ def main():
         if not args.mode:
             parser.error('start/stop require a mode')
         if args.action == 'stop':
-            print(json.dumps(request(root, args.mode, 'stop'), indent=2))
+            action = 'stop:' + args.owner if args.owner else 'stop'
+            print(json.dumps(request(root, args.mode, action), indent=2))
             return 0
         commands = session_commands(args.mode, args.map)
+        if args.rviz:
+            if args.mode != 'mapping':
+                raise ValueError('--rviz is supported for mapping only')
+            commands.append(['ros2', 'run', 'rviz2', 'rviz2', '-d', '/ws/src/go2_nav2/rviz/slam.rviz'])
         preflight = [sys.executable, str(Path(__file__).with_name('session_preflight.py')), args.mode]
-        return supervise(root, args.mode, commands, preflight)
+        return supervise(root, args.mode, commands, preflight, owner=args.owner,
+                         normal_exit_command=commands[-1] if args.rviz else None)
     except (OSError, ValueError, RuntimeError) as exc:
         print(f'ERROR: {exc}. No unrelated processes were stopped.', file=sys.stderr)
         return 1

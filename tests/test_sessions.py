@@ -23,7 +23,7 @@ from go2_session import supervise
 mode, root, fail = sys.argv[2:]
 commands = [[sys.executable, '-c', 'import time; time.sleep(30)']]
 preflight = [sys.executable, '-c', 'raise SystemExit(3)'] if fail == '1' else None
-raise SystemExit(supervise(Path(root), mode, commands, preflight))
+raise SystemExit(supervise(Path(root), mode, commands, preflight, owner='test-owner'))
 '''
 
 
@@ -97,6 +97,28 @@ class SessionTests(unittest.TestCase):
     def test_stale_pid_file_does_not_authorize_killing_any_pid(self):
         (self.root/'mapping.pid').write_text(str(os.getpid()))
         self.assertEqual(sessions.request(self.root, 'mapping', 'stop')['state'], 'not-managed')
+
+    def test_automated_stop_cannot_stop_another_launchers_session(self):
+        child = self.start()
+        self.running()
+        self.assertEqual(sessions.request(self.root, 'mapping', 'stop:other-owner')['state'], 'owner-mismatch')
+        self.assertIsNone(child.poll())
+        self.assertEqual(sessions.request(self.root, 'mapping', 'stop:test-owner')['state'], 'stopped')
+        self.assertEqual(child.wait(timeout=10), 0)
+
+    def test_terminal_hangup_cleans_owned_session(self):
+        import signal
+        child = self.start()
+        self.running()
+        child.send_signal(signal.SIGHUP)
+        self.assertEqual(child.wait(timeout=10), 0)
+        self.assertEqual(sessions.request(self.root, 'mapping', 'status')['state'], 'not-managed')
+
+    def test_normal_window_exit_stops_session_successfully(self):
+        window = [sys.executable, '-c', 'raise SystemExit(0)']
+        self.assertEqual(sessions.supervise(self.root, 'mapping', [window],
+                                            normal_exit_command=window), 0)
+        self.assertEqual(sessions.request(self.root, 'mapping', 'status')['state'], 'not-managed')
 
     def test_unsafe_runtime_permissions_rejected(self):
         self.root.chmod(0o777)

@@ -9,7 +9,26 @@ test container, replace that name with `go2-nav2-live-test` in every command.
 IP addresses below are examples: use the current Wi-Fi addresses of your robot
 and laptop, also configured in `docker/.env` / the container environment.
 
-## Three terminals
+## One command (recommended)
+
+From the laptop repository, with the project container already running:
+
+```bash
+./mapping.sh
+```
+
+This opens RViz and starts the sensor-only relay and SLAM. It uses the IPs in
+the container environment and asks for the SSH password if needed (never stored
+in the script). Close RViz or press Ctrl+C in this terminal to stop its processes.
+Save a map before closing; it is not automatically saved. A lying-down run is
+only a sensor test: stand with the remote and restart for a useful walking map.
+
+The launcher selects `go2-nav2-live-test` if running, otherwise `go2-humble`.
+Override with `GO2_CONTAINER=... ./mapping.sh`. Logs are in `ws/log/mapping.*`.
+An existing relay/session is not taken over or stopped. The remote deployed
+`robot-relay-wifi.sh` should include the current HUP cleanup handler.
+
+## Three terminals (manual alternative)
 
 **1. Robot sensor relay — from the laptop:**
 

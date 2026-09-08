@@ -55,6 +55,7 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
+trap 'exit 129' HUP
 rm -f -- "$GO2_RELAY_SOCKET" "$GO2_RELAY_READY"
 
 cat > "$RELAY_XML" <<EOF

@@ -53,6 +53,16 @@ Tested on **Go2 Edu** (Unitree onboard ROS 2 Foxy + laptop Docker Humble).
 **Mapping with the handheld remote:** [start/stop/restart guide](docs/MAPPING-SESSION.md)
 uses only the sensor relay, SLAM and RViz; no laptop motion commands.
 
+After the one-time setup, run from the laptop repository:
+
+```bash
+./mapping.sh
+```
+
+It starts the sensor-only relay, SLAM and RViz. Close RViz or press Ctrl+C to
+stop its processes. Robot IPs come from the running container; SSH may ask for
+the robot password. Stand with the remote before starting a map for navigation.
+
 [Managed sessions](docs/SESSIONS.md) provide scoped start/stop/status,
 duplicate-start refusal and map-bundle checks. Navigation keeps its direct command path.
 D435i work is reserved for `experiment/d435i-visual-slam`, not `main`.
