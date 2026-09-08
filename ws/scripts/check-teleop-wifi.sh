@@ -12,7 +12,7 @@ if [[ "$N" -eq 0 ]]; then
   echo "OK: no sport_bridge on laptop"
 elif [[ "$N" -eq 1 ]]; then
   echo "WARN: sport_bridge on laptop — stop it for Wi-Fi teleop:"
-  echo "  pkill -f 'go2_nav2.*sport_bridge' || pkill -f sport_bridge"
+  echo "  Use Ctrl+C in the terminal that owns the laptop sport_bridge launch."
 else
   echo "FAIL: $N sport_bridge nodes on laptop (duplicate)"
 fi

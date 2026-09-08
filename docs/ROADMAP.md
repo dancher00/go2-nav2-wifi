@@ -17,8 +17,10 @@ Acceptance checklist (an unchecked item is not yet verified):
   wall/loop-closure error; publish repeatable before/after evidence.
 - [ ] End-to-end save/reload/localization and repeated A-to-B goals with the
   new timing pipeline, including goal cancellation and stopping.
-- [ ] Scoped session ownership and duplicate-start prevention for all laptop
-  launchers; eliminate broad process-kill patterns.
+- [x] Managed mapping/navigation/teleop/transport start/stop/status, exclusive
+  session locks and removal of broad process-kill helpers; legacy direct ROS
+  launches remain unmanaged (see [limitations](SESSIONS.md)).
+- [x] Complete-map validation and no-overwrite saves with isolated tests.
 - [ ] Sensor and network fault-injection tests: missing odometry/scans, Wi-Fi
   interruption, clock reset, reconnect and measured stopping response.
 - [ ] Latency p50/p95/p99, dropout and bandwidth reports under representative
@@ -33,7 +35,9 @@ not part of offline cleanup.
 
 ## Phase 2 — Wi-Fi + D435i visual SLAM (next, not started)
 
-Add a separate optional profile; retain the validated LiDAR baseline.
+Develop on `experiment/d435i-visual-slam`, keeping `main` LiDAR-only.
+The branch exists; camera/visual-SLAM integration has not started. A later
+merge should add an optional profile and retain the validated LiDAR baseline.
 
 1. Verify USB/backend/compute support on the actual robot. Establish camera
    intrinsics, mounting TF and camera/IMU/robot clock relationships.

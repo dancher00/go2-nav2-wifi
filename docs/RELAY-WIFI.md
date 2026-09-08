@@ -92,7 +92,7 @@ GO2_HOST_IP=YOUR_LAPTOP_IP GO2_RELAY_CAMERA=0 bash ~/robot-relay-wifi.sh --senso
 # Laptop Docker: refresh the environment, then inspect sensors / mapping only.
 source /ws/scripts/setup-robot-wifi.sh
 python3 /ws/scripts/check-relay-stream.py --duration 10
-ros2 launch go2_nav2 slam_mapping.launch.py odom_source:=utlidar
+/ws/scripts/go2-session.sh start mapping
 ```
 
 Do not start laptop teleop or send Nav2 goals in sensor-only mode. For stationary

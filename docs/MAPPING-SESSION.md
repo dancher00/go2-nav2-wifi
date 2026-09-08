@@ -25,9 +25,7 @@ starting or killing additional relay instances.
 **2. SLAM — on the laptop, after standing the robot with the remote:**
 
 ```bash
-docker exec -it go2-humble bash -c \
-  'source /ws/scripts/setup-robot-wifi.sh &&
-   ros2 launch go2_nav2 slam_mapping.launch.py odom_source:=utlidar'
+docker exec -it go2-humble bash /ws/scripts/go2-session.sh start mapping
 ```
 
 Keep this terminal open and the robot still during the initial calibration.
@@ -76,8 +74,19 @@ docker exec go2-humble bash -c \
    /ws/scripts/save-map.sh room_run_01'
 ```
 
-For later localization, check that all four files exist under `ws/maps/`:
-`.yaml`, `.pgm`, `.posegraph`, `.data`.
+The saver refuses an existing name and publishes `.yaml` only after `.pgm`,
+`.posegraph` and `.data` are complete. A failed save does not replace an old map.
+For later localization, keep all four files together under `ws/maps/`.
+
+Status and scoped shutdown work from another terminal, even if Wi-Fi is down:
+
+```bash
+docker exec go2-humble bash /ws/scripts/go2-session.sh status
+docker exec go2-humble bash /ws/scripts/go2-session.sh stop mapping
+```
+
+See [session ownership and limitations](SESSIONS.md). `not-managed` does not
+mean no ROS processes exist: a legacy direct launch still belongs to its own terminal.
 
 | What stopped | What to restart |
 | --- | --- |

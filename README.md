@@ -42,7 +42,7 @@ Tested on **Go2 Edu** (Unitree onboard ROS 2 Foxy + laptop Docker Humble).
 | **Mapping** | [slam_toolbox](https://github.com/SteveMacenski/slam_toolbox) (async mode) |
 | **Localization** | slam_toolbox on saved map + RViz **2D Pose Estimate** (not AMCL) |
 | **Navigation** | [Nav2](https://navigation.ros.org/) — **SmacPlanner2D** + **DWB** controller |
-| **Odometry** | `utlidar` or **sport** via `GO2_ODOM_SOURCE` — same for map and nav |
+| **Odometry** | `utlidar`, shared acquisition clock; legacy `sport` is outside the managed workflow |
 | **Wi‑Fi** | Jetson **topic relay** + TCP `/cmd_vel` (no WebRTC, no CycloneDDS patch) |
 | **Laptop** | **Docker** ROS 2 **Humble** · robot onboard **Foxy** |
 
@@ -52,6 +52,10 @@ Tested on **Go2 Edu** (Unitree onboard ROS 2 Foxy + laptop Docker Humble).
 
 **Mapping with the handheld remote:** [start/stop/restart guide](docs/MAPPING-SESSION.md)
 uses only the sensor relay, SLAM and RViz; no laptop motion commands.
+
+[Managed sessions](docs/SESSIONS.md) provide scoped start/stop/status,
+duplicate-start refusal and map-bundle checks. Navigation keeps its direct command path.
+D435i work is reserved for `experiment/d435i-visual-slam`, not `main`.
 
 Full setup: **[docs/RELAY-WIFI.md](docs/RELAY-WIFI.md)** · Mapping & nav: **[docs/NAVIGATION.md](docs/NAVIGATION.md)**
 
@@ -101,6 +105,7 @@ ros2 launch go2_nav2 sport_bridge.launch.py
 | [RELAY-WIFI.md](docs/RELAY-WIFI.md) | One-time Wi‑Fi install, relay, deploy |
 | [NAVIGATION.md](docs/NAVIGATION.md) | Mapping, save map, nav to goal, troubleshooting |
 | [MAPPING-SESSION.md](docs/MAPPING-SESSION.md) | Handheld mapping: terminal roles, restart and checks |
+| [SESSIONS.md](docs/SESSIONS.md) | Owned processes, startup checks and map validation |
 | [SENSOR-TIMING.md](docs/SENSOR-TIMING.md) | Shared acquisition clock and stationary verification |
 | [ROADMAP.md](docs/ROADMAP.md) | Current-stack acceptance criteria, then optional D435i visual SLAM |
 

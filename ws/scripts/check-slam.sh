@@ -24,5 +24,5 @@ timeout 3 ros2 run tf2_ros tf2_echo map base_link 2>/dev/null | head -8 || echo 
 
 echo ""
 if ! ros2 node list 2>/dev/null | grep -q slam_toolbox; then
-  echo "FIX: start terminal 2: ros2 launch go2_nav2 slam_mapping.launch.py"
+  echo "FIX: start terminal 2: /ws/scripts/go2-session.sh start mapping"
 fi

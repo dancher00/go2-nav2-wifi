@@ -1,7 +1,10 @@
 # Go2 — mapping and navigation
 
 **Wi‑Fi (relay setup, once):** [RELAY-WIFI.md](RELAY-WIFI.md)  
-**Map:** `slam_mapping.launch.py` · **Nav:** `/ws/scripts/nav-to-point.sh` + RViz **Goal Pose**
+**Map:** `/ws/scripts/go2-session.sh start mapping` · **Nav:** `/ws/scripts/nav-to-point.sh` + RViz **Goal Pose**
+
+Use [managed sessions](SESSIONS.md) for duplicate prevention and scoped stop/status.
+These commands are not a replacement for the handheld stop.
 
 ---
 
@@ -89,7 +92,7 @@ In each terminal: `cd go2-nav2-wifi/docker && ./shell.sh`
 | T | Command |
 |---|---------|
 | **R** | on robot: `export GO2_HOST_IP=192.168.1.90 && bash ~/robot-relay-wifi.sh` |
-| **1** | `ros2 launch go2_nav2 slam_mapping.launch.py` |
+| **1** | `/ws/scripts/go2-session.sh start mapping` |
 | **2** | `ros2 run rviz2 rviz2 -d $(ros2 pkg prefix go2_nav2)/share/go2_nav2/rviz/slam.rviz` |
 | **3** | `/ws/scripts/teleop-slam.sh` (speed: **q/z w/x e/c** in teleop) |
 
@@ -98,7 +101,7 @@ In each terminal: `cd go2-nav2-wifi/docker && ./shell.sh`
 | T | Command |
 |---|---------|
 | **1** | `ros2 launch go2_nav2 sport_bridge.launch.py` |
-| **2** | `ros2 launch go2_nav2 slam_mapping.launch.py` |
+| **2** | `/ws/scripts/go2-session.sh start mapping` |
 | **3** | `ros2 run rviz2 rviz2 -d $(ros2 pkg prefix go2_nav2)/share/go2_nav2/rviz/slam.rviz` |
 | **4** | `/ws/scripts/teleop-slam.sh` |
 
@@ -109,7 +112,7 @@ Drive around the room. Check: `/ws/scripts/check-slam.sh` — `/scan` and `/map`
 **Explicit odometry selection:** keep `GO2_ODOM_SOURCE=utlidar` in `docker/.env`. Mapping:
 
 ```bash
-ros2 launch go2_nav2 slam_mapping.launch.py odom_source:=${GO2_ODOM_SOURCE}
+/ws/scripts/go2-session.sh start mapping
 ```
 
 Default `utlidar` translates `/utlidar/robot_odom` through the shared sensor clock
@@ -126,10 +129,12 @@ Save map (while T1 `slam_mapping` is running):
 
 ```bash
 /ws/scripts/save-map.sh my_room
-ls /ws/maps/my_room.yaml /ws/maps/my_room.pgm /ws/maps/my_room.posegraph
+python3 -m go2_nav2.map_bundle check /ws/maps/my_room.yaml
 ```
 
-Ctrl+C in mapping terminals when done.
+All four files are required (`.yaml`, `.pgm`, `.posegraph`, `.data`). Existing
+names are refused: choose a new name for each run. Ctrl+C in mapping terminals
+or `/ws/scripts/go2-session.sh stop mapping` when done.
 
 ---
 
@@ -150,13 +155,15 @@ Load the saved map, set **where you are** once, then **where to go** — single 
 | **1** | `/ws/scripts/nav-to-point.sh /ws/maps/my_room.yaml` (reads `GO2_ODOM_SOURCE` from `.env`) |
 | **2** | `ros2 run rviz2 rviz2 -d $(ros2 pkg prefix go2_nav2)/share/go2_nav2/rviz/nav.rviz` |
 
-If the map was built with `sport` → set `GO2_ODOM_SOURCE=sport` in `docker/.env`, or scan will not align with walls.
+Managed navigation requires `GO2_ODOM_SOURCE=utlidar`; rebuild legacy `sport`
+maps with the shared-clock pipeline before using this workflow.
 
 **Ethernet:** T1 `sport_bridge.launch.py`, T2 `/ws/scripts/nav-to-point.sh`, T3 RViz.
 
 **RViz order (T2):**
+
 1. Wait **~12 s** after T1 starts. Check: `ros2 lifecycle get /map_server` → `active [3]`.
-2. **2D Pose Estimate — once per session** (robot position + body heading). Log: `SLAM pose received`. Scan should match walls. Repeat only if scan drifts or log shows `/pose stale`.
+2. **2D Pose Estimate** (robot position + body heading). Scan should match walls.
 3. **2D Goal Pose** — target. Blue line `/nav_plan`. Robot does **not** spin at the goal (final yaw ignored).
 
 **Why it “does not move” without Pose Estimate:** slam_toolbox does not know your pose on the saved map until you set it. This is normal localization behavior (not GPS).
@@ -166,9 +173,10 @@ If the map was built with `sport` → set `GO2_ODOM_SOURCE=sport` in `docker/.en
 **Empty RViz / `unconnected trees`:** need `map→odom→base_link`. Without `/utlidar/robot_odom` from the robot there is no `odom→base_link` — start `bash ~/robot-relay-wifi.sh`. Check: `/ws/scripts/check-tf-nav.sh`.
 
 **`/pose stale`:** the last timestamp-matched `map→odom` correction is held;
-robot motion continues through fresh `odom→base_link`. Before the first matched
+the displayed pose propagates through fresh `odom→base_link`. Before the first matched
 pose the correction is identity. Stale SLAM poses do not mean localization is
-healthy: check scans and alignment before sending another goal.
+healthy: stop with the remote if localization is wrong, and check scans and
+alignment before sending another goal. There is no additional navigation gate.
 
 **Spins at goal:** final yaw rotation is disabled in config; restart `nav-to-point.sh` after updating the repo.
 
@@ -218,17 +226,18 @@ ros2 topic hz /scan
 ros2 node list | grep sport_bridge   # exactly one /sport_bridge
 ```
 
-Duplicates (motor grinding, cmd_vel conflict):
+Duplicates or conflicting controllers: stop motion with the remote first, then
+inspect ownership and stop the relevant managed session:
 
 ```bash
-pkill -f sport_bridge
-pkill -f nav2_slam_loc
-pkill -f go2_odom_tf
-ros2 daemon stop && sleep 1 && ros2 daemon start
-# then nav-to-point.sh again (+ sport_bridge on Ethernet)
+/ws/scripts/go2-session.sh status
+/ws/scripts/go2-session.sh stop navigation
 ```
 
 ---
+
+For an unmanaged launch (including an Ethernet sport bridge), use Ctrl+C in its
+original terminal. No command above stops unrelated or factory robot processes.
 
 ## Common issues
 

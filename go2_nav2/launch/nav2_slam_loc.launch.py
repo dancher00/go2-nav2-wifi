@@ -11,6 +11,12 @@ from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from go2_nav2.map_bundle import validate_map
+
+
+def _validate_map(context):
+    context.launch_configurations['map'] = str(validate_map(LaunchConfiguration('map').perform(context)))
+    return []
 
 
 def _localization_launch(context, *args, **kwargs):
@@ -24,12 +30,6 @@ def _localization_launch(context, *args, **kwargs):
     with open(params_path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
     data["slam_toolbox"]["ros__parameters"]["map_file_name"] = map_stem
-
-    if not os.path.isfile(f"{map_stem}.posegraph"):
-        print(
-            f"WARN: {map_stem}.posegraph missing — run save-map.sh while SLAM is active "
-            "(serialize_map). Localization may fail."
-        )
 
     fd, temp_path = tempfile.mkstemp(suffix=".yaml", prefix="go2_loc_")
     with os.fdopen(fd, "w", encoding="utf-8") as f:
@@ -123,6 +123,7 @@ def generate_launch_description():
             default_value="true",
             description="Launch go2_goal_pose_nav (RViz 2D Goal). Set false for patrol.launch.",
         ),
+        OpaqueFunction(function=_validate_map),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(go2_pkg, "launch", "sensors.launch.py")
