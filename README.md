@@ -50,6 +50,9 @@ Tested on **Go2 Edu** (Unitree onboard ROS 2 Foxy + laptop Docker Humble).
 
 ## Quick start (Wi‑Fi)
 
+**Mapping with the handheld remote:** [start/stop/restart guide](docs/MAPPING-SESSION.md)
+uses only the sensor relay, SLAM and RViz; no laptop motion commands.
+
 Full setup: **[docs/RELAY-WIFI.md](docs/RELAY-WIFI.md)** · Mapping & nav: **[docs/NAVIGATION.md](docs/NAVIGATION.md)**
 
 ```bash
@@ -97,6 +100,20 @@ ros2 launch go2_nav2 sport_bridge.launch.py
 |-----|---------|
 | [RELAY-WIFI.md](docs/RELAY-WIFI.md) | One-time Wi‑Fi install, relay, deploy |
 | [NAVIGATION.md](docs/NAVIGATION.md) | Mapping, save map, nav to goal, troubleshooting |
+| [MAPPING-SESSION.md](docs/MAPPING-SESSION.md) | Handheld mapping: terminal roles, restart and checks |
+| [SENSOR-TIMING.md](docs/SENSOR-TIMING.md) | Shared acquisition clock and stationary verification |
+| [ROADMAP.md](docs/ROADMAP.md) | Current-stack acceptance criteria, then optional D435i visual SLAM |
+
+## Regression tests
+
+After building the Docker image, run on the laptop (also used by CI):
+
+```bash
+bash ws/scripts/test-regressions.sh
+```
+
+Tests run with no external network, a read-only repository and temporary ROS
+logs. They do not replace supervised walking, navigation or stopping tests.
 
 ---
 

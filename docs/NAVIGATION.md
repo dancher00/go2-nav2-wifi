@@ -26,7 +26,9 @@ cd go2-nav2-wifi/docker && ./shell.sh
 ```
 
 Manual reload: `source /ws/scripts/go2-env.sh`.  
-Odometry: `GO2_ODOM_SOURCE=utlidar` (default) or `sport` — **use the same value** for mapping and nav (in `docker/.env`).
+Odometry: use `GO2_ODOM_SOURCE=utlidar` for the timestamp-aligned pipeline, in both
+mapping and navigation. `sport` is a legacy arrival-stamped alternative and is
+not covered by the alignment fix.
 
 ---
 
@@ -76,6 +78,10 @@ Check in container: `ros2 topic hz /utlidar/cloud_deskewed` (should be > 0).
 
 ## Build a map
 
+**Using the handheld remote?** Start with [Mapping session](MAPPING-SESSION.md):
+sensor-only relay, SLAM and RViz. No laptop motion bridge or teleop is needed.
+The tables below describe the separate laptop-teleop workflow.
+
 In each terminal: `cd go2-nav2-wifi/docker && ./shell.sh`
 
 **Wi‑Fi** (relay on robot — teleop goes through it, **not** `sport_bridge` on laptop):
@@ -100,13 +106,15 @@ Drive around the room. Check: `/ws/scripts/check-slam.sh` — `/scan` and `/map`
 
 **Camera while mapping:** relay starts the bridge (`GO2_RELAY_CAMERA=1` by default) → `/go2_front_camera/image_raw`. Enable **Go2FrontCamera** in RViz. Check: `ros2 topic hz /go2_front_camera/image_raw`. If empty — on robot `bash ~/robot-build-camera-cli.sh`, restart relay; see [RELAY-WIFI.md](RELAY-WIFI.md).
 
-**Odom from sport state:** in `docker/.env` set `GO2_ODOM_SOURCE=sport`, restart `./shell.sh`. Mapping:
+**Explicit odometry selection:** keep `GO2_ODOM_SOURCE=utlidar` in `docker/.env`. Mapping:
 
 ```bash
 ros2 launch go2_nav2 slam_mapping.launch.py odom_source:=${GO2_ODOM_SOURCE}
 ```
 
-Default `utlidar` uses `/utlidar/robot_odom`. `sport` uses `/sportmodestate` → `/sport_state/odom` (relay forwards `/sportmodestate`).
+Default `utlidar` translates `/utlidar/robot_odom` through the shared sensor clock
+before publishing TF. Legacy `sport` uses `/sportmodestate` → `/sport_state/odom`
+with arrival-time stamps; it is not the recommended mapping path.
 
 **Teleop does not move robot over Wi‑Fi:** update `robot_relay_wifi.py`, `robot-relay-wifi.sh`, `robot_sport_bridge.py` on the robot (via `deploy-robot-wifi.sh`), restart relay; run `bash ~/robot-build-unitree-msgs.sh` once if `unitree_api` is missing.
 
@@ -157,7 +165,10 @@ If the map was built with `sport` → set `GO2_ODOM_SOURCE=sport` in `docker/.en
 
 **Empty RViz / `unconnected trees`:** need `map→odom→base_link`. Without `/utlidar/robot_odom` from the robot there is no `odom→base_link` — start `bash ~/robot-relay-wifi.sh`. Check: `/ws/scripts/check-tf-nav.sh`.
 
-**`/pose stale`:** until SLAM publishes `/pose`, `map→odom` is **extrapolated from odometry** and does not freeze.
+**`/pose stale`:** the last timestamp-matched `map→odom` correction is held;
+robot motion continues through fresh `odom→base_link`. Before the first matched
+pose the correction is identity. Stale SLAM poses do not mean localization is
+healthy: check scans and alignment before sending another goal.
 
 **Spins at goal:** final yaw rotation is disabled in config; restart `nav-to-point.sh` after updating the repo.
 

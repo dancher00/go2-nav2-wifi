@@ -58,7 +58,7 @@ Visualization Manager:
         Value: /robot_description
       Visual Enabled: true
     - Class: rviz_default_plugins/Image
-      Enabled: true
+      Enabled: false
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -72,7 +72,7 @@ Visualization Manager:
       Transport Hint: raw
       Unreliable: false
   Global Options:
-    Fixed Frame: base_link
+    Fixed Frame: map
     Frame Rate: 30
   Tools:
     - Class: rviz_default_plugins/MoveCamera
@@ -83,7 +83,7 @@ Visualization Manager:
       Class: rviz_default_plugins/TopDownOrtho
       Name: TopDown
       Scale: 18
-      Target Frame: base_link
+      Target Frame: map
       X: 0
       Y: 0
       Angle: 0

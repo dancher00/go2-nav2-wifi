@@ -30,13 +30,8 @@ jobs:
         run: docker build -t go2-humble:ci -f Dockerfile .
         working-directory: docker
 
-      - name: Run watchdog, odometry, relay and shutdown regression tests
-        run: |
-          docker run --rm --network none --read-only --tmpfs /tmp \
-            --entrypoint /bin/bash \
-            -v "${{ github.workspace }}:/repo:ro" \
-            go2-humble:ci \
-            -c 'source /opt/ros/humble/setup.bash && python3 -B -m unittest discover -s /repo/tests -v'
+      - name: Run isolated sensor, watchdog, relay and shutdown regression tests
+        run: bash ws/scripts/test-regressions.sh go2-humble:ci
 
       - name: Fetch unitree_ros2 messages
         run: |

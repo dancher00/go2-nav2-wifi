@@ -22,7 +22,7 @@ GO2_NET=wifi
 GO2_RELAY_DOMAIN_ID=64       # same on robot relay and laptop; never 0
 GO2_ROBOT_IP=192.168.1.58    # Jetson IP on Wi‑Fi
 GO2_HOST_IP=192.168.1.90     # laptop IP on Wi‑Fi
-GO2_ODOM_SOURCE=sport        # or utlidar — same for map and nav
+GO2_ODOM_SOURCE=utlidar      # shared acquisition clock; same for map and nav
 # GO2_CMD_VEL_HZ=50          # optional
 ```
 
@@ -66,6 +66,10 @@ in Hz, and `first frame published` when a camera backend is installed.
 
 ## Each session
 
+For mapping with the handheld remote, follow [the sensor-only session guide](MAPPING-SESSION.md).
+The commands in the table below start laptop motion control; they are not
+required for handheld mapping and can stand the robot up.
+
 | Where | Command |
 |-------|---------|
 | **Robot** | `export GO2_HOST_IP=192.168.1.90 && bash ~/robot-relay-wifi.sh` |
@@ -76,7 +80,7 @@ Then [NAVIGATION.md](NAVIGATION.md): mapping (`slam_mapping` + `teleop-slam.sh`)
 
 **Do not** run `sport_bridge.launch.py` on the laptop over Wi‑Fi.
 
-### Stationary sensor-only test
+### Sensor-only mode (stationary checks or handheld mapping)
 
 The normal launcher starts a sport bridge that can stand the robot up. When the
 robot is lying down, use this mode instead (and stop any previously started
@@ -91,8 +95,10 @@ python3 /ws/scripts/check-relay-stream.py --duration 10
 ros2 launch go2_nav2 slam_mapping.launch.py odom_source:=utlidar
 ```
 
-Do not start teleop or send goals during this check. A map made while lying down
-is only a pipeline smoke test, not a usable navigation map.
+Do not start laptop teleop or send Nav2 goals in sensor-only mode. For stationary
+checks the robot can remain lying down, but that map is only a pipeline smoke
+test. For a usable map, stand it with the handheld remote, restart mapping,
+then drive slowly with the remote. The relay itself never commands standing.
 
 ### DDS domain separation
 
