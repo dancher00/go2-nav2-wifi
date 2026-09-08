@@ -2,8 +2,8 @@ FROM ros:humble-ros-base-jammy
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ROS_DISTRO=humble
-ENV ROS_DOMAIN_ID=0
-ENV CYCLONEDDS_URI='<CycloneDDS><Domain><General><NetworkInterfaceAddress>192.168.1.90</NetworkInterfaceAddress></General></Domain></CycloneDDS>'
+ENV GO2_RELAY_DOMAIN_ID=64
+ENV ROS_DOMAIN_ID=64
 
 COPY entrypoint.sh install-deps.sh setup-robot-net.sh setup-robot-eth.sh setup-robot-wifi.sh check-robot.sh source-unitree.sh source-go2-ws.sh cyclonedds.xml cyclonedds-eth.xml go2-bashrc.snippet /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/install-deps.sh \

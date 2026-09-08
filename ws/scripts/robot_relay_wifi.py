@@ -14,13 +14,16 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
+import signal
 import socket
 import struct
 import sys
 import time
-from typing import Callable, List, Tuple, Type
+from typing import List, Tuple
 
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 from rclpy.serialization import deserialize_message, serialize_message
@@ -77,15 +80,42 @@ def _qos(kind: str) -> QoSProfile:
     return QoSProfile(depth=10)
 
 
+MAX_FRAME_SIZE = 32 * 1024 * 1024
+
+
+def configure_domain(role: str) -> int:
+    """Separate DDS domains prevent internal subscribers hearing relayed copies."""
+    value = os.environ.get("GO2_RELAY_DOMAIN_ID", "64")
+    if not re.fullmatch(r"[0-9]{1,3}", value) or not 1 <= int(value) <= 101:
+        raise ValueError("GO2_RELAY_DOMAIN_ID must be an integer from 1 to 101")
+    domain = 0 if role in ("sub", "pub_cmd") else int(value)
+    os.environ["ROS_DOMAIN_ID"] = str(domain)
+    if domain == 0:
+        os.environ.pop("CYCLONEDDS_URI", None)
+    return domain
+
+
+def _shutdown(node: Node) -> None:
+    node.destroy_node()
+    if rclpy.ok():
+        rclpy.shutdown()
+
+
 def _send_frame(sock: socket.socket, topic_id: int, payload: bytes) -> None:
-    hdr = FRAME_HDR.pack(topic_id & 0xFF, len(payload))
-    sock.sendall(hdr + payload)
+    if not 0 <= topic_id <= 255 or len(payload) > MAX_FRAME_SIZE:
+        raise ValueError("invalid relay frame")
+    sock.sendall(FRAME_HDR.pack(topic_id, len(payload)) + payload)
 
 
 def _recv_exact(sock: socket.socket, n: int) -> bytes:
     buf = bytearray()
     while len(buf) < n:
-        chunk = sock.recv(n - len(buf))
+        if not rclpy.ok():
+            raise ExternalShutdownException()
+        try:
+            chunk = sock.recv(n - len(buf))
+        except socket.timeout:
+            continue  # Retain partial frames across timeouts.
         if not chunk:
             raise ConnectionError("relay socket closed")
         buf.extend(chunk)
@@ -94,283 +124,205 @@ def _recv_exact(sock: socket.socket, n: int) -> bytes:
 
 def _wait_for_ready(ready_path: str, timeout_sec: float = 30.0) -> bool:
     deadline = time.monotonic() + timeout_sec
-    while time.monotonic() < deadline:
+    while rclpy.ok() and time.monotonic() < deadline:
         if os.path.isfile(ready_path):
             return True
         time.sleep(0.2)
     return False
 
 
-def run_subscriber(socket_path: str) -> None:
-    if not _wait_for_ready(READY_PATH):
-        print(f"ERROR: publisher not ready ({READY_PATH})", file=sys.stderr)
-        sys.exit(1)
-
-    rclpy.init()
-    node = Node("go2_relay_wifi_sub")
-    topics = relay_topics()
-    counts = [0] * len(topics)
-    last_log = time.monotonic()
-
-    sock: socket.socket | None = None
-    for _attempt in range(60):
+def _connect(socket_path: str, attempts: int = 60) -> socket.socket:
+    last_error = None
+    for _ in range(attempts):
+        if not rclpy.ok():
+            raise ExternalShutdownException()
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.settimeout(1.0)
         try:
-            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             sock.connect(socket_path)
-            node.get_logger().info(f"connected to publisher at {socket_path}")
-            break
-        except OSError:
+            return sock
+        except OSError as exc:
+            last_error = exc
+            sock.close()
             time.sleep(0.5)
-    if sock is None:
-        node.get_logger().error(f"cannot connect to {socket_path} — is pub process up?")
-        rclpy.shutdown()
-        sys.exit(1)
+    raise ConnectionError(f"cannot connect to relay at {socket_path}") from last_error
 
-    def make_cb(topic_id: int, topic: str) -> Callable:
-        def cb(msg) -> None:
-            try:
+
+def _listen(socket_path: str, ready_path: str) -> socket.socket:
+    server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    bound = False
+    try:
+        server.bind(socket_path)
+        bound = True
+        server.listen(1)
+        server.settimeout(0.25)
+        # Publish readiness only once connections can actually be accepted.
+        with open(ready_path, "w", encoding="ascii"):
+            pass
+        return server
+    except BaseException:
+        server.close()
+        if bound:
+            _remove_paths(ready_path, socket_path)
+        raise
+
+
+def _accept(server: socket.socket) -> socket.socket:
+    while rclpy.ok():
+        try:
+            conn, _ = server.accept()
+            conn.settimeout(0.25)
+            return conn
+        except socket.timeout:
+            continue
+    raise ExternalShutdownException()
+
+
+def _remove_paths(*paths: str) -> None:
+    for path in paths:
+        try:
+            os.unlink(path)
+        except FileNotFoundError:
+            pass
+
+
+def _run_subscriber(socket_path: str, ready_path: str, topics: List, name: str) -> None:
+    rclpy.init()
+    node = Node(name)
+    sock = None
+    try:
+        if not _wait_for_ready(ready_path):
+            if not rclpy.ok():
+                raise ExternalShutdownException()
+            raise ConnectionError(f"publisher not ready ({ready_path})")
+        sock = _connect(socket_path)
+        node.get_logger().info(f"connected to publisher at {socket_path}")
+        counts = [0] * len(topics)
+        last_log = time.monotonic()
+
+        def make_cb(topic_id: int):
+            def cb(msg) -> None:
+                # A broken/blocked transport must stop this process, not log forever.
                 _send_frame(sock, topic_id, serialize_message(msg))
                 counts[topic_id] += 1
-            except OSError as exc:
-                node.get_logger().error(f"send failed on {topic}: {exc}")
+            return cb
 
-        return cb
-
-    for topic_id, (topic, type_str, qos_kind) in enumerate(topics):
-        msg_type = get_message(type_str)
-        node.create_subscription(
-            msg_type, topic, make_cb(topic_id, topic), _qos(qos_kind)
-        )
-        node.get_logger().info(f"subscribe {topic} ({type_str})")
-
-    def spin_once_with_log() -> None:
-        nonlocal last_log
-        rclpy.spin_once(node, timeout_sec=0.05)
-        now = time.monotonic()
-        if now - last_log >= 5.0:
-            parts = [
-                f"{topics[i][0].split('/')[-1]}={counts[i]}"
-                for i in range(len(topics))
-            ]
-            node.get_logger().info("relay rates (5s): " + ", ".join(parts))
-            last_log = now
-
-    try:
-        while rclpy.ok():
-            spin_once_with_log()
-    finally:
-        sock.close()
-        node.destroy_node()
-        rclpy.shutdown()
-
-
-def run_publisher(socket_path: str) -> None:
-    for path in (READY_PATH, socket_path):
-        try:
-            os.unlink(path)
-        except FileNotFoundError:
-            pass
-
-    rclpy.init()
-    node = Node("go2_relay_wifi_pub")
-    pubs: List = []
-    types: List[Type] = []
-
-    topics = relay_topics()
-    for _topic, type_str, qos_kind in topics:
-        msg_type = get_message(type_str)
-        types.append(msg_type)
-        pubs.append(node.create_publisher(msg_type, _topic, _qos(qos_kind)))
-        node.get_logger().info(f"publish {_topic} ({type_str})")
-
-    open(READY_PATH, "w", encoding="ascii").close()
-    print(f"[relay-pub] ready ({len(topics)} topics)", flush=True)
-
-    server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    server.bind(socket_path)
-    server.listen(1)
-    print(f"[relay-pub] waiting for subscriber on {socket_path}", flush=True)
-
-    conn, _ = server.accept()
-    print("[relay-pub] subscriber connected", flush=True)
-
-    try:
-        while rclpy.ok():
-            hdr = _recv_exact(conn, FRAME_HDR.size)
-            topic_id, plen = FRAME_HDR.unpack(hdr)
-            payload = _recv_exact(conn, plen)
-            if topic_id >= len(pubs):
-                node.get_logger().warn(f"bad topic_id {topic_id}")
-                continue
-            msg = deserialize_message(payload, types[topic_id])
-            pubs[topic_id].publish(msg)
-            rclpy.spin_once(node, timeout_sec=0)
-    except (ConnectionError, OSError) as exc:
-        node.get_logger().error(f"relay pub stopped: {exc}")
-    finally:
-        conn.close()
-        server.close()
-        for path in (READY_PATH, socket_path):
-            try:
-                os.unlink(path)
-            except FileNotFoundError:
-                pass
-        node.destroy_node()
-        rclpy.shutdown()
-
-
-def run_cmd_publisher(socket_path: str) -> None:
-    """Internal DDS: laptop cmd_vel -> local /cmd_vel for sport_bridge."""
-    for path in (CMD_READY_PATH, socket_path):
-        try:
-            os.unlink(path)
-        except FileNotFoundError:
-            pass
-
-    rclpy.init()
-    node = Node("go2_relay_cmd_pub")
-    msg_type = get_message(CMD_VEL_TYPE)
-    pub = node.create_publisher(msg_type, CMD_VEL_TOPIC, 10)
-    node.get_logger().info(f"publish {CMD_VEL_TOPIC} ({CMD_VEL_TYPE}) from relay")
-
-    open(CMD_READY_PATH, "w", encoding="ascii").close()
-    print("[relay-cmd-pub] ready", flush=True)
-
-    server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    server.bind(socket_path)
-    server.listen(1)
-    print(f"[relay-cmd-pub] waiting on {socket_path}", flush=True)
-
-    conn, _ = server.accept()
-    print("[relay-cmd-pub] subscriber connected", flush=True)
-
-    try:
-        while rclpy.ok():
-            hdr = _recv_exact(conn, FRAME_HDR.size)
-            _topic_id, plen = FRAME_HDR.unpack(hdr)
-            payload = _recv_exact(conn, plen)
-            msg = deserialize_message(payload, msg_type)
-            pub.publish(msg)
-            rclpy.spin_once(node, timeout_sec=0)
-    except (ConnectionError, OSError) as exc:
-        node.get_logger().error(f"relay cmd pub stopped: {exc}")
-    finally:
-        conn.close()
-        server.close()
-        for path in (CMD_READY_PATH, socket_path):
-            try:
-                os.unlink(path)
-            except FileNotFoundError:
-                pass
-        node.destroy_node()
-        rclpy.shutdown()
-
-
-def run_cmd_subscriber(socket_path: str) -> None:
-    """Wi-Fi DDS: subscribe /cmd_vel from laptop, forward to internal relay."""
-    if not _wait_for_ready(CMD_READY_PATH):
-        print(f"ERROR: cmd publisher not ready ({CMD_READY_PATH})", file=sys.stderr)
-        sys.exit(1)
-
-    rclpy.init()
-    node = Node("go2_relay_cmd_sub")
-    counts = 0
-    last_log = time.monotonic()
-
-    sock: socket.socket | None = None
-    for _attempt in range(60):
-        try:
-            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            sock.connect(socket_path)
-            node.get_logger().info(f"cmd relay connected to {socket_path}")
-            break
-        except OSError:
-            time.sleep(0.5)
-    if sock is None:
-        node.get_logger().error(f"cannot connect to {socket_path}")
-        rclpy.shutdown()
-        sys.exit(1)
-
-    msg_type = get_message(CMD_VEL_TYPE)
-
-    def cb(msg) -> None:
-        nonlocal counts
-        try:
-            _send_frame(sock, 0, serialize_message(msg))
-            counts += 1
-        except OSError as exc:
-            node.get_logger().error(f"cmd send failed: {exc}")
-
-    node.create_subscription(msg_type, CMD_VEL_TOPIC, cb, _qos("default"))
-    node.get_logger().info(f"subscribe {CMD_VEL_TOPIC} on Wi-Fi -> robot sport_bridge")
-
-    try:
+        for topic_id, (topic, type_str, qos_kind) in enumerate(topics):
+            node.create_subscription(get_message(type_str), topic, make_cb(topic_id), _qos(qos_kind))
+            node.get_logger().info(f"subscribe {topic} ({type_str})")
         while rclpy.ok():
             rclpy.spin_once(node, timeout_sec=0.05)
             now = time.monotonic()
-            if now - last_log >= 5.0:
-                node.get_logger().info(f"cmd_vel relay rate (5s): {counts}")
-                counts = 0
+            elapsed = now - last_log
+            if elapsed >= 5.0:
+                parts = [f"{topic.split('/')[-1]}={counts[i] / elapsed:.1f} Hz"
+                         for i, (topic, _, _) in enumerate(topics)]
+                node.get_logger().info("relay rates: " + ", ".join(parts))
+                counts[:] = [0] * len(topics)
                 last_log = now
     finally:
-        sock.close()
-        node.destroy_node()
-        rclpy.shutdown()
+        if sock is not None:
+            sock.close()
+        _shutdown(node)
+
+
+def _run_publisher(socket_path: str, ready_path: str, topics: List, name: str) -> None:
+    # The shell supervisor owns the instance lock and removes stale paths.
+    rclpy.init()
+    node = Node(name)
+    server = conn = None
+    owns_socket = False
+    try:
+        pubs = []
+        types = []
+        for topic, type_str, qos_kind in topics:
+            msg_type = get_message(type_str)
+            types.append(msg_type)
+            pubs.append(node.create_publisher(msg_type, topic, _qos(qos_kind)))
+            node.get_logger().info(f"publish {topic} ({type_str})")
+        server = _listen(socket_path, ready_path)
+        owns_socket = True
+        node.get_logger().info(f"ready on {socket_path}; domain={os.environ['ROS_DOMAIN_ID']}")
+        conn = _accept(server)
+        while rclpy.ok():
+            topic_id, plen = FRAME_HDR.unpack(_recv_exact(conn, FRAME_HDR.size))
+            if topic_id >= len(pubs) or plen > MAX_FRAME_SIZE:
+                raise ValueError("invalid relay frame header")
+            payload = _recv_exact(conn, plen)
+            pubs[topic_id].publish(deserialize_message(payload, types[topic_id]))
+            rclpy.spin_once(node, timeout_sec=0)
+    finally:
+        if conn is not None:
+            conn.close()
+        if server is not None:
+            server.close()
+        if owns_socket:
+            _remove_paths(ready_path, socket_path)
+        _shutdown(node)
+
+
+def run_subscriber(socket_path: str) -> None:
+    _run_subscriber(socket_path, READY_PATH, relay_topics(), "go2_relay_wifi_sub")
+
+
+def run_publisher(socket_path: str) -> None:
+    _run_publisher(socket_path, READY_PATH, relay_topics(), "go2_relay_wifi_pub")
+
+
+def run_cmd_publisher(socket_path: str) -> None:
+    _run_publisher(socket_path, CMD_READY_PATH,
+                   [(CMD_VEL_TOPIC, CMD_VEL_TYPE, "default")], "go2_relay_cmd_pub")
+
+
+def run_cmd_subscriber(socket_path: str) -> None:
+    _run_subscriber(socket_path, CMD_READY_PATH,
+                    [(CMD_VEL_TOPIC, CMD_VEL_TYPE, "default")], "go2_relay_cmd_sub")
+
+
+def _interrupt(_signum, _frame) -> None:
+    raise KeyboardInterrupt()
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Go2 Wi-Fi topic relay")
-    parser.add_argument(
-        "--role",
-        choices=("sub", "pub", "pub_cmd", "sub_cmd", "both"),
-        default="both",
-        help="sub/pub=sensors, pub_cmd/sub_cmd=cmd_vel, both=launch pub then sub",
-    )
+    parser.add_argument("--role", choices=("sub", "pub", "pub_cmd", "sub_cmd", "both"),
+                        default="both", help="both launches the sensor relay only")
     args = parser.parse_args()
+    configure_domain(args.role)
+    signal.signal(signal.SIGTERM, _interrupt)
+    signal.signal(signal.SIGINT, _interrupt)
+    runners = {"sub": (run_subscriber, SOCKET_PATH), "pub": (run_publisher, SOCKET_PATH),
+               "sub_cmd": (run_cmd_subscriber, CMD_SOCKET_PATH),
+               "pub_cmd": (run_cmd_publisher, CMD_SOCKET_PATH)}
+    try:
+        if args.role != "both":
+            runner, path = runners[args.role]
+            runner(path)
+            return
 
-    if args.role == "sub":
-        run_subscriber(SOCKET_PATH)
-    elif args.role == "pub":
-        run_publisher(SOCKET_PATH)
-    elif args.role == "pub_cmd":
-        run_cmd_publisher(CMD_SOCKET_PATH)
-    elif args.role == "sub_cmd":
-        run_cmd_subscriber(CMD_SOCKET_PATH)
-    else:
         import subprocess
-
-        env = os.environ.copy()
-        cdds = env.get("CYCLONEDDS_URI", "")
-        if not cdds:
-            print("ERROR: CYCLONEDDS_URI must be set for pub (robot-relay-wifi.sh)", file=sys.stderr)
-            sys.exit(1)
-
-        pub_env = env.copy()
-        sub_env = env.copy()
-        sub_env.pop("CYCLONEDDS_URI", None)
-
-        script = os.path.abspath(__file__)
-        pub = subprocess.Popen(
-            [sys.executable, script, "--role", "pub"],
-            env=pub_env,
-        )
-        time.sleep(0.5)
-        if pub.poll() is not None:
-            print("ERROR: pub process exited early", file=sys.stderr)
-            sys.exit(1)
-
+        if not os.environ.get("CYCLONEDDS_URI"):
+            raise ValueError("CYCLONEDDS_URI must be set for Wi-Fi publisher")
+        children = []
         try:
-            subprocess.run(
-                [sys.executable, script, "--role", "sub"],
-                env=sub_env,
-                check=False,
-            )
+            script = os.path.abspath(__file__)
+            for role in ("pub", "sub"):
+                children.append(subprocess.Popen([sys.executable, script, "--role", role]))
+            while all(child.poll() is None for child in children):
+                time.sleep(0.2)
+            raise RuntimeError("relay child exited unexpectedly")
         finally:
-            pub.terminate()
-            try:
-                pub.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                pub.kill()
+            for child in children:
+                if child.poll() is None:
+                    child.terminate()
+            for child in children:
+                try:
+                    child.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    child.wait()
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
 
 
 if __name__ == "__main__":

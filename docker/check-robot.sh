@@ -19,9 +19,9 @@ echo "Topics found: $COUNT"
 
 if [[ "$COUNT" -le 3 ]]; then
   echo ""
-  echo "Still few topics. Robot must use DOMAIN 0 (empty ROS_DOMAIN_ID)."
-  echo "  Do NOT export ROS_DOMAIN_ID=37 on PC or robot."
-  echo "  On robot SSH: unset ROS_DOMAIN_ID; open NEW shell; ros2 topic list"
+  echo "Still few topics. Wi-Fi relay and laptop must share GO2_RELAY_DOMAIN_ID (default 64)."
+  echo "  Robot internal DDS and direct Ethernet must stay on domain 0."
+  echo "  Re-source the appropriate setup-robot-wifi.sh / setup-robot-eth.sh."
   echo "  Router: disable Wi-Fi client isolation."
 fi
 

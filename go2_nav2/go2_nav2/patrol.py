@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import List
 
 import rclpy
+from rclpy.executors import ExternalShutdownException
 import yaml
 from geometry_msgs.msg import PoseStamped
 from rclpy.callback_groups import ReentrantCallbackGroup
@@ -138,12 +139,13 @@ def main() -> None:
     executor.add_node(node)
     try:
         executor.spin()
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
         node._exec.cancel_active()
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == "__main__":

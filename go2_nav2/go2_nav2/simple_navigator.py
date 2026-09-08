@@ -61,7 +61,8 @@ def main() -> None:
         ok = False
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
     sys.exit(0 if ok else 1)
 
 

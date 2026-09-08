@@ -53,8 +53,8 @@ else
   echo ""
   echo "FAIL: no utlidar — checklist:"
   echo "  1. Laptop: export GO2_ROBOT_IP=${ROBOT_IP}; source /ws/scripts/setup-robot-wifi.sh"
-  echo "  2. Unplug Ethernet cable on robot (DDS often on 192.168.123.18 only)"
+  echo "  2. Start robot-relay-wifi.sh; laptop and relay must share GO2_RELAY_DOMAIN_ID (default 64)"
   echo "  3. Retry: export GO2_WIFI_MODE=multicast; source /ws/scripts/setup-robot-wifi.sh"
-  echo "  4. Robot: bash ~/robot-show-dds.sh — which IP is in cyclonedds xml?"
+  echo "  4. Robot: bash ~/robot-check-topics.sh — internal DDS stays on domain 0; do not patch factory XML"
   echo "  5. Router: disable AP/client isolation"
 fi

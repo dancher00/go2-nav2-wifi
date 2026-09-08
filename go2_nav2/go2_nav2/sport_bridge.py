@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import json
+import signal
 import time
 
 import rclpy
 from geometry_msgs.msg import Twist
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from unitree_api.msg import Request
 
@@ -105,15 +107,28 @@ class SportBridge(Node):
 def main() -> None:
     rclpy.init()
     node = SportBridge()
+
+    def interrupt(_signum, _frame):
+        # Keep the ROS context alive long enough to attempt StopMove.
+        raise KeyboardInterrupt()
+
+    previous_handlers = {sig: signal.signal(sig, interrupt)
+                         for sig in (signal.SIGINT, signal.SIGTERM)}
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
-        node.get_logger().info("StopMove")
-        node._send(API_STOP_MOVE)
-        node.destroy_node()
-        rclpy.shutdown()
+        try:
+            if rclpy.ok():
+                node.get_logger().info("StopMove")
+                node._send(API_STOP_MOVE)
+        finally:
+            node.destroy_node()
+            if rclpy.ok():
+                rclpy.shutdown()
+            for sig, handler in previous_handlers.items():
+                signal.signal(sig, handler)
 
 
 if __name__ == "__main__":

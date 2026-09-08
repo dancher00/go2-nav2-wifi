@@ -23,6 +23,8 @@ slam_toolbox:
     # Do not resize /map during nav (map_server + Nav2 use fixed saved map).
     map_update_interval: 9999.0
     resolution: 0.05
+    # Just above LaserScan's float32 0.20 m limit (avoid rounding warnings).
+    min_laser_range: 0.21
     max_laser_range: 20.0
     minimum_time_interval: 0.05
     transform_timeout: 0.5

@@ -189,6 +189,13 @@ Main knobs in `go2_nav2/config/go2_nav2_minimal.yaml`:
 
 Teleop **q/z** sets speed on the laptop; speed clamp on the robot is **off** by default. Optional: `export GO2_MAX_LINEAR=0.5` before `robot-relay-wifi.sh`. Unitree firmware may limit speed itself.
 
+Stationary measurements on this robot: native LiDAR about **15.5 Hz**, isolated
+Wi-Fi relay about **15.4 Hz**, with no duplicate cloud timestamps. The configured
+controller runs at 15 Hz and local costmap at 8 Hz. At 0.45 m/s, a 15 Hz scan
+interval is about 67 ms / 3 cm of travel. This is not a guarantee of safe stopping:
+Wi-Fi delay, processing, braking and physical obstacle tests still matter.
+Increasing the reported relay rate by duplicating frames adds no information.
+
 ---
 
 ## Checks
@@ -216,7 +223,7 @@ ros2 daemon stop && sleep 1 && ros2 daemon start
 
 | Symptom | Fix |
 |---------|-----|
-| No topics | Wi‑Fi: relay on robot + `check-wifi-dds.sh`; cable: `setup-robot-eth.sh`; `ROS_DOMAIN_ID=0` |
+| No topics | Wi‑Fi: relay + laptop must share `GO2_RELAY_DOMAIN_ID=64`; internal robot and cable stay on domain 0 |
 | No `.posegraph` | run `save-map.sh` while `slam_mapping` is active |
 | `failed to create plan` | goal in free space, closer; scan aligned with walls |
 | Robot in RViz wrong vs floor | **2D Pose Estimate** on `/initialpose` |
@@ -225,7 +232,7 @@ ros2 daemon stop && sleep 1 && ros2 daemon start
 | Plan arcs only / `invalid motion model` | planner **SmacPlanner2D**. `sudo apt install ros-humble-nav2-smac-planner`, restart `nav-to-point.sh` |
 | Two models in RViz, jumps | duplicate `map→odom` — rebuild `go2_nav2`, one **Pose Estimate** |
 | Plan visible, robot still, `cmd tcp reconnecting` | update `go2_cmd_vel_tcp.py` on robot, restart relay; on laptop `/ws/scripts/check-nav-cmdvel.sh` — `/cmd_vel` ~15–20 Hz |
-| Stops mid-route, `Failed to make progress` | wait for leg to finish (~60 s); do not spam Goal Pose; on robot `GO2_CMD_TIMEOUT=8` |
+| Stops mid-route, `Failed to make progress` | inspect planner/controller, fresh scans and TCP connection; do not extend command watchdogs to mask the failure |
 | Second Goal Pose silent | restart T1 after `colcon build`; log should show `Goal received` |
 | `Transform data too old` odom→map | restart T1; do not spam Pose Estimate while driving |
 | Motors grind, jerking | **only one** `sport_bridge`; do not set Goal while moving |

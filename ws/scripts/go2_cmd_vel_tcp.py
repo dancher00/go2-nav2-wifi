@@ -19,6 +19,7 @@ import time
 
 import rclpy
 from geometry_msgs.msg import Twist
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import (
     DurabilityPolicy,
@@ -303,10 +304,13 @@ def main() -> None:
     parser.add_argument("--bind", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     args = parser.parse_args()
-    if args.role == "server":
-        run_server(args.bind, args.port)
-    else:
-        run_client(args.host, args.port)
+    try:
+        if args.role == "server":
+            run_server(args.bind, args.port)
+        else:
+            run_client(args.host, args.port)
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass  # Each runner's finally block owns socket and ROS cleanup.
 
 
 if __name__ == "__main__":

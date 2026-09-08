@@ -22,7 +22,9 @@ TCP_PID=""
 cleanup() {
   [[ -n "$TCP_PID" ]] && kill "$TCP_PID" 2>/dev/null || true
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 if [[ ! -f "$MAP" ]]; then
   echo "ERROR: map not found: $MAP"
@@ -58,4 +60,5 @@ if [[ "${GO2_NET:-wifi}" == "wifi" ]]; then
   fi
 fi
 
-exec ros2 launch go2_nav2 nav2_slam_loc.launch.py "map:=${MAP}" "odom_source:=${ODOM}"
+# Keep the shell alive so its EXIT trap also stops the TCP client.
+ros2 launch go2_nav2 nav2_slam_loc.launch.py "map:=${MAP}" "odom_source:=${ODOM}"

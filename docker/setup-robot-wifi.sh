@@ -55,7 +55,7 @@ cat > "$CDDS_RUNTIME" <<EOF
       <Interfaces>
         <NetworkInterface address="${GO2_HOST_IP}" priority="default" multicast="default" />
       </Interfaces>
-      <AllowMulticast>${GO2_WIFI_MULTICAST:-false}</AllowMulticast>
+      <AllowMulticast>${GO2_WIFI_MULTICAST:-spdp}</AllowMulticast>
     </General>
     <Discovery>
       <ParticipantIndex>auto</ParticipantIndex>
@@ -70,7 +70,14 @@ EOF
 
 export CYCLONEDDS_URI="file://${CDDS_RUNTIME}"
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-export ROS_DOMAIN_ID=0
+# Keep relayed Wi-Fi topics separate from the robot's onboard domain 0.
+export GO2_RELAY_DOMAIN_ID="${GO2_RELAY_DOMAIN_ID:-64}"
+if [[ ! "$GO2_RELAY_DOMAIN_ID" =~ ^[0-9]{1,3}$ ]] ||
+   (( 10#$GO2_RELAY_DOMAIN_ID < 1 || 10#$GO2_RELAY_DOMAIN_ID > 101 )); then
+  echo "ERROR: GO2_RELAY_DOMAIN_ID must be an integer from 1 to 101" >&2
+  return 1 2>/dev/null || exit 1
+fi
+export ROS_DOMAIN_ID="$((10#$GO2_RELAY_DOMAIN_ID))"
 
 if [[ -d /ws/install/go2_nav2 ]]; then
   case ":${AMENT_PREFIX_PATH:-}:" in

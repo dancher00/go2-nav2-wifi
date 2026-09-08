@@ -10,7 +10,9 @@ TCP_PID=""
 cleanup() {
   [[ -n "$TCP_PID" ]] && kill "$TCP_PID" 2>/dev/null || true
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 if [[ "${GO2_NET:-wifi}" == "wifi" ]]; then
   ROBOT="${GO2_ROBOT_IP:-192.168.1.58}"
@@ -22,5 +24,6 @@ if [[ "${GO2_NET:-wifi}" == "wifi" ]]; then
   sleep 1
 fi
 
-exec ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
+# Keep the shell alive so its EXIT trap also stops the TCP client.
+ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
   -r cmd_vel:=/cmd_vel

@@ -11,7 +11,7 @@ services:
     stdin_open: true
     tty: true
     environment:
-      - ROS_DOMAIN_ID=0   # robot default: empty = 0. Do not use 37.
+      - GO2_RELAY_DOMAIN_ID=${GO2_RELAY_DOMAIN_ID:-64}
       - DISPLAY=${DISPLAY:-:0}
       - GO2_AUTO_ENV=${GO2_AUTO_ENV:-1}
       - GO2_NET=${GO2_NET:-wifi}

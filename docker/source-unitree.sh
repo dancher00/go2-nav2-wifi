@@ -9,7 +9,5 @@ else
   return 1 2>/dev/null || exit 1
 fi
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-# Robot uses empty ROS_DOMAIN_ID = domain 0. Do NOT use 37 unless robot was rebooted with it.
-export ROS_DOMAIN_ID=0
-export CYCLONEDDS_URI="${CYCLONEDDS_URI:-file:///etc/cyclonedds/go2.xml}"
-echo "Unitree DDS ready: DOMAIN=$ROS_DOMAIN_ID (use 0, same as robot)"
+source "$(dirname "${BASH_SOURCE[0]}")/setup-robot-net.sh" || return $?
+echo "Unitree DDS ready: DOMAIN=$ROS_DOMAIN_ID"

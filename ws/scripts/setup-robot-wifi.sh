@@ -48,7 +48,7 @@ fi
 
 CDDS_RUNTIME="/tmp/go2-wifi-cyclonedds.xml"
 WIFI_MODE="${GO2_WIFI_MODE:-peer}" # peer | multicast
-# Match Unitree robot after wifi patch (spdp)
+# Discovery must match the robot's Wi-Fi relay publisher
 MULTICAST="${GO2_WIFI_MULTICAST:-spdp}"
 [[ "$WIFI_MODE" == "multicast" ]] && MULTICAST=true
 
@@ -84,7 +84,14 @@ EOF
 
 export CYCLONEDDS_URI="file://${CDDS_RUNTIME}"
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-export ROS_DOMAIN_ID=0
+# Keep relayed Wi-Fi topics separate from the robot's onboard domain 0.
+export GO2_RELAY_DOMAIN_ID="${GO2_RELAY_DOMAIN_ID:-64}"
+if [[ ! "$GO2_RELAY_DOMAIN_ID" =~ ^[0-9]{1,3}$ ]] ||
+   (( 10#$GO2_RELAY_DOMAIN_ID < 1 || 10#$GO2_RELAY_DOMAIN_ID > 101 )); then
+  echo "ERROR: GO2_RELAY_DOMAIN_ID must be an integer from 1 to 101" >&2
+  return 1 2>/dev/null || exit 1
+fi
+export ROS_DOMAIN_ID="$((10#$GO2_RELAY_DOMAIN_ID))"
 
 if [[ -d /ws/install/go2_nav2 ]]; then
   case ":${AMENT_PREFIX_PATH:-}:" in

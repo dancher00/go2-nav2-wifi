@@ -73,6 +73,11 @@ Then on the laptop (Docker shell): `slam_mapping` + teleop → `save-map.sh` →
 
 **Do not** run `sport_bridge.launch.py` on the laptop over Wi‑Fi (relay handles cmd_vel on the robot).
 
+For a robot lying down, use `bash ~/robot-relay-wifi.sh --sensors-only` instead:
+normal relay mode starts motion control and may stand it up. Wi-Fi now uses DDS
+domain 64 on the laptop and relay publisher; onboard DDS and Ethernet stay on 0.
+See [stationary tests and upgrade notes](docs/RELAY-WIFI.md#stationary-sensor-only-test).
+
 ---
 
 ## Quick start (Ethernet)

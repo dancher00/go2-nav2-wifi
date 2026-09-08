@@ -19,6 +19,7 @@ In `.env`:
 
 ```bash
 GO2_NET=wifi
+GO2_RELAY_DOMAIN_ID=64       # same on robot relay and laptop; never 0
 GO2_ROBOT_IP=192.168.1.58    # Jetson IP on Wi‑Fi
 GO2_HOST_IP=192.168.1.90     # laptop IP on Wi‑Fi
 GO2_ODOM_SOURCE=sport        # or utlidar — same for map and nav
@@ -58,7 +59,8 @@ export GO2_HOST_IP=192.168.1.90
 bash ~/robot-relay-wifi.sh
 ```
 
-Log should show: `Sport bridge on robot`, `first frame published`, `relay-pub] ready (6 topics)`.
+Log should show `Relay running: onboard domain 0 -> Wi-Fi domain 64`, topic rates
+in Hz, and `first frame published` when a camera backend is installed.
 
 ---
 
@@ -73,6 +75,38 @@ Log should show: `Sport bridge on robot`, `first frame published`, `relay-pub] r
 Then [NAVIGATION.md](NAVIGATION.md): mapping (`slam_mapping` + `teleop-slam.sh`), `save-map.sh`, `nav-to-point.sh`.
 
 **Do not** run `sport_bridge.launch.py` on the laptop over Wi‑Fi.
+
+### Stationary sensor-only test
+
+The normal launcher starts a sport bridge that can stand the robot up. When the
+robot is lying down, use this mode instead (and stop any previously started
+motion bridges first):
+
+```bash
+# Robot: no TCP command server, sport bridge, or stand command is started.
+GO2_HOST_IP=YOUR_LAPTOP_IP GO2_RELAY_CAMERA=0 bash ~/robot-relay-wifi.sh --sensors-only
+# Laptop Docker: refresh the environment, then inspect sensors / mapping only.
+source /ws/scripts/setup-robot-wifi.sh
+python3 /ws/scripts/check-relay-stream.py --duration 10
+ros2 launch go2_nav2 slam_mapping.launch.py odom_source:=utlidar
+```
+
+Do not start teleop or send goals during this check. A map made while lying down
+is only a pipeline smoke test, not a usable navigation map.
+
+### DDS domain separation
+
+The robot's internal subscriber, camera and motion bridges use domain **0**.
+Only the Wi-Fi relay publisher and laptop use **64**. Both sides must set the
+same `GO2_RELAY_DOMAIN_ID` if changed (supported configuration range: 1–101).
+Ethernet setup still uses domain 0. No factory DDS files are changed.
+
+Sharing domain 0 across both relay sides creates a feedback loop: a high reported
+message rate can actually be repeated old frames. `check-relay-stream.py` counts
+unique original timestamps as well as arrivals. Update both robot and laptop,
+restart their ROS processes and re-source the network setup when upgrading.
+The supervisor rejects a second instance on the same socket and stops its own
+children on exit or child failure.
 
 ---
 
@@ -99,7 +133,8 @@ Keyboard teleop publishes on keypresses: hold the movement key for repeated comm
 releasing it lets the source timeout stop motion. If the keyboard's initial repeat
 delay exceeds the timeout, motion may briefly pause before repeating. Nav2 publishes
 continuously while driving. The robot's `GO2_CMD_TIMEOUT` remains a separate watchdog
-for loss of the TCP stream.
+for loss of the TCP stream; the launcher now defaults it to **0.5 seconds**, not
+8 seconds. Do not increase watchdogs to mask transport or planner failures.
 
 ---
 
