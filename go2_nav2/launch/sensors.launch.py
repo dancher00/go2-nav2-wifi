@@ -4,7 +4,7 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, LogInfo
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
@@ -25,10 +25,11 @@ def generate_launch_description():
                 description="Stamp-synced cloud for pointcloud_to_laserscan",
             ),
             DeclareLaunchArgument("odom_topic", default_value="/utlidar/robot_odom"),
+            DeclareLaunchArgument("odom_topic_sync", default_value="/utlidar/robot_odom_sync"),
             DeclareLaunchArgument(
                 "odom_tf_use_current_stamp",
-                default_value="true",
-                description="false for Nav2 — TF stamps match /scan (avoid costmap drops)",
+                default_value="false",
+                description="Must remain false: use the acquisition stamps from the shared sensor clock",
             ),
             DeclareLaunchArgument(
                 "odom_source",
@@ -39,6 +40,11 @@ def generate_launch_description():
                 "use_go2_description",
                 default_value="true",
                 description="Use go2_description URDF (meshes). If false, static box + go2_vis.",
+            ),
+            LogInfo(
+                msg="WARNING: sport odometry uses arrival time, not the native LiDAR acquisition clock; use odom_source:=utlidar for aligned SLAM.",
+                condition=IfCondition(PythonExpression(
+                    ["'", LaunchConfiguration("odom_source"), "' == 'sport'"])),
             ),
             DeclareLaunchArgument("lidar_x", default_value="0.171"),
             DeclareLaunchArgument("lidar_y", default_value="0.0"),
@@ -127,7 +133,7 @@ def generate_launch_description():
                                 "'/sport_state/odom' if '",
                                 LaunchConfiguration("odom_source"),
                                 "' == 'sport' else '",
-                                LaunchConfiguration("odom_topic"),
+                                LaunchConfiguration("odom_topic_sync"),
                                 "'",
                             ]
                         )
@@ -149,6 +155,8 @@ def generate_launch_description():
                     {
                         "cloud_in": LaunchConfiguration("cloud_topic"),
                         "cloud_out": LaunchConfiguration("cloud_topic_sync"),
+                        "odom_in": LaunchConfiguration("odom_topic"),
+                        "odom_out": LaunchConfiguration("odom_topic_sync"),
                     }
                 ],
             ),

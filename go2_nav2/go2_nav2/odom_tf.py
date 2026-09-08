@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""odom -> base_link TF from /utlidar/robot_odom (same as unitree_go2_nav odomTf.cpp).
+"""odom -> base_link TF from shared-clock /utlidar/robot_odom_sync.
 
 Optional smoothing only for RViz; keep smooth_alpha:=1.0 for SLAM/Nav2.
 """
@@ -21,7 +21,7 @@ from tf2_ros import TransformBroadcaster
 class OdomTf(Node):
     def __init__(self) -> None:
         super().__init__("go2_odom_tf")
-        self.declare_parameter("odom_topic", "/utlidar/robot_odom")
+        self.declare_parameter("odom_topic", "/utlidar/robot_odom_sync")
         self.declare_parameter("odom_frame", "odom")
         self.declare_parameter("base_frame", "base_link")
         # 1.0 = passthrough like ref; 0.35 = extra smoothing for RViz only
@@ -30,8 +30,8 @@ class OdomTf(Node):
         self.declare_parameter("max_jump_yaw", 0.8)
         self.declare_parameter("publish_odom", True)
         self.declare_parameter("odom_out_topic", "/odom")
-        # Fresh TF stamps (robot_odom header can lag vs controller clock).
-        self.declare_parameter("use_current_stamp", True)
+        # Acquisition time has already been translated by the shared clock node.
+        self.declare_parameter("use_current_stamp", False)
 
         topic = self.get_parameter("odom_topic").value
         self._odom_frame = self.get_parameter("odom_frame").value
@@ -42,6 +42,10 @@ class OdomTf(Node):
         self._use_current_stamp = bool(
             self.get_parameter("use_current_stamp").value
         )
+        if self._use_current_stamp:
+            raise ValueError('use_current_stamp=true breaks cloud/pose alignment; use the shared clock node')
+        self._stamp = None
+        self._last_stamp_ns = 0
         self._publish_odom = bool(self.get_parameter("publish_odom").value)
         odom_out = self.get_parameter("odom_out_topic").value
 
@@ -54,16 +58,13 @@ class OdomTf(Node):
         self._got_odom = False
         self._x = self._y = self._z = 0.0
         self._qx = self._qy = self._qz = self._qw = 1.0
-        self.create_timer(1.0 / 30.0, self._publish_tf)
+        # No timer: old poses must never masquerade as fresh measurements.
 
     def _publish_tf(self) -> None:
-        if not self._got_odom:
-            self._x = self._y = self._z = 0.0
-            self._qx = self._qy = self._qz = 0.0
-            self._qw = 1.0
-        stamp = self.get_clock().now().to_msg()
+        if self._stamp is None:
+            return
         t = TransformStamped()
-        t.header.stamp = stamp
+        t.header.stamp = self._stamp
         t.header.frame_id = self._odom_frame
         t.child_frame_id = self._base_frame
         t.transform.translation.x = self._x
@@ -76,6 +77,11 @@ class OdomTf(Node):
         self._br.sendTransform(t)
 
     def _on_odom(self, msg: Odometry) -> None:
+        incoming_ns = msg.header.stamp.sec * 10**9 + msg.header.stamp.nanosec
+        if incoming_ns <= self._last_stamp_ns:
+            return
+        self._last_stamp_ns = incoming_ns
+        self._stamp = msg.header.stamp
         if not self._got_odom:
             self._got_odom = True
         x = msg.pose.pose.position.x
@@ -132,13 +138,8 @@ class OdomTf(Node):
 
         self._publish_tf()
         if self._odom_pub is not None:
-            stamp = (
-                self.get_clock().now().to_msg()
-                if self._use_current_stamp
-                else msg.header.stamp
-            )
             out = Odometry()
-            out.header.stamp = stamp
+            out.header.stamp = self._stamp
             out.header.frame_id = self._odom_frame
             out.child_frame_id = self._base_frame
             out.pose.pose.position.x = self._x
@@ -149,6 +150,7 @@ class OdomTf(Node):
             out.pose.pose.orientation.z = self._qz
             out.pose.pose.orientation.w = self._qw
             out.twist = msg.twist
+            out.pose.covariance = msg.pose.covariance
             self._odom_pub.publish(out)
 
 

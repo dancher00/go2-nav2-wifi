@@ -2,8 +2,9 @@
 """Single publisher of map->odom for Nav2 (no duplicate with slam_toolbox).
 
 slam_toolbox: transform_publish_period=0 (no map->odom TF).
-Fresh /pose: map->odom from SLAM pose + odom->base_link.
-Stale /pose: propagate last SLAM pose with odom delta (dead reckoning until scan returns).
+Pair every SLAM /pose with odom->base_link at that pose's acquisition stamp.
+Hold the resulting map->odom correction between poses; odom->base_link
+continues to describe motion. Never pair an old map pose with latest odometry.
 """
 
 from __future__ import annotations
@@ -47,6 +48,8 @@ class MapOdomRelay(Node):
         self.declare_parameter("rate_hz", 30.0)
         self.declare_parameter("smooth_alpha", 1.0)
         self.declare_parameter("max_pose_age_sec", 5.0)
+        # Legacy launch compatibility: holding map->odom always propagates the
+        # robot through odom->base_link, without mixing measurement times.
         self.declare_parameter("odom_propagate_when_stale", True)
 
         self._map = str(self.get_parameter("map_frame").value)
@@ -54,14 +57,12 @@ class MapOdomRelay(Node):
         self._base = str(self.get_parameter("base_frame").value)
         pose_topic = str(self.get_parameter("pose_topic").value)
         rate = max(float(self.get_parameter("rate_hz").value), 1.0)
-        self._odom_propagate = bool(
-            self.get_parameter("odom_propagate_when_stale").value
-        )
 
         self._buffer = Buffer()
         self._listener = TransformListener(self._buffer, self)
         self._br = TransformBroadcaster(self)
         self._last_pose: PoseWithCovarianceStamped | None = None
+        self._pending_pose = None
         self._smooth_tx = 0.0
         self._smooth_ty = 0.0
         self._smooth_yaw = 0.0
@@ -70,7 +71,7 @@ class MapOdomRelay(Node):
         self._warned_stale = False
         self._max_pose_age = float(self.get_parameter("max_pose_age_sec").value)
         self._last_pose_rx = 0.0
-        # Anchor for odom propagation when /pose is stale (uses /utlidar/robot_odom TF).
+        # A SLAM pose and native odometry sampled at the SAME acquisition time.
         self._anchor_px = self._anchor_py = self._anchor_yaw_map = 0.0
         self._anchor_ox = self._anchor_oy = self._anchor_yaw_odom = 0.0
         self._have_anchor = False
@@ -80,29 +81,37 @@ class MapOdomRelay(Node):
         )
         self.create_timer(1.0 / rate, self._tick)
         self.get_logger().info(
-            f"map->odom @ {rate:.0f} Hz; stale -> "
-            f"{'odom propagate' if self._odom_propagate else 'hold'}"
+            f"map->odom @ {rate:.0f} Hz; timestamp-matched anchors, hold between poses"
         )
 
     def _on_pose(self, msg: PoseWithCovarianceStamped) -> None:
+        stamp_ns = msg.header.stamp.sec * 10**9 + msg.header.stamp.nanosec
+        if stamp_ns <= 0:
+            return
+        if self._last_pose is not None:
+            previous = self._last_pose.header.stamp
+            if stamp_ns <= previous.sec * 10**9 + previous.nanosec:
+                return
         if self._last_pose is None:
             self._have_smooth = False
             self.get_logger().debug("SLAM /pose received")
         self._last_pose = msg
+        self._pending_pose = msg
         self._last_pose_rx = time.monotonic()
         self._warned_stale = False
-        self._save_anchor(msg)
+        if self._save_anchor(msg):
+            self._pending_pose = None
 
-    def _save_anchor(self, pose: PoseWithCovarianceStamped) -> None:
+    def _save_anchor(self, pose: PoseWithCovarianceStamped) -> bool:
         try:
             odom_base = self._buffer.lookup_transform(
                 self._odom,
                 self._base,
-                Time(),
-                timeout=Duration(seconds=0.1),
+                Time.from_msg(pose.header.stamp),
+                timeout=Duration(seconds=0.0),
             )
         except Exception:
-            return
+            return False
         p = pose.pose.pose.position
         q = pose.pose.pose.orientation
         self._anchor_px = p.x
@@ -113,6 +122,7 @@ class MapOdomRelay(Node):
         bo = odom_base.transform.rotation
         self._anchor_yaw_odom = _yaw_from_quat(bo.x, bo.y, bo.z, bo.w)
         self._have_anchor = True
+        return True
 
     def _send(self, tx: float, ty: float, yaw: float) -> None:
         qx, qy, qz, qw = _quat_from_yaw(yaw)
@@ -156,61 +166,29 @@ class MapOdomRelay(Node):
         return tx, ty, yaw_mo
 
     def _tick(self) -> None:
-        if self._last_pose is None:
+        if self._pending_pose is not None:
+            if self._save_anchor(self._pending_pose):
+                self._pending_pose = None
+        if not self._have_anchor:
             if not self._warned_pose:
-                self.get_logger().warn("map->odom identity until /pose")
+                self.get_logger().warn("map->odom identity until a timestamp-matched /pose + odom TF")
                 self._warned_pose = True
             self._send(0.0, 0.0, 0.0)
             return
-
-        try:
-            odom_base = self._buffer.lookup_transform(
-                self._odom,
-                self._base,
-                Time(),
-                timeout=Duration(seconds=0.1),
-            )
-        except Exception:
-            if self._have_smooth:
-                self._send(self._smooth_tx, self._smooth_ty, self._smooth_yaw)
-            return
-
-        bx = odom_base.transform.translation.x
-        by = odom_base.transform.translation.y
-        bo = odom_base.transform.rotation
-        yaw_odom = _yaw_from_quat(bo.x, bo.y, bo.z, bo.w)
 
         pose_age = time.monotonic() - self._last_pose_rx
         pose_stale = self._last_pose_rx > 0.0 and pose_age > self._max_pose_age
 
         if pose_stale:
             if not self._warned_stale:
-                self.get_logger().warn(
-                    f"/pose stale ({pose_age:.1f}s) — "
-                    + (
-                        "map->odom from odom delta (/utlidar/robot_odom)"
-                        if self._odom_propagate and self._have_anchor
-                        else "holding map->odom; check /scan"
-                    )
-                )
+                self.get_logger().warn(f"/pose stale ({pose_age:.1f}s) — holding timestamp-matched map->odom")
                 self._warned_stale = True
-            if self._odom_propagate and self._have_anchor:
-                px, py, yaw_map = self._map_pose_from_odom_propagate(
-                    bx, by, yaw_odom
-                )
-            else:
-                if self._have_smooth:
-                    self._send(self._smooth_tx, self._smooth_ty, self._smooth_yaw)
-                return
         else:
             self._warned_stale = False
-            p = self._last_pose.pose.pose.position
-            q = self._last_pose.pose.pose.orientation
-            px, py = p.x, p.y
-            yaw_map = _yaw_from_quat(q.x, q.y, q.z, q.w)
 
         tx, ty, yaw_mo = self._compute_map_odom(
-            px, py, yaw_map, bx, by, yaw_odom
+            self._anchor_px, self._anchor_py, self._anchor_yaw_map,
+            self._anchor_ox, self._anchor_oy, self._anchor_yaw_odom,
         )
 
         alpha = float(self.get_parameter("smooth_alpha").value)

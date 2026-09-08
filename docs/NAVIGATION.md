@@ -112,7 +112,7 @@ Default `utlidar` uses `/utlidar/robot_odom`. `sport` uses `/sportmodestate` →
 
 **Jittering in place, `robot-check-cmdvel.sh` → NO /cmd_vel:** use `/ws/scripts/teleop-slam.sh` on the laptop (TCP client inside). Put the handheld remote aside.
 
-**No map, log shows `pointcloud_to_laserscan` / `transform cache`:** over Wi‑Fi cloud timestamps may not match TF (`go2_cloud_stamp_sync` in `slam_mapping` re-stamps the cloud; rebuild `go2_nav2`).
+**No map, log shows `pointcloud_to_laserscan` / `transform cache`:** rebuild `go2_nav2` and restart the entire mapping launch. `go2_cloud_stamp_sync` now translates cloud AND native odometry with one fixed clock offset; allow one second for calibration. Do not independently re-stamp either stream with arrival time. See [sensor timing](SENSOR-TIMING.md).
 
 Save map (while T1 `slam_mapping` is running):
 
