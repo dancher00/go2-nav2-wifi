@@ -1,0 +1,61 @@
+{
+  "backend": "trt",
+  "version": "8.5.2.2",
+  "model": "/home/unitree/go2-stock-camera/da3/models/da3-small-308-fp16.engine",
+  "units": "relative; not metres",
+  "calibrated": false,
+  "fusion_enabled": false,
+  "input_shape": [
+    1,
+    1,
+    3,
+    182,
+    308
+  ],
+  "load_seconds": 2.3209774390006714,
+  "frames": [
+    {
+      "source": "/home/unitree/go2-stock-camera/data/20260909T174635-43703/capture/1788975997980019210.jpg",
+      "seconds": 0.03609512799994263,
+      "depth_min": 0.6434454917907715,
+      "depth_max": 1.2238802909851074,
+      "reference_relative_mae": 0.0003755565267056227,
+      "reference_max_abs_error": 0.0016423463821411133,
+      "output_relative_l2": {
+        "confidence": 0.002063327468931675,
+        "predicted_depth": 0.00044825076474808156,
+        "intrinsics": 0.0009115631692111492,
+        "extrinsics": 0.00014167999324854463
+      }
+    },
+    {
+      "source": "/home/unitree/go2-stock-camera/data/20260909T174635-43703/capture/1788976012683219346.jpg",
+      "seconds": 0.026816871999471914,
+      "depth_min": 0.6612824201583862,
+      "depth_max": 1.2173243761062622,
+      "reference_relative_mae": 0.0005820720689371228,
+      "reference_max_abs_error": 0.0025637149810791016,
+      "output_relative_l2": {
+        "confidence": 0.0025843207258731127,
+        "predicted_depth": 0.0007247636094689369,
+        "intrinsics": 0.000497938715852797,
+        "extrinsics": 0.0001394231803715229
+      }
+    },
+    {
+      "source": "/home/unitree/go2-stock-camera/data/20260909T174635-43703/capture/1788976027564115357.jpg",
+      "seconds": 0.027919506000216643,
+      "depth_min": 0.644388735294342,
+      "depth_max": 1.2208958864212036,
+      "reference_relative_mae": 0.0003918280126526952,
+      "reference_max_abs_error": 0.002625107765197754,
+      "output_relative_l2": {
+        "confidence": 0.002438803669065237,
+        "predicted_depth": 0.0005774091114290059,
+        "intrinsics": 0.00041159807005897164,
+        "extrinsics": 0.0001964534749276936
+      }
+    }
+  ],
+  "peak_rss_mib": 1450.53125
+}

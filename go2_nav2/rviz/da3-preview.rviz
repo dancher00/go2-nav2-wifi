@@ -1,0 +1,37 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Background Color: 35; 35; 35
+    Fixed Frame: go2_da3_relative
+    Frame Rate: 15
+  Displays:
+    - Class: rviz_default_plugins/PointCloud2
+      Name: DA3 relative geometry - NOT metres or SLAM map
+      Enabled: true
+      Topic:
+        Value: /go2_da3/relative_points
+        Reliability Policy: Best Effort
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Depth: 1
+      Color Transformer: RGB8
+      Position Transformer: XYZ
+      Style: Points
+      Size (Pixels): 3
+      Decay Time: 0
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 2.2
+      Focal Point:
+        X: 0.8
+        Y: 0
+        Z: 0
+      Pitch: 0.25
+      Yaw: 3.14
+Window Geometry:
+  Width: 1100
+  Height: 800
