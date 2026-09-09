@@ -44,6 +44,14 @@ class SessionTests(unittest.TestCase):
         self.assertIn('lidar3d_robot_viz.launch.py', commands[0])
         self.assertEqual(commands[1][:4], ['ros2', 'run', 'rviz2', 'rviz2'])
 
+    def test_plan_preview_has_no_controller_or_motion_transport(self):
+        with patch.dict(os.environ, GO2_LIDAR3D_PLAN='1', GO2_NET='wifi'):
+            commands = sessions.session_commands('lidar3d-viz', None)
+        self.assertIn('lidar3d_planning.launch.py', commands[1])
+        self.assertIn('lidar3d_planning.rviz', commands[-1][-1])
+        self.assertNotIn('controller', str(commands))
+        self.assertNotIn('go2_cmd_vel_tcp', str(commands))
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

@@ -38,6 +38,8 @@ class OdomTf(Node):
         super().__init__("go2_odom_tf")
         self.declare_parameter("sensor_from_base", [0., 0., 0., 0., 0., 0., 1.])
         self.declare_parameter("best_effort", False)
+        self.declare_parameter("sensor_frame", "")
+        self._sensor_frame = self.get_parameter("sensor_frame").value
         self._sensor_from_base = self.get_parameter("sensor_from_base").value
         self.declare_parameter("odom_topic", "/utlidar/robot_odom_sync")
         self.declare_parameter("odom_frame", "odom")
@@ -110,6 +112,19 @@ class OdomTf(Node):
         qy = msg.pose.pose.orientation.y
         qz = msg.pose.pose.orientation.z
         qw = msg.pose.pose.orientation.w
+
+        # Registered clouds are in the world frame. Costmap ray tracing needs
+        # the actual sensor origin, separately from the transformed robot body.
+        if getattr(self, "_sensor_frame", ""):
+            sensor_tf = TransformStamped()
+            sensor_tf.header.stamp = self._stamp
+            sensor_tf.header.frame_id = self._odom_frame
+            sensor_tf.child_frame_id = self._sensor_frame
+            sensor_tf.transform.translation.x = x
+            sensor_tf.transform.translation.y = y
+            sensor_tf.transform.translation.z = z
+            sensor_tf.transform.rotation = msg.pose.pose.orientation
+            self._br.sendTransform(sensor_tf)
 
         offset = getattr(self, "_sensor_from_base", (0., 0., 0., 0., 0., 0., 1.))
         (x, y, z), (qx, qy, qz, qw) = compose_pose((x, y, z), (qx, qy, qz, qw), offset)

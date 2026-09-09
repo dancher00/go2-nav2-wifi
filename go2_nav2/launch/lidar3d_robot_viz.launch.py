@@ -12,6 +12,6 @@ def generate_launch_description():
     return LaunchDescription([
         Node(package='go2_nav2', executable='go2_odom_tf', name='go2_odom_tf',
              parameters=[pkg + '/config/lidar3d_robot_viz.yaml',
-                {'sensor_from_base': [0.,0.,0.,0.,0.,0.,1.]} if os.environ.get('GO2_LIDAR3D_BACKEND') == 'legkilo' else {}]),
+                {'sensor_from_base': [0.,0.,0.,0.,0.,0.,1.]} if os.environ.get('GO2_LIDAR3D_BACKEND') == 'legkilo' else ({'sensor_frame': 'lidar3d_sensor'} if os.environ.get('GO2_LIDAR3D_PLAN') == '1' else {})]),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(pkg + '/launch/robot_description.launch.py')),
     ])

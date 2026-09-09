@@ -15,19 +15,26 @@ if [[ "$mapping_mode" == lidar3d && "${1:-}" == --laptop ]]; then
   compute=laptop
   shift
 fi
+planning=0
+if [[ "$mapping_mode" == lidar3d && "${1:-}" == --plan ]]; then planning=1; shift; fi
 if [[ "${1:-}" == --help ]]; then
-  echo 'Usage: ./mapping.sh [--3d [--legkilo|--laptop]]  (close RViz or press Ctrl+C to stop)'
+  echo 'Usage: ./mapping.sh [--3d [--legkilo|--laptop|--plan]]  (close RViz or press Ctrl+C to stop)'
   echo '3D computes on Jetson by default; --laptop preserves the Wi-Fi raw-sensor experiment.'
   echo 'Optional: GO2_CONTAINER=go2-humble GO2_ROBOT_USER=unitree ./mapping.sh'
   echo 'GO2_RVIZ=0 disables the window; 3D sessions save automatically on stop.'
   echo 'GO2_RECORD=1 records 3D backend inputs for offline diagnosis.'
   exit 0
 fi
-[[ $# == 0 ]] || { echo 'Usage: ./mapping.sh [--3d [--legkilo|--laptop]]' >&2; exit 2; }
+[[ $# == 0 ]] || { echo 'Usage: ./mapping.sh [--3d [--legkilo|--laptop|--plan]]' >&2; exit 2; }
 [[ "$compute" == jetson || "$compute" == laptop ]] || { echo 'GO2_LIDAR3D_COMPUTE must be jetson or laptop' >&2; exit 2; }
 [[ "$backend" == pointlio || "$backend" == legkilo ]] || { echo "Unknown 3D backend" >&2; exit 2; }
 [[ "$backend" != legkilo || "$compute" == jetson ]] || { echo "Leg-KILO launcher currently supports Jetson; replay is available through go2-session." >&2; exit 2; }
 rviz="${GO2_RVIZ:-1}"
+if [[ "$planning" == 1 ]]; then
+  [[ "$backend" == pointlio && "$compute" == jetson && "$rviz" == 1 ]] || {
+    echo '--plan previews Point-LIO planning with Jetson SLAM and laptop RViz.' >&2; exit 2;
+  }
+fi
 record=0
 [[ "${GO2_RECORD:-0}" != 1 ]] || record=1
 [[ "$rviz" == 0 || "$rviz" == 1 ]] || { echo 'GO2_RVIZ must be 0 or 1' >&2; exit 2; }
@@ -120,7 +127,7 @@ if [[ "$mapping_mode" == lidar3d && "$compute" == jetson ]]; then
       x_added=1
     fi
     mapping_started=1
-    docker exec -e GO2_LIDAR3D_BACKEND="$backend" -e DISPLAY="$DISPLAY" -e QT_QPA_PLATFORM=xcb -e QT_X11_NO_MITSHM=1 \
+    docker exec -e GO2_LIDAR3D_PLAN="$planning" -e GO2_LIDAR3D_BACKEND="$backend" -e DISPLAY="$DISPLAY" -e QT_QPA_PLATFORM=xcb -e QT_X11_NO_MITSHM=1 \
       -e LIBGL_ALWAYS_SOFTWARE=1 -e XDG_CONFIG_HOME=/tmp/go2-mapping-config \
       "$GO2_CONTAINER" bash /ws/scripts/go2-session.sh start lidar3d-viz --owner "$owner" \
       >"$log_dir/rviz.log" 2>&1 &

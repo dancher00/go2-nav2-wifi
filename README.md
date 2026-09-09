@@ -157,3 +157,5 @@ Point-LIO на Jetson (raw L1 + гироскоп, без камеры, уско�
 Обычный `./mapping.sh` сохраняет 2D-профиль.
 
 Проверенный 3D Point-LIO baseline: [снимок сборки и запуск](docs/POINTLIO-BASELINE.md).
+
+Экспериментальный [Point-LIO → Nav2 plan preview](docs/LIDAR-3D-NAV2.md): `./mapping.sh --3d --plan`, без движения.

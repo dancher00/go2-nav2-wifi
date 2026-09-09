@@ -109,3 +109,11 @@ class MappingLauncherTests(unittest.TestCase):
         self.assertNotIn('start lidar3d-viz', trace)
         self.assertNotIn('xhost', trace)
         self.assertIn('go2-lidar3d-onboard bash /ws/scripts/go2-session.sh start lidar3d', trace)
+
+    def test_plan_preview_keeps_sensor_only_owned_session(self):
+        result, trace = self.run_launcher('--3d', '--plan')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('GO2_LIDAR3D_PLAN=1', trace)
+        self.assertIn('start lidar3d-viz --owner', trace)
+        self.assertNotIn('sport_bridge', trace)
+        self.assertNotIn('go2_cmd_vel_tcp', trace)

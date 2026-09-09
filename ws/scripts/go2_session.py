@@ -184,7 +184,11 @@ def session_commands(mode, map_path, output_dir=None, bag=None, config=None):
                              'GO2_RELAY_CAMERA=0', 'bash', str(scripts / 'robot-relay-wifi.sh'), '--sensors-only'])
     elif mode == 'lidar3d-viz':
         commands.append(['ros2', 'launch', 'go2_nav2', 'lidar3d_robot_viz.launch.py'])
+        planning = os.environ.get('GO2_LIDAR3D_PLAN') == '1'
+        if planning:
+            commands.append(['ros2', 'launch', 'go2_nav2', 'lidar3d_planning.launch.py'])
         rviz_file = 'legkilo.rviz' if os.environ.get('GO2_LIDAR3D_BACKEND') == 'legkilo' else 'lidar3d.rviz'
+        if planning: rviz_file = 'lidar3d_planning.rviz'
         commands.append(['ros2', 'run', 'rviz2', 'rviz2', '-d', '/ws/src/go2_nav2/rviz/' + rviz_file])
     elif mode == 'navigation':
         from go2_nav2.map_bundle import validate_map

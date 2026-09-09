@@ -15,6 +15,7 @@ setup(
                 "launch/sport_bridge.launch.py",
                 "launch/slam_mapping.launch.py",
                 "launch/lidar3d_mapping.launch.py",
+                "launch/lidar3d_planning.launch.py",
                 "launch/legkilo_mapping.launch.py",
                 "launch/lidar3d_robot_viz.launch.py",
                 "launch/sensors.launch.py",
@@ -26,7 +27,7 @@ setup(
         ),
         (
             "share/" + package_name + "/rviz",
-            ["rviz/nav.rviz", "rviz/slam.rviz", "rviz/bringup.rviz", "rviz/lidar3d.rviz"],
+            ["rviz/nav.rviz", "rviz/slam.rviz", "rviz/bringup.rviz", "rviz/lidar3d.rviz", "rviz/lidar3d_planning.rviz"],
         ),
         (
             "share/" + package_name + "/urdf",
@@ -40,6 +41,7 @@ setup(
                 "config/pointcloud_to_laserscan.yaml",
                 "config/slam_toolbox_mapping.yaml",
                 "config/pointlio_go2.yaml",
+                "config/lidar3d_planner.yaml",
                 "config/legkilo_go2.yaml",
                 "config/lidar3d_robot_viz.yaml",
                 "config/go2_nav2_minimal.yaml",
