@@ -1,0 +1,21 @@
+{
+  "frames": 127,
+  "observed_unique_hz": 12.467085062054192,
+  "increasing_stamps": true,
+  "status": {
+    "published": 321,
+    "decode_errors": 0,
+    "width": 1920,
+    "height": 1080,
+    "recorded": 321,
+    "received_unique": 366,
+    "repeated_jpegs": 88,
+    "frame_age_sec": 0.06005208999977185,
+    "live": true,
+    "timestamp_basis": "Jetson JPEG receipt; exposure time unavailable",
+    "camera_calibrated": false,
+    "lidar_extrinsics_calibrated": false,
+    "fusion_enabled": false,
+    "source_error": ""
+  }
+}
