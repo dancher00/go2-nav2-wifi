@@ -1,0 +1,37 @@
+{
+  "backend": "ort",
+  "version": "1.16.3",
+  "model": "/home/unitree/go2-stock-camera/da3/models/model.onnx",
+  "units": "relative; not metres",
+  "calibrated": false,
+  "fusion_enabled": false,
+  "input_shape": [
+    1,
+    1,
+    3,
+    182,
+    308
+  ],
+  "load_seconds": 2.978269134000584,
+  "frames": [
+    {
+      "source": "/home/unitree/go2-stock-camera/data/20260909T174635-43703/capture/1788975997980019210.jpg",
+      "seconds": 0.7527184640002815,
+      "depth_min": 0.6436548233032227,
+      "depth_max": 1.2236601114273071
+    },
+    {
+      "source": "/home/unitree/go2-stock-camera/data/20260909T174635-43703/capture/1788976012683219346.jpg",
+      "seconds": 0.695959061999929,
+      "depth_min": 0.660846471786499,
+      "depth_max": 1.2177313566207886
+    },
+    {
+      "source": "/home/unitree/go2-stock-camera/data/20260909T174635-43703/capture/1788976027564115357.jpg",
+      "seconds": 0.8048121250003533,
+      "depth_min": 0.6447960138320923,
+      "depth_max": 1.222903847694397
+    }
+  ],
+  "peak_rss_mib": 258.6875
+}
