@@ -1,0 +1,100 @@
+{
+  "date": "2026-09-09",
+  "scope": "Leg-KILO Go2 input association; no camera or factory world-pose fusion",
+  "fixes": [
+    "Retain first LowState per identical raw IMU key; do not erase after one SportState consumption. Firmware repeats IMU keys, sometimes with different joint fields.",
+    "Increase existing pending SportState bound from 8 to 512 to accommodate delayed LowState delivery in recorded data.",
+    "Process earliest match; retain timestamped body IMU for preceding unmatched packets and overflow. Missing encoders produce no foot velocity observation and do not update contact hysteresis."
+  ],
+  "timing_limit": "Identical IMU keys are an association heuristic, not proof of atomic IMU/joint acquisition. Measured 389.477073 ms is LowState minus SportState bag receipt time, not Wi-Fi end-to-end latency.",
+  "first_circle_reproducibility": {
+    "final_2x_run": "run-20260909-164617-hlbsrsrx",
+    "reference_1x_run": "run-20260909-162547-0iykcb73",
+    "identical_input_frames": 1913,
+    "frontend_all_saved_columns_exactly_equal": true,
+    "backend_max_position_difference_m": 0.0,
+    "return_discrepancy_m": 0.8608325249676865,
+    "old_bug_evidence": "1913 identical clouds, four frames with different accepted kinematics; five missing IMU/kinematics packets in one run. Identical Sport IMUs could select different encoder fields. Earlier 0.039 m return is not a validated accuracy result."
+  },
+  "two_walks": {
+    "source_run": "run-20260909-154943-tc2qc0rt",
+    "fixed_2x_run": "run-20260909-164031-gul9c5s2",
+    "first_endpoint_separation_m": {
+      "before": 0.12492327485149424,
+      "after": 0.0917972542189189,
+      "windows_s": [
+        [
+          30,
+          34
+        ],
+        [
+          120,
+          140
+        ]
+      ],
+      "same_physical_endpoint_confirmed": false
+    },
+    "second_return_discrepancy_m": {
+      "before": 1.1890099170732755,
+      "after": 0.2101265135483077,
+      "windows_s": [
+        [
+          265,
+          280
+        ],
+        [
+          350,
+          370
+        ]
+      ],
+      "same_physical_endpoint_confirmed_by_user": true
+    },
+    "method": "Distance between median saved backend positions in stationary windows, seconds relative to first pose; no external ground-truth trajectory.",
+    "output_poses": 8003,
+    "output_duration_s": 520.500987,
+    "accepted_loop_edges": 22,
+    "received_lowstate": 243541,
+    "received_sportstate": 153412,
+    "matched_sportstate": 142427,
+    "imu_only_sportstate": 10876,
+    "pending_tail_sportstate": 109,
+    "limitation": "Last six source frames (~0.39 s of final stationary tail) are absent: no later match flushes pending Sport packets at end of recording. Shutdown tail draining remains unresolved.",
+    "prefix_1x_run": "run-20260909-163900-sluk1xks",
+    "prefix_identical_input_frames_against_2x": 906,
+    "limitation_full_rate_comparison": "Full long-record 1x replay has not been repeated; rate equality is established for the short circle and the problematic long-record prefix."
+  },
+  "jetson_live_smoke": {
+    "run": "run-20260909-164638-qo5e9_nq",
+    "duration_s": 197.53445386886597,
+    "poses": 3038,
+    "max_displacement_from_first_m": 0.017751704108174206,
+    "observed_output_rates_hz": {
+      "odom": 15.4,
+      "registered": 0.8
+    },
+    "motion_commands_sent": false,
+    "rviz_started": false,
+    "raw_bag_recorded": false,
+    "archive_sha256_verified_files": 18,
+    "archive_bytes": 9796489,
+    "removed_from_jetson": true,
+    "backend_processes_stopped": true,
+    "limitation": "Stationary smoke, not a new walking accuracy validation. No new CPU/RAM or network benchmark was performed."
+  },
+  "builds": {
+    "patch_sha256": "0d8777213539e989a2794bac2dda2cea0a7dd9b4e3cc7ac68d7be589b1b8acda",
+    "amd64_image": "sha256:a8e64acdf1d9cc5e47ba6d2a5084e402a28f4d35d88642c069afcd739ceef966",
+    "jetson_image": "sha256:edac901a79f1b5e72ac2b456680feb1ceb5f7f995fb22b1caf2435421237f29d"
+  },
+  "validation": {
+    "python_tests_passed": 110,
+    "cpp_built": [
+      "amd64",
+      "arm64"
+    ],
+    "diff_check_passed": true
+  },
+  "launch": "GO2_RECORD=1 ./mapping.sh --3d --legkilo",
+  "audit": "Set GO2_LEGKILO_INPUT_TRACE inside backend environment for optional CSV plus .pairing reception trace; disabled by default. Compare finalized CSVs using ws/scripts/compare-legkilo-inputs.py.",
+  "remaining": "Walking validation on installed Jetson build; residual drift and map consistency; provisional contact thresholds and joint/IMU timing; recording-tail flush. Replay return discrepancy is not whole-map accuracy or a new SLAM algorithm."
+}

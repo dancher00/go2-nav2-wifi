@@ -1,0 +1,96 @@
+{
+  "date": "2026-09-09",
+  "streams": {
+    "/lidar3d/odom": {
+      "count": 182,
+      "receipt_hz": 15.37602622005165,
+      "first_t": 1788956617.8251565,
+      "last_t": 1788956629.5981548,
+      "p_extent": [
+        0.029311673667773944,
+        0.04729622110757342,
+        0.013173453277693009
+      ],
+      "step_position_p95_m": 0.007427441818792363,
+      "step_rotation_p95_deg": 0.19351241148664677,
+      "frame": "lidar3d_map",
+      "nonzero_cov": false,
+      "mode_counts": {}
+    },
+    "/lidar3d/factory_odom_clock_reference": {
+      "count": 1782,
+      "receipt_hz": 150.75313346489344,
+      "first_t": 1788956617.8019748,
+      "last_t": 1788956629.6207774,
+      "p_extent": [
+        8.940696716308594e-05,
+        6.556510925292969e-05,
+        2.026185393333435e-05
+      ],
+      "step_position_p95_m": 4.061871775961118e-06,
+      "step_rotation_p95_deg": 0.0032853965865192376,
+      "frame": "odom",
+      "nonzero_cov": false,
+      "mode_counts": {}
+    },
+    "/utlidar/robot_odom": {
+      "count": 3016,
+      "receipt_hz": 150.78763225033163,
+      "first_t": 1788955854.0592263,
+      "last_t": 1788955874.0558074,
+      "p_extent": [
+        9.226799011230469e-05,
+        8.726119995117188e-05,
+        2.4430453777313232e-05
+      ],
+      "step_position_p95_m": 4.0639220605848036e-06,
+      "step_rotation_p95_deg": 0.003249129752529153,
+      "frame": "odom",
+      "nonzero_cov": false,
+      "mode_counts": {}
+    },
+    "/sportmodestate": {
+      "count": 5981,
+      "receipt_hz": 299.04679285348124,
+      "first_t": 1788955854.0574415,
+      "last_t": 1788955874.055343,
+      "p_extent": [
+        9.274482727050781e-05,
+        8.726119995117188e-05,
+        2.4430453777313232e-05
+      ],
+      "step_position_p95_m": 3.2902830991881585e-06,
+      "step_rotation_p95_deg": 0.002292035924946445,
+      "frame": null,
+      "nonzero_cov": false,
+      "mode_counts": {
+        "0": 5981
+      }
+    },
+    "/lowstate": {
+      "count": 9968,
+      "receipt_hz": 498.48428920001766,
+      "first_t": 5850359,
+      "last_t": 5870356
+    }
+  },
+  "factory_vs_sport_nearest_stamp": {
+    "matched": 3016,
+    "time_gap_p95_ms": 1.9451379776000977,
+    "position_difference_p95_m": 2.4726076912245763e-06,
+    "position_exact_equal_fraction": 0.7473474801061007,
+    "rotation_difference_p95_deg": 0.0017662129559870845
+  },
+  "inactive_advertised_topics": [
+    "/lio_sam_ros2/mapping/odometry",
+    "/uslam/frontend/odom",
+    "/uslam/localization/odom"
+  ],
+  "limitations": [
+    "20 second observation, mode=0; no ground truth or walking accuracy measurement.",
+    "Our session was stopped through normal launcher lifecycle after about 12 seconds of this observation; native sources remained active.",
+    "Factory and SportState matching does not reveal proprietary estimator internals or establish independent inputs.",
+    "Per-message changes at different stream rates must not be compared as equal-time error metrics."
+  ],
+  "legkilo_review_commit": "4b29f2f7d175dcf661f23f01f77918bed2bf0502"
+}

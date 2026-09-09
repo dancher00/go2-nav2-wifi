@@ -1,0 +1,21 @@
+{
+  "validation": {
+    "circle": {
+      "old_export_poses": 1370,
+      "fixed_export_poses": 2439,
+      "native_poses": 2439,
+      "known_submap_max_position_change_m": 3.796026854616212e-15,
+      "fixed_duration_s": 158.57907247543335
+    },
+    "slope": {
+      "old_export_poses": 2750,
+      "fixed_export_poses": 2750,
+      "native_poses": 2750,
+      "known_submap_max_position_change_m": 8.412182359588386e-10,
+      "fixed_duration_s": 178.81497764587402
+    }
+  },
+  "test_method": "Compiled exact modified buildBackendTrajectory method with a harness using native records; IMU coordinate conversion identity. Full amd64 image also compiled.",
+  "image": "go2-legkilo:export-tail-fix",
+  "deployed_on_jetson": false
+}

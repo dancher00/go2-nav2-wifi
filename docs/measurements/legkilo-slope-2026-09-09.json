@@ -1,0 +1,117 @@
+{
+  "run": "run-20260909-171236-lweyxya7",
+  "user_motion": "walk on slope",
+  "same_endpoint_confirmed": false,
+  "windows_s": {
+    "start": [
+      0,
+      3
+    ],
+    "end": [
+      130,
+      175
+    ]
+  },
+  "backend": {
+    "start_m": [
+      0.000488625,
+      0.000356602,
+      -0.002578126
+    ],
+    "end_m": [
+      0.055861261999999995,
+      -0.983199777,
+      0.008437525
+    ],
+    "end_minus_start_m": [
+      0.055372636999999995,
+      -0.983556379,
+      0.011015651
+    ],
+    "endpoint_separation_xy_m": 0.985113840934095,
+    "endpoint_separation_3d_m": 0.9851754281176929,
+    "z_min_relative_start_m": -0.422259989,
+    "z_max_relative_start_m": 0.014815831,
+    "stationary_max_radius_m": 0.01747341799215403
+  },
+  "frontend": {
+    "start_m": [
+      0.000488625,
+      0.000356602,
+      -0.002578126
+    ],
+    "end_m": [
+      -0.0045757385,
+      -0.7659464645,
+      0.016850846000000003
+    ],
+    "end_minus_start_m": [
+      -0.0050643635,
+      -0.7663030665,
+      0.019428972000000003
+    ],
+    "endpoint_separation_xy_m": 0.7663198010654322,
+    "endpoint_separation_3d_m": 0.7665660587698495,
+    "z_min_relative_start_m": -0.42127859,
+    "z_max_relative_start_m": 0.023230026,
+    "stationary_max_radius_m": 0.017429944935371415
+  },
+  "duration_s": 178.81497764587402,
+  "accepted_loop_edges": 7,
+  "reference_note": "Factory/Sport position is diagnostic, not ground truth or fused measurement. Each Z curve is independently zeroed at start.",
+  "archive": {
+    "verified_sha256_files": 63,
+    "bytes": 558341278,
+    "removed_from_jetson": true
+  },
+  "factory": {
+    "start_m": [
+      -0.2960980236530304,
+      0.2642788738012314,
+      0.3133275657892227
+    ],
+    "end_m": [
+      -0.34185485541820526,
+      0.003635671571828425,
+      0.3283068835735321
+    ],
+    "end_minus_start_m": [
+      -0.045756831765174866,
+      -0.26064320222940296,
+      0.014979317784309387
+    ],
+    "endpoint_separation_xy_m": 0.2646291112511697,
+    "endpoint_separation_3d_m": 0.26505272396801977,
+    "z_min_relative_start_m": -0.04201678931713104,
+    "z_max_relative_start_m": 0.015153035521507263,
+    "stationary_max_radius_m": 0.00030246391658447693
+  },
+  "sport": {
+    "start_m": [
+      -0.29608380794525146,
+      0.2642868161201477,
+      0.31332412362098694
+    ],
+    "end_m": [
+      -0.34185102581977844,
+      0.00363753829151392,
+      0.3283066898584366
+    ],
+    "end_minus_start_m": [
+      -0.04576721787452698,
+      -0.2606492778286338,
+      0.014982566237449646
+    ],
+    "endpoint_separation_xy_m": 0.2646368913522125,
+    "endpoint_separation_3d_m": 0.26506067523422316,
+    "z_min_relative_start_m": -0.04425179958343506,
+    "z_max_relative_start_m": 0.015058934688568115,
+    "stationary_max_radius_m": 0.0002970408675086778
+  },
+  "interpretation": {
+    "z": "SLAM estimates descent of about 0.42 m and ascent back to within 0.011 m of initial Z. Actual ramp height was not independently measured.",
+    "xy": "Backend endpoint separation 0.985 m versus frontend 0.766 m; user has not separately confirmed identical physical endpoints on this recording, so these are not asserted return errors.",
+    "factory_z": "Recorded factory/Sport Z varies only about 0.06 m; cannot validate ramp elevation against this signal. Its world-height semantics are not established here.",
+    "next": "Inspect accepted loop registration constraints on saved recordings before tuning weights or requesting another walk."
+  }
+}

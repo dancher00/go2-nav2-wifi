@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'go2_nav2'))
 from go2_nav2 import cloud_stamp_sync, odom_tf, map_odom_relay
 from go2_nav2.sensor_time import SharedSensorClock
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import PointCloud2
+from sensor_msgs.msg import PointCloud2, Imu
 from geometry_msgs.msg import PoseWithCovarianceStamped, TransformStamped
 
 SECOND = 10**9
@@ -67,9 +67,10 @@ class PairedStreamTests(unittest.TestCase):
             clock.observe_odom(SOURCE+t, EPOCH+t, t)
         node = SimpleNamespace(_sensor_clock=clock, _failed=False, _reported_offset=False,
                                _first_odom_stamp=None, _last_odom_mono=None,
-                               _pub=Mock(), _odom_pub=Mock(), _offset_pub=Mock(),
+                               _pub=Mock(), _imu_pub=Mock(), _odom_pub=Mock(), _offset_pub=Mock(),
                                get_logger=Mock(return_value=Mock()), get_clock=Mock(return_value=Mock()))
         node._clock_fault = MethodType(cloud_stamp_sync.CloudStampSync._clock_fault, node)
+        node._forward_sensor = MethodType(cloud_stamp_sync.CloudStampSync._forward_sensor, node)
         return node
 
     def deliver(self, node, method, msg, mono):
@@ -98,6 +99,32 @@ class PairedStreamTests(unittest.TestCase):
         self.deliver(node, cloud_stamp_sync.CloudStampSync._on_cloud,
                      stamp(PointCloud2(), SOURCE+2*SECOND), 2*SECOND)
         node._pub.publish.assert_not_called()
+
+    def test_imu_uses_cloud_clock_without_changing_measurement_or_relative_time(self):
+        node = self.make_node()
+        odom = stamp(Odometry(), SOURCE+SECOND)
+        imu = stamp(Imu(), SOURCE+SECOND+4000000)
+        imu.header.frame_id = 'utlidar_imu'
+        imu.linear_acceleration.z = 9.82
+        imu.angular_velocity.x = .012
+        imu.linear_acceleration_covariance[0] = .3
+        self.deliver(node, cloud_stamp_sync.CloudStampSync._on_odom, odom, SECOND)
+        self.deliver(node, cloud_stamp_sync.CloudStampSync._on_imu, imu, SECOND+180000000)
+        self.assertEqual(cloud_stamp_sync.stamp_ns(imu.header.stamp)-cloud_stamp_sync.stamp_ns(odom.header.stamp), 4000000)
+        self.assertEqual(imu.header.frame_id, 'utlidar_imu')
+        self.assertEqual(imu.linear_acceleration.z, 9.82)
+        self.assertEqual(imu.angular_velocity.x, .012)
+        self.assertEqual(imu.linear_acceleration_covariance[0], .3)
+        node._imu_pub.publish.assert_called_once_with(imu)
+
+    def test_imu_obeys_same_stale_reference_and_clock_fault_as_cloud(self):
+        node = self.make_node()
+        self.deliver(node, cloud_stamp_sync.CloudStampSync._on_odom, stamp(Odometry(), SOURCE+SECOND), SECOND)
+        self.deliver(node, cloud_stamp_sync.CloudStampSync._on_imu, stamp(Imu(), SOURCE+2*SECOND), 2*SECOND)
+        node._imu_pub.publish.assert_not_called()
+        node._failed = True
+        self.deliver(node, cloud_stamp_sync.CloudStampSync._on_imu, stamp(Imu(), SOURCE+SECOND+1), SECOND+1)
+        node._imu_pub.publish.assert_not_called()
         self.assertEqual(node._sensor_clock.dropped['no_fresh_odom'], 1)
 
     def test_clock_fault_does_not_resume_with_fresh_looking_messages(self):

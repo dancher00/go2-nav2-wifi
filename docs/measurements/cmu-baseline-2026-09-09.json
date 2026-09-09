@@ -1,0 +1,184 @@
+{
+  "results": {
+    "circle": {
+      "source": "run-20260909-170530-z_dptdy9",
+      "pointlio_run": "run-20260909-174518-q9hqajab",
+      "windows_relative_source_s": [
+        [
+          0,
+          4
+        ],
+        [
+          100,
+          150
+        ]
+      ],
+      "pointlio_native_imu": {
+        "endpoint_3d_m": 0.03446814876316065,
+        "endpoint_xy_m": 0.02769038120018159,
+        "endpoint_delta_m": [
+          -0.014978763,
+          0.023289351,
+          0.020525497999999975
+        ],
+        "relative_z_min_m": -0.17504232000000003,
+        "relative_z_max_m": 0.03886694099999999,
+        "stationary_max_radius_m": 0.03318996622945986
+      },
+      "pointlio_body_converted": {
+        "endpoint_3d_m": 0.024671716555079378,
+        "endpoint_xy_m": 0.01510938875497227,
+        "endpoint_delta_m": [
+          0.005411665709128322,
+          0.01410700190690875,
+          0.019503844985676422
+        ],
+        "relative_z_min_m": -0.16716138155618848,
+        "relative_z_max_m": 0.03193441514016826,
+        "stationary_max_radius_m": 0.03396188789798686
+      },
+      "legkilo_live_backend": {
+        "endpoint_3d_m": 1.0119998993753245,
+        "endpoint_xy_m": 1.0116059149733858,
+        "endpoint_delta_m": [
+          -0.09679581999999999,
+          1.0069642975,
+          0.0282359545
+        ],
+        "relative_z_min_m": -0.0509893625,
+        "relative_z_max_m": 0.09878140849999999,
+        "stationary_max_radius_m": 0.016979548044742495
+      },
+      "pointlio_poses": 2439,
+      "pointlio_source_time_extent_s": [
+        0.3904297351837158,
+        158.96934175491333
+      ]
+    },
+    "slope": {
+      "source": "run-20260909-171236-lweyxya7",
+      "pointlio_run": "run-20260909-174701-lu_0_5s8",
+      "windows_relative_source_s": [
+        [
+          0,
+          3
+        ],
+        [
+          130,
+          175
+        ]
+      ],
+      "pointlio_native_imu": {
+        "endpoint_3d_m": 0.19697108026342233,
+        "endpoint_xy_m": 0.19542768780327183,
+        "endpoint_delta_m": [
+          -0.0377982265,
+          -0.1917375165,
+          0.024609455500000044
+        ],
+        "relative_z_min_m": -0.498405082,
+        "relative_z_max_m": 0.029512664999999993,
+        "stationary_max_radius_m": 0.04101660309780129
+      },
+      "pointlio_body_converted": {
+        "endpoint_3d_m": 0.18247574370104674,
+        "endpoint_xy_m": 0.18138902885619745,
+        "endpoint_delta_m": [
+          -0.07477254164047803,
+          -0.16526054219328162,
+          0.019885101203053146
+        ],
+        "relative_z_min_m": -0.49954557523577126,
+        "relative_z_max_m": 0.02495634145100356,
+        "stationary_max_radius_m": 0.04148169253695264
+      },
+      "legkilo_live_backend": {
+        "endpoint_3d_m": 0.9851754281176929,
+        "endpoint_xy_m": 0.985113840934095,
+        "endpoint_delta_m": [
+          0.055372636999999995,
+          -0.983556379,
+          0.011015651
+        ],
+        "relative_z_min_m": -0.422259989,
+        "relative_z_max_m": 0.014815831,
+        "stationary_max_radius_m": 0.01747341799215403
+      },
+      "pointlio_poses": 2744,
+      "pointlio_source_time_extent_s": [
+        0.38996362686157227,
+        178.81497764587402
+      ]
+    }
+  },
+  "limitations": [
+    "Point-LIO offline replay vs Leg-KILO live is not a matched-input algorithm ablation.",
+    "Point-LIO uses LiDAR gyro, Leg-KILO uses body IMU and encoders. No loop closure in Point-LIO.",
+    "Body conversion uses current configured nominal extrinsics, not new independent calibration.",
+    "Slope same physical endpoint was not separately confirmed.",
+    "No new live walk or robot motion during comparison."
+  ],
+  "input_check": {
+    "run-20260909-170530-z_dptdy9": {
+      "samples": 39873,
+      "frame_id": [
+        "utlidar_imu"
+      ],
+      "duration_s": 159.13204073905945,
+      "nonpositive_dt": 0,
+      "dt_p50_p99_max_s": [
+        0.004478931427001953,
+        0.006517956256866455,
+        0.019373416900634766
+      ],
+      "gyro_abs_max": [
+        3.074706554412842,
+        3.2985851764678955,
+        2.515726089477539
+      ],
+      "acc_abs_max": [
+        36.249393463134766,
+        28.723405838012695,
+        52.661865234375
+      ],
+      "initial_2s_mean_gyro": [
+        -0.003960657672025148,
+        0.0002681280152374309,
+        8.712228900621704e-05
+      ]
+    },
+    "run-20260909-171236-lweyxya7": {
+      "samples": 44845,
+      "frame_id": [
+        "utlidar_imu"
+      ],
+      "duration_s": 178.95913434028625,
+      "nonpositive_dt": 0,
+      "dt_p50_p99_max_s": [
+        0.004463911056518555,
+        0.007002046108245849,
+        0.0202786922454834
+      ],
+      "gyro_abs_max": [
+        2.4587278366088867,
+        2.507688045501709,
+        2.2911972999572754
+      ],
+      "acc_abs_max": [
+        33.802146911621094,
+        29.917274475097656,
+        48.78777313232422
+      ],
+      "initial_2s_mean_gyro": [
+        -0.0034167533766251974,
+        0.0005861359126948354,
+        0.0019769034241147814
+      ]
+    }
+  },
+  "configuration": "go2_nav2/config/pointlio_go2.yaml, unchanged; gyro-only output model; raw L1/IMU recorded by common clock translator",
+  "map_review": "Horizontal map slices inspected. Wall thickening and fragmented structures remain; no ground truth wall accuracy or elimination of double walls established. Map axes and sampling differ, so visual density is not an accuracy comparison.",
+  "selected_for_next_live_test": "Existing Point-LIO profile, ./mapping.sh --3d; candidate based on these recordings, not claimed globally superior or live-validated.",
+  "transport_note": "All replays run on laptop DDS domain 65 loopback. These are estimator/recording tests, not Wi-Fi throughput or latency measurements.",
+  "laptop_container_image": "sha256:4e8fc13ee251009044a2e2ac0e2ecd6de805600d5bb7140c115c0578035f0495"
+}

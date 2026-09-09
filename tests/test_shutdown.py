@@ -19,6 +19,24 @@ NODES = {
 
 
 class ShutdownTests(unittest.TestCase):
+    def test_sensor_take_message_error_is_only_ignored_after_context_shutdown(self):
+        filename = "go2_nav2/go2_nav2/cloud_stamp_sync.py"
+        tree = ast.parse((ROOT / filename).read_text())
+        main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main')
+        for active in (False, True):
+            ros, node = Mock(), Mock()
+            ros.spin.side_effect = RuntimeError('take_message interrupted')
+            ros.ok.return_value = active
+            scope = {'rclpy': ros, 'CloudStampSync': Mock(return_value=node),
+                     'signal': Mock(), 'ExternalShutdownException': ExternalShutdownException}
+            exec(compile(ast.Module(body=[main], type_ignores=[]), filename, 'exec'), scope)
+            if active:
+                with self.assertRaises(RuntimeError):
+                    scope['main']()
+            else:
+                scope['main']()
+            node.destroy_node.assert_called_once()
+
     def test_sport_bridge_stop_precedes_context_shutdown(self):
         for filename in ("ws/scripts/robot_sport_bridge.py", "go2_nav2/go2_nav2/sport_bridge.py"):
             tree = ast.parse((ROOT / filename).read_text())

@@ -1,0 +1,5 @@
+**
+!ws/
+!ws/scripts/
+!ws/scripts/build-lidar3d.sh
+!ws/scripts/pointlio-wifi.patch

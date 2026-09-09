@@ -1,0 +1,146 @@
+{
+  "date": "2026-09-09",
+  "source_bag": "ws/maps/lidar3d/run-20260908-203239-ze668fd6/sensors/sensors_0.db3",
+  "source_sha256": "4514451730c53218d94d1ee91b34cab3b82d7874bbf6c938c6cf7bd726add89b",
+  "runs": [
+    {
+      "run": "run-20260908-203239-ze668fd6",
+      "poses": 3261,
+      "duration_s": 211.88126969337463,
+      "max_displacement_m": 7.138836674530278,
+      "last_translation_m": [
+        -5.896830388503539,
+        3.9382990756415186,
+        -0.534426926137951
+      ],
+      "floor_disagreement_deg": 5.203571794421277,
+      "complete": true,
+      "end_rotation_vs_cloud_icp_deg": 28.735578186825865,
+      "end_translation_vs_cloud_icp_m": 6.920868145204578,
+      "imu_as_input": true,
+      "imu_meas_omg_cov": 0.1
+    },
+    {
+      "run": "run-20260909-105338-hmx7ypsr",
+      "poses": 1968,
+      "duration_s": 127.85147261619568,
+      "max_displacement_m": 4.161981484368261,
+      "last_translation_m": [
+        -1.7614289458335022,
+        -2.6385041596888983,
+        0.29322359990472596
+      ],
+      "floor_disagreement_deg": 5.001558025435498,
+      "complete": true,
+      "imu_as_input": true,
+      "imu_meas_omg_cov": 0.1
+    },
+    {
+      "run": "run-20260909-105810-0f8upw0b",
+      "poses": 3261,
+      "duration_s": 211.88126969337463,
+      "max_displacement_m": 7.575040789970554,
+      "last_translation_m": [
+        0.1319823701305156,
+        0.7456963595024088,
+        -0.12096472264489001
+      ],
+      "floor_disagreement_deg": 0.28693664663127605,
+      "complete": true,
+      "end_rotation_vs_cloud_icp_deg": 3.1517127276740045,
+      "end_translation_vs_cloud_icp_m": 0.7132793770437486,
+      "imu_as_input": false,
+      "imu_meas_omg_cov": 0.1
+    },
+    {
+      "run": "run-20260909-110219-3layxk_w",
+      "poses": 3261,
+      "duration_s": 211.88126969337463,
+      "max_displacement_m": 7.5585086368135785,
+      "last_translation_m": [
+        0.15715942224444163,
+        0.8153403947971419,
+        -0.12902929848092237
+      ],
+      "floor_disagreement_deg": 0.18424018496230898,
+      "complete": true,
+      "end_rotation_vs_cloud_icp_deg": 3.0203803921454067,
+      "end_translation_vs_cloud_icp_m": 0.7875592127615076,
+      "imu_as_input": false,
+      "imu_meas_omg_cov": 0.01
+    }
+  ],
+  "exact_original_replay_prefix_poses": 1968,
+  "geometry_reference": {
+    "source_points": 4960,
+    "target_points": 4274,
+    "fitted_translation": [
+      -0.1593135221479686,
+      0.10105375366338257,
+      -0.029585930823868126
+    ],
+    "fitted_rotation": [
+      [
+        -0.5048624747630603,
+        -0.8629347103903904,
+        -0.0213908199834926
+      ],
+      [
+        0.8030215683207738,
+        -0.4786121736710612,
+        0.35508695839963406
+      ],
+      [
+        -0.3166547684588992,
+        0.16209279076291588,
+        0.9345885109474258
+      ]
+    ],
+    "translation_norm_m": 0.1909659309179666,
+    "inlier_fraction_025m": 0.6544354838709677,
+    "inlier_rmse_m": 0.08857681323224659,
+    "method": "Offline endpoint cloud ICP seeded by factory pose and diagnostic frame fit; geometric consistency check, not ground truth or backend input"
+  },
+  "floor_method": "RANSAC 180 candidates per sampled raw scan, .025m inlier threshold, range .5..4m; SVD refit; normals averaged over first/last 10 seconds and transformed by backend endpoint attitudes",
+  "selected_change": "use_imu_as_input true -> false, consistent with pinned CMU launch override; original gyro covariance .1 retained",
+  "validation": "93 regression tests passed on base 2D image without network; native replay at rate 1 completed, all 3261 output timestamps retained",
+  "limits": [
+    "No independent ground truth",
+    "No loop closure",
+    "Raw acceleration remains unused",
+    "No robot motion commands sent",
+    "Offline replay does not rule out source measurement or timestamp limitations",
+    "One short live walk recorded; independent map accuracy and longer routes remain unverified"
+  ],
+  "previous_turn_control": {
+    "run": "run-20260909-110602-vefhzl41",
+    "poses": 536,
+    "last_8s_span_m": 0.038690806093494075,
+    "floor_consistency_deg_using_previous_fit": 0.32044085473225487,
+    "max_displacement_m": 0.5387134979075848
+  },
+  "first_live_output_model": {
+    "backend": "CMU Point-LIO ROS2 adaptation",
+    "loop_closure": false,
+    "map": "/ws/maps/lidar3d/run-20260909-111658-cgv0pur7/PCD/scans.pcd",
+    "trajectory": "/ws/maps/lidar3d/run-20260909-111658-cgv0pur7/trajectory.tum",
+    "points": 979356,
+    "trajectory_poses": 2434,
+    "trajectory_duration_s": 158.21244978904724,
+    "max_displacement_from_first_m": 2.052610759722252,
+    "trajectory_format": "TUM: stamp x y z qx qy qz qw; camera_init -> aft_mapped (initial IMU coordinates)",
+    "note": "File integrity and nonempty geometry do not establish mapping accuracy.",
+    "imu_enabled": true,
+    "imu_acceleration_used": false,
+    "imu_as_input": false,
+    "replay_rate": null,
+    "run": "run-20260909-111658-cgv0pur7",
+    "cloud_recorded": 2455,
+    "imu_recorded": 39882,
+    "factory_odom_recorded": 23925,
+    "pose_rate_hz": 15.378056551453716,
+    "last_8s_position_span_m": 0.04285235120650867,
+    "end_distance_from_standing_pose_at_95s_m": 0.33240284863950664,
+    "note_live": "Initial pose was lying; robot stood around 86s and walked after 100s. Endpoint distances are not errors relative to ground truth. Native map, trajectory and bag saved by owned-session shutdown."
+  }
+}

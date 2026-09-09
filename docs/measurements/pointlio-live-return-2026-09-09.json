@@ -1,0 +1,73 @@
+{
+  "run": "run-20260909-175238-e5qpoiay",
+  "compute": "jetson",
+  "live": true,
+  "user_completed_requested_return_test": true,
+  "backend": "existing CMU-derived Point-LIO, gyro-only output model",
+  "loop_closure": false,
+  "windows_s": {
+    "start": [
+      0,
+      8
+    ],
+    "end": [
+      200,
+      220
+    ]
+  },
+  "native_imu": {
+    "start_m": [
+      0.003583466,
+      -0.006240376,
+      0.352370155
+    ],
+    "end_m": [
+      0.020621201,
+      0.015811552,
+      0.363586478
+    ],
+    "delta_m": [
+      0.017037735,
+      0.022051928,
+      0.011216322999999973
+    ],
+    "endpoint_3d_m": 0.03003960459273286,
+    "endpoint_xy_m": 0.02786704043215585,
+    "stationary_max_radius_m": 0.044174157266043464,
+    "sensitivity_end_window_170_220_endpoint_m": 0.024381188702997075,
+    "relative_z_min_m": -0.687480988
+  },
+  "body_converted": {
+    "start_m": [
+      -0.13896430087992473,
+      -0.2600821244105453,
+      0.35598750931754747
+    ],
+    "end_m": [
+      -0.1270311715880998,
+      -0.23516502360729308,
+      0.37182757906465747
+    ],
+    "delta_m": [
+      0.01193312929182494,
+      0.024917100803252212,
+      0.015840069747109997
+    ],
+    "endpoint_3d_m": 0.03184602481830584,
+    "endpoint_xy_m": 0.02762718746334564,
+    "stationary_max_radius_m": 0.04437353881169586,
+    "sensitivity_end_window_170_220_endpoint_m": 0.03010445531570993,
+    "relative_z_min_m": -0.6719453936380083
+  },
+  "duration_s": 222.85275387763977,
+  "poses": 3427,
+  "limitations": [
+    "Return displacement only; no external trajectory ground truth or whole-map accuracy metric.",
+    "Body conversion uses current extrinsics; not independently calibrated in this test.",
+    "Motion/transients occur after initial return around 180-190 s; final window is 200-220 s. Sensitivity to longer end window reported."
+  ],
+  "map_points": 2160459,
+  "observed_odom_hz": 15.4,
+  "result_saved_on_laptop": true,
+  "map_review": "Saved XY/XZ slices inspected; wall thickening and peripheral fragments remain. No quantitative whole-map accuracy established."
+}

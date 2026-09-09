@@ -1,0 +1,15 @@
+{
+  "source_run": "run-20260909-134943-sh07fj9_",
+  "user_report": "Robot lying stationary throughout; drift observed in RViz.",
+  "compute": "Jetson live",
+  "kin_meas_noise": 0.05,
+  "duration_s": 72.40157628059387,
+  "poses": 1114,
+  "max_displacement_m": 3.1460395072263942,
+  "observed_contacts": 0,
+  "conclusion": "Backend trajectory drifts without leg contacts. Increasing leg weight does not address this failure. Exact estimator failure mechanism remains unresolved.",
+  "session_stopped": true,
+  "result_offloaded_to_laptop": true,
+  "jetson_copy_removed": true,
+  "follow_up": "legkilo-single-step-2026-09-09.json: disabling second cloud update mitigates startup drift; original binary retained."
+}

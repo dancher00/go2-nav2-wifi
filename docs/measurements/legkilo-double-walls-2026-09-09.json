@@ -1,0 +1,46 @@
+{
+  "source_run": "run-20260909-142549-1370vot1",
+  "duration_s": 199.18481755256653,
+  "poses": 3063,
+  "map_points": 34002,
+  "rviz_decay_s": 120,
+  "rviz_cloud_topic": "/lidar3d/registered",
+  "rviz_cloud_semantics": "Recent registered frontend scans, not persistent optimized backend map.",
+  "saved_geometry": "Visible separated surfaces remain in exported PCD, so visualization decay is not the only issue.",
+  "loop_edges_original": 0,
+  "loop_path_failure": "LoopClosure prepended ROOT_DIR/result to an absolute temp_result_save_folder; candidate PCD loads fail.",
+  "wall_section_spread": {
+    "p95_minus_p5_m": 0.5191183,
+    "points": 762,
+    "method": "Manual wall-region selection, horizontal PCA normal, 5\u201395 percentile distance spread. Includes physical surface structure and noise; not absolute mapping accuracy."
+  },
+  "sessions_stopped": true,
+  "recording_saved_on_laptop": true,
+  "loop_path_fix": {
+    "patch_sha256": "3b9fb6c5c59a8249a697e950c7ba0e552a00873f6fa8913f6f9c0ce88ca2c8c8",
+    "deployed_jetson": true,
+    "replay_run": "run-20260909-143714-q943kyfl",
+    "accepted_loop_edges": 1,
+    "accepted_pair": [
+      0,
+      4
+    ],
+    "source_inlier_fraction": 0.825759,
+    "wall_section_spread_p95_minus_p5_m": 0.40418744,
+    "config": {
+      "loop_min_id_separation": 3,
+      "loop_icp_max_corr_dist": 0.3,
+      "loop_icp_inlier_dist_threshold": 0.15,
+      "loop_icp_fitness_threshold": 0.7
+    },
+    "note": "Improvement in manually selected wall region; surfaces still separated. Not an absolute accuracy measurement."
+  },
+  "previous_walk_regression": {
+    "run": "run-20260909-143917-pcapt5a2",
+    "accepted_loop_edges": 0,
+    "max_abs_trajectory_difference": 0.0,
+    "duration_s": 199.39942979812622
+  },
+  "tests_passed": 107,
+  "remaining": "Persistent optimized map publication in RViz is still absent; live recent-scan view does not incorporate backend corrections. Map drift/double surfaces remain."
+}

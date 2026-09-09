@@ -1,0 +1,16 @@
+{
+  "source": "run-20260909-170530-z_dptdy9",
+  "sport_received": 46607,
+  "low_received": 67482,
+  "sport_without_any_matching_recorded_low": 7151,
+  "fraction_without_matching_low": 0.1534318879138327,
+  "replay_pairing_counts": {
+    "low": 67482,
+    "sport": 46607,
+    "match": 39456,
+    "imu_only": 7048
+  },
+  "method": "Compare raw six-axis float32 IMU key hashes in completed existing reception trace; count Sport packets whose key is absent from every received Low packet. Received counts equal rosbag topic counts.",
+  "conclusion": "Recorded inputs omit encoder counterparts for 15.34% of Sport packets. Replay supplies IMU without foot observations for these interior packets. This establishes a recording limitation, not the exact live accepted sequence or proof that it caused all trajectory divergence.",
+  "pipeline": "Raw Low is independently recorded by Python BEST_EFFORT subscription depth 200; live backend has a separate C++ Low subscriber. Same robot topics do not ensure equal subscriber histories."
+}

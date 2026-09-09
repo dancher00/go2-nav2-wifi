@@ -1,0 +1,88 @@
+{
+  "runs": [
+    {
+      "label": "Leg-KILO",
+      "run": "run-20260909-132532-3gcg62it",
+      "poses": 3066,
+      "duration_s": 199.39942979812622,
+      "body_return_distance_m": 1.0177044785708433,
+      "body_step_p95_m": 0.0634323447314184,
+      "body_step_max_m": 0.10654901743407177,
+      "body_path_length_m": 63.900594140676176,
+      "floor_tilt_median_p95_deg": [
+        1.037782445872515,
+        1.6578091330135751
+      ],
+      "initial_final_floor_angle_deg": 0.7850876281512128
+    },
+    {
+      "label": "Point-LIO",
+      "run": "run-20260909-132951-angijccl",
+      "poses": 3060,
+      "duration_s": 199.00944185256958,
+      "body_return_distance_m": 1.0287422988220072,
+      "body_step_p95_m": 0.07319706585385542,
+      "body_step_max_m": 0.12491296832171865,
+      "body_path_length_m": 63.34947721605005,
+      "floor_tilt_median_p95_deg": [
+        0.4776757080364979,
+        1.4980745437890635
+      ],
+      "initial_final_floor_angle_deg": 0.29387280003728405
+    },
+    {
+      "label": "Leg-KILO p2plane only",
+      "run": "run-20260909-133424-fi7ren7r",
+      "poses": 3065,
+      "duration_s": 199.39942979812622,
+      "body_return_distance_m": 3.5133998732527685,
+      "body_step_p95_m": 0.059717654583618864,
+      "body_step_max_m": 0.11680084147268198,
+      "body_path_length_m": 61.48185521179678,
+      "floor_tilt_median_p95_deg": [
+        1.0356217134030352,
+        1.5954780018581685
+      ],
+      "initial_final_floor_angle_deg": 1.224684118856525
+    },
+    {
+      "label": "Leg-KILO kin covariance 0.05",
+      "run": "run-20260909-133839-qa4ai3lo",
+      "poses": 3065,
+      "duration_s": 199.39942979812622,
+      "body_return_distance_m": 0.9310410929707972,
+      "body_step_p95_m": 0.053362926138267285,
+      "body_step_max_m": 0.09515102976325049,
+      "body_path_length_m": 44.25112652711876,
+      "floor_tilt_median_p95_deg": [
+        0.5807831996186541,
+        1.443640665609265
+      ],
+      "initial_final_floor_angle_deg": 0.2620381141578102
+    }
+  ],
+  "source": "run-20260909-132532-3gcg62it/sensors",
+  "body_frame_conversion": "Point-LIO IMU pose composed with measured sensor_from_base from lidar3d_robot_viz.yaml; Leg-KILO already outputs body pose. Calibration approximate, originally measured for visualization.",
+  "limitations": [
+    "User confirmed stopping approximately near the start, not at a marked identical position. Endpoint distance is not measured return error.",
+    "Pose-to-pose steps include real motion and estimator noise, not pure jitter.",
+    "Factory odometry is a comparison estimate, not ground truth.",
+    "Leg-KILO original run was live on Jetson; other runs were replayed on laptop, candidate configs at 2x. No repeated controlled accuracy trial.",
+    "No loop closure accepted; loop_min_id_separation=50 is larger than this short run submap count."
+  ],
+  "source_archive": {
+    "files_verified_sha256": 30,
+    "bytes": 636183875,
+    "removed_from_jetson": true
+  },
+  "configuration_decision": "Promote kin_meas_noise=0.05 to experimental Leg-KILO config: smaller adjacent pose steps and floor tilt on walking replay, plus smaller maximum displacement on separate standing recording. Keep NDT enabled. Requires next live walking validation; no absolute accuracy claim.",
+  "held_out_standing": {
+    "source": "run-20260909-132117-hirn0q_0/sensors",
+    "candidate_run": "run-20260909-134315-2xh4qib0",
+    "duration_s": 62.057557821273804,
+    "poses": 955,
+    "baseline_max_displacement_m": 0.022105,
+    "candidate_max_displacement_m": 0.010414342544083471,
+    "compute": "laptop replay at 2x; baseline live on Jetson"
+  }
+}

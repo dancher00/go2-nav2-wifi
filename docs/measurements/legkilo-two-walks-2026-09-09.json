@@ -1,0 +1,86 @@
+{
+  "run": "run-20260909-154943-tc2qc0rt",
+  "duration_s": 520.8914339542389,
+  "poses": 8009,
+  "points": 107515,
+  "kin_meas_noise": 0.5,
+  "segments": [
+    {
+      "name": "first",
+      "start_window_s": [
+        30,
+        34
+      ],
+      "return_window_s": [
+        120,
+        140
+      ],
+      "backend_delta_xyz_m": [
+        0.0286181165,
+        -0.12160110199999999,
+        0.00014440549999999996
+      ],
+      "backend_horizontal_separation_m": 0.12492327485149424,
+      "frontend_horizontal_separation_m": 0.08210842396992925
+    },
+    {
+      "name": "second",
+      "start_window_s": [
+        265,
+        280
+      ],
+      "return_window_s": [
+        350,
+        370
+      ],
+      "backend_delta_xyz_m": [
+        1.1757003835000002,
+        0.177406852,
+        -0.007482676000000021
+      ],
+      "backend_horizontal_separation_m": 1.1890099170732755,
+      "frontend_horizontal_separation_m": 1.195077125987769,
+      "horizontal_return_discrepancy_m": 1.1890099170732755
+    }
+  ],
+  "stationary_windows": [
+    {
+      "window_s": [
+        120,
+        260
+      ],
+      "range_xyz_m": [
+        0.041578000000000004,
+        0.013302938,
+        0.008190870000000017
+      ],
+      "distance_from_median_p95_m": 0.015536096213768565,
+      "first_to_last_5s_median_distance_m": 0.012958363177203438
+    },
+    {
+      "window_s": [
+        350,
+        515
+      ],
+      "range_xyz_m": [
+        0.02008424100000017,
+        0.025697055999999996,
+        0.009069634999999965
+      ],
+      "distance_from_median_p95_m": 0.009626683849897063,
+      "first_to_last_5s_median_distance_m": 0.001781369563756143
+    }
+  ],
+  "interpretation": "User confirms the second walk ended at its starting physical location: 1.189 m horizontal return discrepancy. First segment endpoint separation is 0.125 m; exact same-point return was not separately confirmed for that segment. No surveyed ground truth. Small stationary variation does not establish walking accuracy.",
+  "archive": {
+    "files_verified_sha256": 73,
+    "bytes": 1633021925,
+    "removed_from_jetson": true,
+    "destination": "ws/maps/lidar3d/run-20260909-154943-tc2qc0rt"
+  },
+  "accepted_loop_edges": 23,
+  "user_confirmation": {
+    "second_segment_returned_to_same_physical_location": true,
+    "surveyed_ground_truth": false
+  }
+}

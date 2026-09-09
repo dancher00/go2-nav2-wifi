@@ -19,7 +19,14 @@ if [[ ! "$GO2_RELAY_DOMAIN_ID" =~ ^[0-9]{1,3}$ ]] ||
   exit 2
 fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/robot-source-unitree-ros.sh"
+if [[ "${GO2_RELAY_USE_HUMBLE:-0}" == 1 ]]; then
+  set +u
+  source /opt/ros/humble/setup.bash
+  if [[ -f /opt/go2-unitree-msgs/local_setup.bash ]]; then source /opt/go2-unitree-msgs/local_setup.bash; fi
+  export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+else
+  source "${SCRIPT_DIR}/robot-source-unitree-ros.sh"
+fi
 set -u
 export ROS_DOMAIN_ID=0
 unset CYCLONEDDS_URI

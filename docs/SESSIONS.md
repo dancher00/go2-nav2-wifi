@@ -77,3 +77,11 @@ owned shutdown were checked. No navigation/motion test was performed. The saved
 `session_smoke_20260908_guard` map is a pipeline artifact, not a navigation map.
 Physical stopping time, walking drift and end-to-end goal execution remain
 unverified for these changes; see [the roadmap](ROADMAP.md).
+
+### Эксперимент 3D LiDAR
+
+В ветке `experiment/lidar-3d-slam`: `./mapping.sh --3d` запускает отдельный
+Point-LIO на Jetson (raw L1 + гироскоп, без камеры, ускорений и loop closure);
+на ноутбуке — только RViz через Wi-Fi. `--3d --laptop` сохраняет вычисления на ноутбуке.
+Установка, измерения и ограничения: [3D LiDAR SLAM](LIDAR-3D-SLAM.md).
+Обычный `./mapping.sh` сохраняет 2D-профиль.

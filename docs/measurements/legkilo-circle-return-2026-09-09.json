@@ -1,0 +1,57 @@
+{
+  "run": "run-20260909-151627-bjedi0db",
+  "user_observation": "Returned exactly to starting location; no surveyed ground truth or heading confirmation",
+  "window_method": "Median first 2 s versus stationary standing 65–85 s after first SLAM pose; later lying down excluded. Window identified from native pose stability and recorded factory velocity/height.",
+  "metrics": {
+    "backend": {
+      "median_return_delta_xyz_m": [
+        1.4746414760000002,
+        0.5941251449999999,
+        0.014108860999999999
+      ],
+      "horizontal_return_distance_m": 1.5898277172891186
+    },
+    "frontend": {
+      "median_return_delta_xyz_m": [
+        1.4816267285,
+        0.723437512,
+        0.016021152
+      ],
+      "horizontal_return_distance_m": 1.6488115709123232
+    },
+    "factory_reference": {
+      "median_return_delta_xyz_m": [
+        -0.29854726791381836,
+        0.4004436731338501,
+        -0.0003937333822250366
+      ],
+      "horizontal_return_distance_m": 0.4994853416585266
+    }
+  },
+  "yaw_change_deg_NOT_heading_error": -4.743098808966238,
+  "saved_poses": 1913,
+  "duration_s": 124.58600378036499,
+  "loop_attempts": 91,
+  "accepted_loop_edges": 2,
+  "accepted_pairs": [
+    [
+      2,
+      8
+    ],
+    [
+      3,
+      6
+    ]
+  ],
+  "return_loop_to_submap_zero_accepted": false,
+  "floor_fit_samples": 119,
+  "floor_tilt_deg_p50_p95_max": [
+    1.6438603749786018,
+    3.4669310595560834,
+    4.82268899942749
+  ],
+  "floor_method": "Raw clouds sampled every 16 frames; body extrinsics; RANSAC lower plane then SVD, 2.5 cm inliers, >=50 points; normals transformed by saved body poses. Plane identification heuristic, not ground truth.",
+  "later_height_drop_m": -0.265919468,
+  "interpretation": "Large return-position drift exists in native Jetson frontend and persists after backend optimization. This is not explained by Wi-Fi/RViz display. Factory position is a diagnostic reference, not ground truth and not fused.",
+  "archive": "Finalized inputs/map/trajectory transferred to laptop; Jetson copy removed by session archival."
+}

@@ -28,6 +28,8 @@ ssh() {
     while [[ ! -f "$TEST_DIR/closed" ]]; do sleep .05; done
   fi
 }
+scp() { echo "scp $*" >> "$TEST_DIR/trace"; }
+tar() { echo "tar $*" >> "$TEST_DIR/trace"; }
 launcher_path="$1"
 shift
 source "$launcher_path" "$@"
@@ -40,7 +42,7 @@ class MappingLauncherTests(unittest.TestCase):
             script = Path(directory) / 'mapping.sh'
             shutil.copyfile(SCRIPT, script)
             result = subprocess.run(['bash', '-c', FAKES, 'test', str(script), *args],
-                                    env=dict(os.environ, DISPLAY=':test', TEST_DIR=directory, **overrides),
+                                    env={**os.environ, 'DISPLAY': ':test', 'TEST_DIR': directory, **overrides},
                                     text=True, capture_output=True, timeout=8)
             trace = Path(directory) / 'trace'
             return result, trace.read_text() if trace.exists() else ''
@@ -72,3 +74,38 @@ class MappingLauncherTests(unittest.TestCase):
         self.assertEqual(result.returncode, 7)
         self.assertIn('-O exit', trace)
         self.assertIn('stop mapping --owner mapping.', trace)
+
+    def test_lidar3d_deploys_sensor_profile_and_stops_only_its_session(self):
+        result, trace = self.run_launcher('--3d', '--laptop')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('GO2_RELAY_PROFILE=lidar3d', trace)
+        self.assertIn('robot_relay_wifi.py', trace)
+        self.assertIn('start lidar3d --rviz --owner mapping.', trace)
+        self.assertIn('stop lidar3d --owner mapping.', trace)
+        self.assertNotIn('sport_bridge', trace)
+        self.assertNotIn('stop mapping --owner', trace)
+
+    def test_headless_mapping_does_not_change_x11_permissions(self):
+        result, trace = self.run_launcher('--3d', '--laptop', GO2_RVIZ='0', DISPLAY='')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn('xhost', trace)
+        self.assertNotIn('--rviz', trace)
+
+    def test_jetson_default_owns_remote_compute_and_local_visualization(self):
+        result, trace = self.run_launcher('--3d')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('GO2_LIDAR3D_COMPUTE=jetson', trace)
+        self.assertIn('go2-lidar3d-onboard bash /ws/scripts/go2-session.sh start lidar3d --owner', trace)
+        self.assertIn('start lidar3d-viz --owner mapping.', trace)
+        self.assertIn('stop lidar3d-viz --owner mapping.', trace)
+        self.assertIn('stop lidar3d --owner mapping.', trace)
+        self.assertNotIn('start lidar3d --rviz', trace)
+        self.assertNotIn('GO2_RELAY_PROFILE=lidar3d ', trace)
+        self.assertNotIn('sport_bridge', trace)
+
+    def test_headless_jetson_does_not_launch_laptop_backend_or_rviz(self):
+        result, trace = self.run_launcher('--3d', GO2_RVIZ='0', DISPLAY='')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn('start lidar3d-viz', trace)
+        self.assertNotIn('xhost', trace)
+        self.assertIn('go2-lidar3d-onboard bash /ws/scripts/go2-session.sh start lidar3d', trace)

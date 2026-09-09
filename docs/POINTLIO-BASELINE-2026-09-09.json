@@ -1,0 +1,45 @@
+{
+  "name": "pointlio-baseline-2026-09-09",
+  "upstream": {
+    "repository": "https://github.com/jizhang-cmu/autonomy_stack_go2",
+    "commit": "43d5f54b389b251713f0097893c30fa76c870d54"
+  },
+  "launch": "GO2_RECORD=1 ./mapping.sh --3d",
+  "stop": "Ctrl+C; owned processes stop and results transfer to laptop after SHA256 verification",
+  "backend": "Point-LIO gyro-only output model; raw L1 and LiDAR gyro; no legs, acceleration integration, camera or loop closure",
+  "images": {
+    "local_tag_on_each_machine": "go2-lidar3d:baseline-20260909",
+    "jetson_arm64": "sha256:edac901a79f1b5e72ac2b456680feb1ceb5f7f995fb22b1caf2435421237f29d",
+    "laptop_amd64": "sha256:4e8fc13ee251009044a2e2ac0e2ecd6de805600d5bb7140c115c0578035f0495",
+    "note": "Jetson tested image includes optional Leg-KILO; baseline invokes Point-LIO. Tags are local, not registry-published. No additional image copies created."
+  },
+  "sha256": {
+    "mapping.sh": "37631160170eff122842904d5c883af12bb44e27105f9fd1f56579da3accf347",
+    "setup-lidar3d.sh": "b0b8da7e624dd92f0c471814effd39d793159e3a9372f3e6f5f02cd8560b62c6",
+    "setup-lidar3d-jetson.sh": "dff7a012347bb5c45fae7ae18506eb56ef4f7631038a0aad0c26ebf422846b93",
+    "docker/Dockerfile.lidar3d": "be9ae6cbf9acb8b34f633ba71a0e91912ebfba55a9db67fe59b1d8965f34ce21",
+    "ws/scripts/build-lidar3d.sh": "8cdf4599926c7e32e617351754d05409ef3780c937d5c697e067b7e23bbe808c",
+    "ws/scripts/pointlio-wifi.patch": "a1e8d3e215bb9f38e4e45269e1a9fbd07341193113d70e962b38ae669877b738",
+    "go2_nav2/config/pointlio_go2.yaml": "303e3c1c3c591635bb11dcde40607a486e53f2540c193f7eccf820161b67e31c",
+    "go2_nav2/launch/lidar3d_mapping.launch.py": "a693d4a253f080c3de84d88f26376e73ecdceb72c204b711ee94bcad86fba96b",
+    "go2_nav2/rviz/lidar3d.rviz": "b3c359df948d223fdc6bf2a788146c5f9eaf7780f169e12bc19e71a01aebd984",
+    "go2_nav2/go2_nav2/cloud_stamp_sync.py": "36327eb6426c80dc9786b45ae70ce0badcb007e60ba5814c5d228d052edab0c0",
+    "ws/scripts/go2_session.py": "19de2b979987eb6311c1057314f4ec6337d6ddf1a3f8537a174434d5eca7d34c",
+    "ws/scripts/robot_relay_wifi.py": "f606b77834ad956b7079d45bf0ff1fa1513965db3842bf3dbd066e0264f0d58f"
+  },
+  "evidence": "measurements/pointlio-live-return-2026-09-09.json",
+  "live_run": "run-20260909-175238-e5qpoiay",
+  "limits": [
+    "One live return test (~3 cm), not whole-map accuracy or long-route guarantee.",
+    "Nominal extrinsics and gyro calibration remain limitations.",
+    "Package repositories in Dockerfile are not completely locked; rebuilding source is not guaranteed to produce identical image bytes. Preserve recorded local image IDs for exact binary reproduction.",
+    "Unreleased Leg-KILO export-tail patch remains outside this Git checkpoint."
+  ],
+  "validation": {
+    "tests_passed": 110,
+    "test_command": "ROS Humble: python3 -m unittest discover -s tests -v",
+    "duration_s": 5.441,
+    "log": "ws/log/lidar3d/baseline-freeze-ros-tests.log",
+    "pointlio_jetson_source_and_config_hashes_match_laptop": true
+  }
+}

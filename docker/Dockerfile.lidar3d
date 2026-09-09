@@ -1,0 +1,28 @@
+# Optional experiment image: the main Dockerfile and image stay the 2D baseline.
+ARG BASE_IMAGE=go2-humble:local
+FROM ${BASE_IMAGE}
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      git patch python3-dev libpcl-dev \
+      ros-humble-pcl-ros ros-humble-tf2-eigen ros-humble-tf2-sensor-msgs \
+      ros-humble-diagnostic-updater \
+    && rm -rf /var/lib/apt/lists/*
+COPY ws/scripts/build-lidar3d.sh ws/scripts/pointlio-wifi.patch /opt/go2-lidar3d-build/
+RUN bash /opt/go2-lidar3d-build/build-lidar3d.sh /opt/go2-lidar3d-workspace /opt/go2-lidar3d \
+    && dpkg-query -W > /opt/go2-lidar3d/dependencies.tsv \
+    && rm -rf /opt/go2-lidar3d-workspace/build /opt/go2-lidar3d-workspace/log
+
+ARG GO2_UID=1000
+ARG GO2_GID=1000
+RUN apt-get update && apt-get install -y --no-install-recommends iproute2 && rm -rf /var/lib/apt/lists/*
+RUN groupadd -g ${GO2_GID} go2 && useradd -m -u ${GO2_UID} -g ${GO2_GID} -s /bin/bash go2
+
+# Visualization uses the same measured leg joints as the 2D baseline.
+RUN apt-get update && apt-get install -y --no-install-recommends ros-humble-rosidl-generator-dds-idl \
+    && rm -rf /var/lib/apt/lists/* \
+    && git init /opt/go2-unitree-src \
+    && git -C /opt/go2-unitree-src remote add origin https://github.com/unitreerobotics/unitree_ros2.git \
+    && git -C /opt/go2-unitree-src fetch --depth 1 origin 5204e6e098ee53f4bd929bd77eb1d387cd0fa842 \
+    && git -C /opt/go2-unitree-src checkout --detach FETCH_HEAD \
+    && bash -c 'source /opt/ros/humble/setup.bash && cd /opt/go2-unitree-src && colcon build --base-paths cyclonedds_ws/src/unitree/unitree_go --merge-install --install-base /opt/go2-unitree-msgs --cmake-args -DBUILD_TESTING=OFF' \
+    && rm -rf /opt/go2-unitree-src

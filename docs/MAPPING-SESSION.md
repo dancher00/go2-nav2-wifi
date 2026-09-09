@@ -122,3 +122,11 @@ use blanket `pkill` commands: other sessions may own matching processes.
 At the end, stop robot motion with the remote, save if needed, then Ctrl+C in
 the SLAM, RViz and relay terminals. These commands do not disconnect USB cameras
 or stop unrelated factory processes on the robot.
+
+### Эксперимент 3D LiDAR
+
+В ветке `experiment/lidar-3d-slam`: `./mapping.sh --3d` запускает отдельный
+Point-LIO на Jetson (raw L1 + гироскоп, без камеры, ускорений и loop closure);
+на ноутбуке — только RViz через Wi-Fi. `--3d --laptop` сохраняет вычисления на ноутбуке.
+Установка, измерения и ограничения: [3D LiDAR SLAM](LIDAR-3D-SLAM.md).
+Обычный `./mapping.sh` сохраняет 2D-профиль.

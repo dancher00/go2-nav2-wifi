@@ -13,6 +13,7 @@ Run via: bash ~/robot-relay-wifi.sh
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import signal
@@ -20,6 +21,7 @@ import socket
 import struct
 import sys
 import time
+import zlib
 from typing import List, Tuple
 
 import rclpy
@@ -47,8 +49,29 @@ def relay_topics() -> List[Tuple[str, str, str]]:
     global _RELAY_TOPICS
     if _RELAY_TOPICS is not None:
         return _RELAY_TOPICS
+    profile = os.environ.get("GO2_RELAY_PROFILE", "default")
+    if profile == "lidar3d":
+        # Preserve native sensor coordinates and original per-point time.
+        candidates = [
+            ("/utlidar/cloud", "sensor_msgs/msg/PointCloud2", "sensor"),
+            ("/utlidar/robot_odom", "nav_msgs/msg/Odometry", "default"),
+            ("/utlidar/imu", "sensor_msgs/msg/Imu", "imu"),
+            ("/lf/lowstate", "unitree_go/msg/LowState", "default"),
+        ]
+    elif profile == "lidar3d-map":
+        # Jetson computes locally. Wi-Fi carries visualization only, never raw IMU/cloud.
+        candidates = [
+            ("/lidar3d/registered", "sensor_msgs/msg/PointCloud2", "sensor"),
+            ("/lidar3d/odom", "nav_msgs/msg/Odometry", "sensor"),
+            ("/lidar3d/path", "nav_msgs/msg/Path", "sensor"),
+            ("/lf/lowstate", "unitree_go/msg/LowState", "default"),
+        ]
+    elif profile == "default":
+        candidates = RELAY_TOPICS_CANDIDATES
+    else:
+        raise ValueError("GO2_RELAY_PROFILE must be default, lidar3d or lidar3d-map")
     active: List[Tuple[str, str, str]] = []
-    for topic, type_str, qos_kind in RELAY_TOPICS_CANDIDATES:
+    for topic, type_str, qos_kind in candidates:
         try:
             get_message(type_str)
             active.append((topic, type_str, qos_kind))
@@ -70,9 +93,9 @@ FRAME_HDR = struct.Struct("!BI")  # topic_id (1 byte used), payload_len
 
 
 def _qos(kind: str) -> QoSProfile:
-    if kind == "sensor":
+    if kind in ("sensor", "imu"):
         return QoSProfile(
-            depth=1,
+            depth=200 if kind == "imu" else 1,
             reliability=ReliabilityPolicy.BEST_EFFORT,
             history=HistoryPolicy.KEEP_LAST,
             durability=DurabilityPolicy.VOLATILE,
@@ -190,7 +213,11 @@ def _run_subscriber(socket_path: str, ready_path: str, topics: List, name: str) 
     rclpy.init()
     node = Node(name)
     sock = None
+    trace = None
     try:
+        trace_prefix = os.environ.get('GO2_RELAY_TRACE_PREFIX')
+        if trace_prefix:
+            trace = open(trace_prefix + '-source.jsonl', 'x', buffering=65536)
         if not _wait_for_ready(ready_path):
             if not rclpy.ok():
                 raise ExternalShutdownException()
@@ -198,17 +225,34 @@ def _run_subscriber(socket_path: str, ready_path: str, topics: List, name: str) 
         sock = _connect(socket_path)
         node.get_logger().info(f"connected to publisher at {socket_path}")
         counts = [0] * len(topics)
+        last_sent = [float('-inf')] * len(topics)
         last_log = time.monotonic()
 
         def make_cb(topic_id: int):
             def cb(msg) -> None:
+                if os.environ.get('GO2_RELAY_PROFILE') == 'lidar3d-map':
+                    interval = {'/lidar3d/registered': .2, '/lidar3d/path': 1.0, '/lf/lowstate': .05}.get(topics[topic_id][0], 0)
+                    now = time.monotonic()
+                    if now - last_sent[topic_id] < interval:
+                        return
+                    last_sent[topic_id] = now
                 # A broken/blocked transport must stop this process, not log forever.
-                _send_frame(sock, topic_id, serialize_message(msg))
+                if trace is not None:
+                    wall, mono = time.time_ns(), time.monotonic_ns()
+                # Visualization is already CDR. Skip Python reconstruction of the
+                # growing Path for frames that will not be sent over Wi-Fi.
+                payload = msg if isinstance(msg, bytes) else serialize_message(msg)
+                if trace is not None and hasattr(msg, 'header'):
+                    stamp = msg.header.stamp.sec * 10**9 + msg.header.stamp.nanosec
+                    crc = zlib.crc32(msg.data) if hasattr(msg, 'point_step') else None
+                    trace.write(json.dumps([topics[topic_id][0], stamp, wall, mono, len(payload), crc]) + '\n')
+                _send_frame(sock, topic_id, payload)
                 counts[topic_id] += 1
             return cb
 
         for topic_id, (topic, type_str, qos_kind) in enumerate(topics):
-            node.create_subscription(get_message(type_str), topic, make_cb(topic_id), _qos(qos_kind))
+            node.create_subscription(get_message(type_str), topic, make_cb(topic_id), _qos(qos_kind),
+                                     raw=os.environ.get('GO2_RELAY_PROFILE') == 'lidar3d-map')
             node.get_logger().info(f"subscribe {topic} ({type_str})")
         while rclpy.ok():
             rclpy.spin_once(node, timeout_sec=0.05)
@@ -221,6 +265,8 @@ def _run_subscriber(socket_path: str, ready_path: str, topics: List, name: str) 
                 counts[:] = [0] * len(topics)
                 last_log = now
     finally:
+        if trace is not None:
+            trace.close()
         if sock is not None:
             sock.close()
         _shutdown(node)

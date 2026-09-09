@@ -12,10 +12,11 @@ import socket
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 
-MODES = ('mapping', 'navigation', 'teleop', 'transport')
-RESOURCES = {'mapping': ('stack',), 'navigation': ('stack', 'motion'),
+MODES = ('mapping', 'lidar3d', 'lidar3d-viz', 'navigation', 'teleop', 'transport')
+RESOURCES = {'mapping': ('stack',), 'lidar3d': ('stack',), 'lidar3d-viz': ('stack',), 'navigation': ('stack', 'motion'),
              'teleop': ('motion',), 'transport': ('motion',)}
 
 
@@ -160,7 +161,7 @@ def supervise(root, mode, commands, preflight=None, owner=None, normal_exit_comm
             signal.signal(sig, handler)
 
 
-def session_commands(mode, map_path):
+def session_commands(mode, map_path, output_dir=None, bag=None, config=None):
     scripts = Path(__file__).resolve().parent
     odom = os.environ.get('GO2_ODOM_SOURCE', 'utlidar')
     if odom != 'utlidar':
@@ -168,6 +169,23 @@ def session_commands(mode, map_path):
     commands = []
     if mode == 'mapping':
         commands.append(['ros2', 'launch', 'go2_nav2', 'slam_mapping.launch.py', 'odom_source:=utlidar'])
+    elif mode == 'lidar3d':
+        if output_dir is None:
+            raise ValueError('lidar3d requires a new output directory')
+        backend_launch = 'legkilo_mapping.launch.py' if os.environ.get('GO2_LIDAR3D_BACKEND') == 'legkilo' else 'lidar3d_mapping.launch.py'
+        commands.append(['ros2', 'launch', 'go2_nav2', backend_launch,
+                         f'result_dir:={output_dir}'])
+        if bag:
+            commands[-1].append(f'bag:={bag}')
+        if config:
+            commands[-1].append(f'config:={config}')
+        if not bag and os.environ.get('GO2_LIDAR3D_COMPUTE') == 'jetson':
+            commands.append(['env', 'GO2_RELAY_PROFILE=lidar3d-map', 'GO2_RELAY_USE_HUMBLE=1',
+                             'GO2_RELAY_CAMERA=0', 'bash', str(scripts / 'robot-relay-wifi.sh'), '--sensors-only'])
+    elif mode == 'lidar3d-viz':
+        commands.append(['ros2', 'launch', 'go2_nav2', 'lidar3d_robot_viz.launch.py'])
+        rviz_file = 'legkilo.rviz' if os.environ.get('GO2_LIDAR3D_BACKEND') == 'legkilo' else 'lidar3d.rviz'
+        commands.append(['ros2', 'run', 'rviz2', 'rviz2', '-d', '/ws/src/go2_nav2/rviz/' + rviz_file])
     elif mode == 'navigation':
         from go2_nav2.map_bundle import validate_map
         map_path = validate_map(map_path)
@@ -175,7 +193,7 @@ def session_commands(mode, map_path):
                          f'map:={map_path}', 'odom_source:=utlidar'])
     elif mode == 'teleop':
         commands.append(['ros2', 'run', 'teleop_twist_keyboard', 'teleop_twist_keyboard'])
-    if mode != 'mapping' and os.environ.get('GO2_NET', 'wifi') == 'wifi':
+    if mode not in ('mapping', 'lidar3d', 'lidar3d-viz') and os.environ.get('GO2_NET', 'wifi') == 'wifi':
         host = os.environ.get('GO2_ROBOT_IP')
         if not host:
             raise ValueError('Set GO2_ROBOT_IP before starting a motion session')
@@ -193,6 +211,9 @@ def main():
     parser.add_argument('--map', default='/ws/maps/my_room.yaml')
     parser.add_argument('--rviz', action='store_true', help='Open RViz in the owned mapping session')
     parser.add_argument('--owner', help='Scope automated stop to this launcher token')
+    parser.add_argument('--output', help='New directory for a lidar3d PCD map and TUM trajectory')
+    parser.add_argument('--bag', help='Replay recorded lidar3d inputs locally, headless, without robot relay')
+    parser.add_argument('--config', help='Backend YAML override for lidar3d')
     args = parser.parse_args()
     try:
         root = runtime_dir()
@@ -205,14 +226,50 @@ def main():
             action = 'stop:' + args.owner if args.owner else 'stop'
             print(json.dumps(request(root, args.mode, action), indent=2))
             return 0
-        commands = session_commands(args.mode, args.map)
+        output_dir = None
+        if (args.bag or args.config) and args.mode != 'lidar3d':
+            raise ValueError('--bag/--config are only supported for lidar3d')
+        if args.bag:
+            if args.rviz:
+                raise ValueError('Offline replay is headless; inspect its saved PCD and trajectory')
+            if not (Path(args.bag) / 'metadata.yaml').is_file():
+                raise ValueError('Expected a finalized sensors bag directory with metadata.yaml')
+            # Independent local DDS domain, no robot peers. Existing stack ownership remains.
+            os.environ['ROS_DOMAIN_ID'] = '65'
+            # RMW's localhost-only flag adds lo a second time when XML names it.
+            os.environ['ROS_LOCALHOST_ONLY'] = '0'
+            os.environ['CYCLONEDDS_URI'] = '<CycloneDDS><Domain><General><Interfaces><NetworkInterface name="lo"/></Interfaces><AllowMulticast>true</AllowMulticast></General></Domain></CycloneDDS>'
+        if args.output and args.mode != 'lidar3d':
+            raise ValueError('--output is only supported for lidar3d')
+        if args.mode == 'lidar3d':
+            if args.output:
+                output_dir = Path(args.output).resolve()
+                output_dir.mkdir(parents=True, exist_ok=False)
+            else:
+                base = Path('/ws/maps/lidar3d')
+                base.mkdir(parents=True, exist_ok=True)
+                output_dir = Path(tempfile.mkdtemp(prefix=time.strftime('run-%Y%m%d-%H%M%S-'), dir=base))
+            (output_dir / 'Log').mkdir()
+            (output_dir / 'PCD').mkdir()
+            print(f'3D result directory: {output_dir}', flush=True)
+        commands = session_commands(args.mode, args.map, output_dir, args.bag, args.config)
         if args.rviz:
-            if args.mode != 'mapping':
-                raise ValueError('--rviz is supported for mapping only')
-            commands.append(['ros2', 'run', 'rviz2', 'rviz2', '-d', '/ws/src/go2_nav2/rviz/slam.rviz'])
+            if args.mode not in ('mapping', 'lidar3d'):
+                raise ValueError('--rviz is supported for mapping and lidar3d only')
+            if args.mode == 'lidar3d':
+                commands.append(['ros2', 'launch', 'go2_nav2', 'lidar3d_robot_viz.launch.py'])
+            preset = 'lidar3d' if args.mode == 'lidar3d' else 'slam'
+            commands.append(['ros2', 'run', 'rviz2', 'rviz2', '-d', f'/ws/src/go2_nav2/rviz/{preset}.rviz'])
         preflight = [sys.executable, str(Path(__file__).with_name('session_preflight.py')), args.mode]
-        return supervise(root, args.mode, commands, preflight, owner=args.owner,
-                         normal_exit_command=commands[-1] if args.rviz else None)
+        if args.bag or args.mode == 'lidar3d-viz':
+            preflight = None
+        result = supervise(root, args.mode, commands, preflight, owner=args.owner,
+                           normal_exit_command=commands[-1] if args.rviz or args.bag or args.mode == 'lidar3d-viz' else None)
+        if output_dir is not None:
+            saved = subprocess.run([sys.executable, str(Path(__file__).with_name('export-lidar3d.py')),
+                                    str(output_dir)], check=False)
+            result = result or saved.returncode
+        return result
     except (OSError, ValueError, RuntimeError) as exc:
         print(f'ERROR: {exc}. No unrelated processes were stopped.', file=sys.stderr)
         return 1

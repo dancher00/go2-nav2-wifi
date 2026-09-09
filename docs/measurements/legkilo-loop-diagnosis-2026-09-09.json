@@ -1,0 +1,612 @@
+{
+  "date": "2026-09-09",
+  "scope": "Diagnose saved live graph constraints; no production parameter/code change or Jetson deployment. No robot movement, camera changes or added guards/nodes.",
+  "runs": [
+    "run-20260909-170530-z_dptdy9",
+    "run-20260909-171236-lweyxya7"
+  ],
+  "weights": {
+    "near_translation_sigma_m": 0.1,
+    "loop_translation_sigma_m": 1.0,
+    "near_rotation_sigma_deg": 5.0,
+    "loop_rotation_sigma_deg": 20.0,
+    "loop_block_loss": "Cauchy, scale 3",
+    "translation_information_loop_vs_neighbor": 0.01
+  },
+  "frozen_graph": {
+    "run-20260909-170530-z_dptdy9": [
+      {
+        "loop_trans_multiplier": null,
+        "endpoint_3d_m": 1.0278699931230986,
+        "cost": 3.905114740996202e-28,
+        "optimality": 3.3452778009903873e-13,
+        "nfev": 1
+      },
+      {
+        "loop_trans_multiplier": 10.0,
+        "endpoint_3d_m": 1.0119609832966148,
+        "cost": 0.061833112840744976,
+        "optimality": 1.6516858812856174e-05,
+        "nfev": 9
+      },
+      {
+        "loop_trans_multiplier": 1.0,
+        "endpoint_3d_m": 0.9924197575745398,
+        "cost": 1.4969758389469976,
+        "optimality": 0.00042754413187598775,
+        "nfev": 34
+      }
+    ],
+    "run-20260909-171236-lweyxya7": [
+      {
+        "loop_trans_multiplier": null,
+        "endpoint_3d_m": 0.7665660587698495,
+        "cost": 1.1538683607284842e-27,
+        "optimality": 4.95009212038619e-13,
+        "nfev": 1
+      },
+      {
+        "loop_trans_multiplier": 10.0,
+        "endpoint_3d_m": 0.9851791945399095,
+        "cost": 0.22890863229419678,
+        "optimality": 2.0757000254931213e-05,
+        "nfev": 65
+      },
+      {
+        "loop_trans_multiplier": 1.0,
+        "endpoint_3d_m": 0.9372856085492338,
+        "cost": 3.487319800742171,
+        "optimality": 0.00026317872877407167,
+        "nfev": 131
+      }
+    ]
+  },
+  "method": "Reconstruct saved frontend submap poses, neighbor and second-neighbor odometry edges, and saved loop transforms. Fix first node. scipy sparse least_squares with the same translation/quaternion residual and per-loop-block Cauchy objective as Ceres. Experiment strengthens translation only; rotation remains at 20 degrees. This is a fixed-constraint diagnostic, not a rerun of online loop discovery.",
+  "validation": "Default reconstructed graph endpoint distances reproduce saved live Ceres output within 0.00004 m on circle and 0.000004 m on slope. No-loop graph has essentially zero residual and equals saved frontend.",
+  "loop_registration": {
+    "run-20260909-170530-z_dptdy9": [
+      {
+        "i": 0,
+        "j": 26,
+        "initial": {
+          "fraction_within_15cm": 0.7968277945619335,
+          "median_nn_m": 0.06384726362263694,
+          "p90_nn_m": 0.2959512492781349
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7968277945619335,
+          "median_nn_m": 0.06227431575025702,
+          "p90_nn_m": 0.2906997776094849
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.7938066465256798,
+          "median_nn_m": 0.06349658164140501,
+          "p90_nn_m": 0.2953953127876609
+        },
+        "registration_translation_change_m": 0.04181600023691348,
+        "registration_rotation_change_deg": 0.5812993657432238,
+        "remaining_loop_translation_residual_m": 0.02815315840348669,
+        "registration_delta_in_world_m": [
+          0.004053704211951547,
+          -0.04153302081352507,
+          -0.002674610266720641
+        ]
+      },
+      {
+        "i": 1,
+        "j": 26,
+        "initial": {
+          "fraction_within_15cm": 0.8126888217522659,
+          "median_nn_m": 0.059286371884763,
+          "p90_nn_m": 0.48145408105148496
+        },
+        "measured": {
+          "fraction_within_15cm": 0.8141993957703928,
+          "median_nn_m": 0.05863671795936692,
+          "p90_nn_m": 0.4737073830332312
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.8149546827794562,
+          "median_nn_m": 0.0589821663498805,
+          "p90_nn_m": 0.47611950787062485
+        },
+        "registration_translation_change_m": 0.013473622947576981,
+        "registration_rotation_change_deg": 0.643060251771305,
+        "remaining_loop_translation_residual_m": 0.00912506027645049,
+        "registration_delta_in_world_m": [
+          -0.0026687517431182037,
+          -0.01236991420642365,
+          -0.004626175741667733
+        ]
+      },
+      {
+        "i": 3,
+        "j": 20,
+        "initial": {
+          "fraction_within_15cm": 0.7107337780473014,
+          "median_nn_m": 0.07847895965515832,
+          "p90_nn_m": 1.1685767935101747
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7143723468768951,
+          "median_nn_m": 0.07799829235184225,
+          "p90_nn_m": 1.2413246412742032
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.7137659187386295,
+          "median_nn_m": 0.08077543164064585,
+          "p90_nn_m": 1.17521107725313
+        },
+        "registration_translation_change_m": 0.09999227734271533,
+        "registration_rotation_change_deg": 0.36006262384443855,
+        "remaining_loop_translation_residual_m": 0.08774147192391964,
+        "registration_delta_in_world_m": [
+          0.03424153261090061,
+          -0.09394142649068918,
+          -0.0009906369332787004
+        ]
+      },
+      {
+        "i": 5,
+        "j": 19,
+        "initial": {
+          "fraction_within_15cm": 0.7382198952879581,
+          "median_nn_m": 0.07049167481106036,
+          "p90_nn_m": 0.5361809759726911
+        },
+        "measured": {
+          "fraction_within_15cm": 0.72891215823153,
+          "median_nn_m": 0.06933471492969688,
+          "p90_nn_m": 0.5762436088150741
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.7393833624200117,
+          "median_nn_m": 0.0704677079961863,
+          "p90_nn_m": 0.5369265969287567
+        },
+        "registration_translation_change_m": 0.05644714210090642,
+        "registration_rotation_change_deg": 0.3067575080085906,
+        "remaining_loop_translation_residual_m": 0.04990794917410911,
+        "registration_delta_in_world_m": [
+          0.0342974852827508,
+          -0.04470009513194577,
+          -0.0034443939720091655
+        ]
+      },
+      {
+        "i": 10,
+        "j": 14,
+        "initial": {
+          "fraction_within_15cm": 0.6900958466453674,
+          "median_nn_m": 0.0781782431557991,
+          "p90_nn_m": 0.6622713133960278
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7342917997870074,
+          "median_nn_m": 0.07186082809514216,
+          "p90_nn_m": 0.6136580073051388
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.6932907348242812,
+          "median_nn_m": 0.07856657606485407,
+          "p90_nn_m": 0.6607974305370762
+        },
+        "registration_translation_change_m": 0.21155073621737538,
+        "registration_rotation_change_deg": 0.2679798958044655,
+        "remaining_loop_translation_residual_m": 0.20509578148976426,
+        "registration_delta_in_world_m": [
+          -0.010780516441830668,
+          0.21076408786227865,
+          -0.014696725041404207
+        ]
+      },
+      {
+        "i": 10,
+        "j": 15,
+        "initial": {
+          "fraction_within_15cm": 0.7251296558227251,
+          "median_nn_m": 0.06970928388766319,
+          "p90_nn_m": 0.5676487173221959
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7751060820367751,
+          "median_nn_m": 0.06482559227185881,
+          "p90_nn_m": 0.5036022052284428
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.7260726072607261,
+          "median_nn_m": 0.06935152306596615,
+          "p90_nn_m": 0.5656970872668613
+        },
+        "registration_translation_change_m": 0.2368949546417348,
+        "registration_rotation_change_deg": 0.11355538303437518,
+        "remaining_loop_translation_residual_m": 0.23000789219112205,
+        "registration_delta_in_world_m": [
+          -0.009702772277010274,
+          0.23630861953261179,
+          -0.013539279133004047
+        ]
+      },
+      {
+        "i": 22,
+        "j": 26,
+        "initial": {
+          "fraction_within_15cm": 0.8051359516616314,
+          "median_nn_m": 0.06067225211511117,
+          "p90_nn_m": 0.4980501873584793
+        },
+        "measured": {
+          "fraction_within_15cm": 0.8096676737160121,
+          "median_nn_m": 0.05942989110005198,
+          "p90_nn_m": 0.4812329697331243
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.8036253776435045,
+          "median_nn_m": 0.060140300370357766,
+          "p90_nn_m": 0.4935740091860816
+        },
+        "registration_translation_change_m": 0.03735070463653459,
+        "registration_rotation_change_deg": 0.8600043251099782,
+        "remaining_loop_translation_residual_m": 0.03493003019358396,
+        "registration_delta_in_world_m": [
+          0.011468767605981001,
+          -0.03553948078973741,
+          -0.0006984351376706063
+        ]
+      },
+      {
+        "i": 23,
+        "j": 26,
+        "initial": {
+          "fraction_within_15cm": 0.6963746223564955,
+          "median_nn_m": 0.06660509020413871,
+          "p90_nn_m": 1.2369204007323504
+        },
+        "measured": {
+          "fraction_within_15cm": 0.716012084592145,
+          "median_nn_m": 0.06505956494969775,
+          "p90_nn_m": 1.1647671943644782
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.7009063444108762,
+          "median_nn_m": 0.06556407335683986,
+          "p90_nn_m": 1.2290190267036423
+        },
+        "registration_translation_change_m": 0.07556194198572988,
+        "registration_rotation_change_deg": 1.2858025729380158,
+        "remaining_loop_translation_residual_m": 0.07345020588470966,
+        "registration_delta_in_world_m": [
+          0.017944412564169124,
+          -0.07336052346359485,
+          -0.0024163467319585114
+        ]
+      }
+    ],
+    "run-20260909-171236-lweyxya7": [
+      {
+        "i": 1,
+        "j": 40,
+        "initial": {
+          "fraction_within_15cm": 0.7253278122843341,
+          "median_nn_m": 0.07958716302801142,
+          "p90_nn_m": 1.0746733916769433
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7073844030365769,
+          "median_nn_m": 0.08093434068767687,
+          "p90_nn_m": 0.9229689202592952
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.7053140096618358,
+          "median_nn_m": 0.08393773915323464,
+          "p90_nn_m": 0.9122376222916792
+        },
+        "registration_translation_change_m": 0.19682186966713067,
+        "registration_rotation_change_deg": 2.394912099635417,
+        "remaining_loop_translation_residual_m": 0.0329801302900958,
+        "registration_delta_in_world_m": [
+          -0.029167597153661986,
+          -0.19457522771672028,
+          0.005346065331915076
+        ]
+      },
+      {
+        "i": 1,
+        "j": 42,
+        "initial": {
+          "fraction_within_15cm": 0.7136038186157518,
+          "median_nn_m": 0.06910324838288485,
+          "p90_nn_m": 0.7278130028749005
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7136038186157518,
+          "median_nn_m": 0.0696487630878172,
+          "p90_nn_m": 0.6440717182155605
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.7076372315035799,
+          "median_nn_m": 0.07424010898683127,
+          "p90_nn_m": 0.6067710198063513
+        },
+        "registration_translation_change_m": 0.17615126600827846,
+        "registration_rotation_change_deg": 0.9597115266669651,
+        "remaining_loop_translation_residual_m": 0.0738074244205078,
+        "registration_delta_in_world_m": [
+          -0.00196999237267337,
+          -0.17614024281849539,
+          -5.006208513415131e-05
+        ]
+      },
+      {
+        "i": 4,
+        "j": 37,
+        "initial": {
+          "fraction_within_15cm": 0.7214060860440713,
+          "median_nn_m": 0.06810666549191369,
+          "p90_nn_m": 1.2652417671890892
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7229800629590766,
+          "median_nn_m": 0.06890716721754678,
+          "p90_nn_m": 1.2919600431531588
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.6873032528856243,
+          "median_nn_m": 0.07683831301585316,
+          "p90_nn_m": 1.2355163771450237
+        },
+        "registration_translation_change_m": 0.04278775319502912,
+        "registration_rotation_change_deg": 0.5781279418384903,
+        "remaining_loop_translation_residual_m": 0.31252367850174634,
+        "registration_delta_in_world_m": [
+          0.005729329921220135,
+          0.0423956308014629,
+          -0.0007596651094966535
+        ]
+      },
+      {
+        "i": 7,
+        "j": 32,
+        "initial": {
+          "fraction_within_15cm": 0.6055846422338569,
+          "median_nn_m": 0.10068095038403688,
+          "p90_nn_m": 0.5394522990201207
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7076788830715532,
+          "median_nn_m": 0.0873837963284147,
+          "p90_nn_m": 0.366348514880146
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.668848167539267,
+          "median_nn_m": 0.08823428680010084,
+          "p90_nn_m": 0.42059639912124047
+        },
+        "registration_translation_change_m": 0.5423765967228786,
+        "registration_rotation_change_deg": 3.0080615035867315,
+        "remaining_loop_translation_residual_m": 0.272989332779902,
+        "registration_delta_in_world_m": [
+          -0.3524615051574659,
+          -0.41154467830420965,
+          -0.023963259676225562
+        ]
+      },
+      {
+        "i": 7,
+        "j": 33,
+        "initial": {
+          "fraction_within_15cm": 0.6011661807580175,
+          "median_nn_m": 0.09830067413791582,
+          "p90_nn_m": 0.509228342784648
+        },
+        "measured": {
+          "fraction_within_15cm": 0.8198250728862974,
+          "median_nn_m": 0.07196630954811203,
+          "p90_nn_m": 0.20683662723492757
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.8011661807580175,
+          "median_nn_m": 0.06981533268163932,
+          "p90_nn_m": 0.226110137343037
+        },
+        "registration_translation_change_m": 0.586977279700506,
+        "registration_rotation_change_deg": 5.000533890658116,
+        "remaining_loop_translation_residual_m": 0.24738959276872693,
+        "registration_delta_in_world_m": [
+          -0.37111432188569626,
+          -0.4541145802627738,
+          -0.024422018112565967
+        ]
+      },
+      {
+        "i": 7,
+        "j": 34,
+        "initial": {
+          "fraction_within_15cm": 0.5919696147585458,
+          "median_nn_m": 0.09152266062414582,
+          "p90_nn_m": 4.348050238564883
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7297883884970158,
+          "median_nn_m": 0.06647870393142094,
+          "p90_nn_m": 4.336893573002272
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.7373846988605535,
+          "median_nn_m": 0.06665754109347627,
+          "p90_nn_m": 4.272111082586349
+        },
+        "registration_translation_change_m": 0.5380555706341363,
+        "registration_rotation_change_deg": 6.60439091116457,
+        "remaining_loop_translation_residual_m": 0.09865306029592509,
+        "registration_delta_in_world_m": [
+          -0.4394153559905778,
+          -0.3102659751919824,
+          -0.012367968639512164
+        ]
+      },
+      {
+        "i": 8,
+        "j": 33,
+        "initial": {
+          "fraction_within_15cm": 0.49737609329446064,
+          "median_nn_m": 0.15272813909782185,
+          "p90_nn_m": 1.0392624403961501
+        },
+        "measured": {
+          "fraction_within_15cm": 0.7399416909620992,
+          "median_nn_m": 0.07082652134000465,
+          "p90_nn_m": 0.5351792728104567
+        },
+        "optimized": {
+          "fraction_within_15cm": 0.6793002915451894,
+          "median_nn_m": 0.07773639012338437,
+          "p90_nn_m": 0.6746652175656798
+        },
+        "registration_translation_change_m": 0.6050657094633433,
+        "registration_rotation_change_deg": 2.866695065576735,
+        "remaining_loop_translation_residual_m": 0.22715172916702836,
+        "registration_delta_in_world_m": [
+          -0.4257513368267777,
+          -0.42884234437376795,
+          -0.03057050262264721
+        ]
+      }
+    ]
+  },
+  "geometry_proxy": [
+    {
+      "run": "run-20260909-170530-z_dptdy9",
+      "i": 0,
+      "j": 26,
+      "planar_matches": 848,
+      "horizontal_surface_fraction": 0.8066037735849056,
+      "normal_information_eigenvalues": [
+        0.0038557341965801376,
+        0.1917250204237911,
+        0.8044192446702236
+      ],
+      "weak_translation_axis_world": [
+        -0.1031882499449822,
+        0.9946591080915521,
+        0.002333187478493426
+      ],
+      "note": "Point-to-plane geometry proxy on saved clouds; not the GICP Hessian or a calibrated covariance."
+    },
+    {
+      "run": "run-20260909-170530-z_dptdy9",
+      "i": 1,
+      "j": 26,
+      "planar_matches": 886,
+      "horizontal_surface_fraction": 0.845372460496614,
+      "normal_information_eigenvalues": [
+        0.006758069363075682,
+        0.15120523713278652,
+        0.8420366903986468
+      ],
+      "weak_translation_axis_world": [
+        -0.12677402637988786,
+        0.9918886924659306,
+        0.009228650695381563
+      ],
+      "note": "Point-to-plane geometry proxy on saved clouds; not the GICP Hessian or a calibrated covariance."
+    },
+    {
+      "run": "run-20260909-171236-lweyxya7",
+      "i": 1,
+      "j": 40,
+      "planar_matches": 806,
+      "horizontal_surface_fraction": 0.847394540942928,
+      "normal_information_eigenvalues": [
+        0.007798394775779254,
+        0.14710032617855634,
+        0.8451012827719091
+      ],
+      "weak_translation_axis_world": [
+        0.108818339453744,
+        0.9940302917235389,
+        -0.007896083494126072
+      ],
+      "note": "Point-to-plane geometry proxy on saved clouds; not the GICP Hessian or a calibrated covariance."
+    },
+    {
+      "run": "run-20260909-171236-lweyxya7",
+      "i": 1,
+      "j": 42,
+      "planar_matches": 1019,
+      "horizontal_surface_fraction": 0.8557409224730128,
+      "normal_information_eigenvalues": [
+        0.005416247136737877,
+        0.1421973262827609,
+        0.8523864286302526
+      ],
+      "weak_translation_axis_world": [
+        0.09184478703268695,
+        0.9956741258915062,
+        -0.014055964040402824
+      ],
+      "note": "Point-to-plane geometry proxy on saved clouds; not the GICP Hessian or a calibrated covariance."
+    },
+    {
+      "run": "run-20260909-171236-lweyxya7",
+      "i": 7,
+      "j": 33,
+      "planar_matches": 1203,
+      "horizontal_surface_fraction": 0.8354114713216958,
+      "normal_information_eigenvalues": [
+        0.02732459341967371,
+        0.1401933061643259,
+        0.8324820990402241
+      ],
+      "weak_translation_axis_world": [
+        -0.05477535035216443,
+        -0.9971575858035706,
+        -0.051734032011743536
+      ],
+      "note": "Point-to-plane geometry proxy on saved clouds; not the GICP Hessian or a calibrated covariance."
+    }
+  ],
+  "findings": [
+    "At circle return, accepted edges 0->26 and 1->26 adjust translation by only 0.042 m and 0.013 m; measured constraint does not encode the approximately 1 m physical return correction.",
+    "81-86% of selected planar correspondences at start/return are horizontal surfaces. Weak translation axis is nearly world Y, matching the endpoint-error direction. This is a point-to-plane normal-information proxy, not actual GICP covariance.",
+    "Correspondence search is local (0.3 m); accepted overlap >=0.7 is insufficient evidence of accurate longitudinal registration in this geometry. These findings support geometric ambiguity/local-minimum diagnosis, not proof that every accepted edge is false.",
+    "Increasing loop translation information by 100x barely improves circle return and still worsens slope endpoint separation relative to no loops. Blind weight increase is not a fix.",
+    "Accumulated frontend error remains before graph optimization; the cause of all frontend drift (kinematics vs LiDAR/IMU) has not been isolated here.",
+    "Two independent raw no-loop replays of circle produce the same 0.0333 m native frontend return, versus 1.0279 m live frontend. Loop closure cannot account for this frontend discrepancy; actual accepted live input sequence was not traced on that run. Do not attribute all live drift to geometric ambiguity or claim 3 cm live accuracy."
+  ],
+  "raw_replay_limitations": {
+    "circle_first_no_loop_run": "run-20260909-172626-b7kra5bj",
+    "circle_first_output_duration_s": 89.0528073310852,
+    "circle_source_duration_s": 158.96934175491333,
+    "circle_first_status": "Backend trajectory export omits stationary tail belonging to an empty submap; native frontend contains 2439 poses over 158.579 s. Not a 70-second sensor-processing loss.",
+    "slope_no_loop_run": "run-20260909-172832-frgi6py4",
+    "slope_no_loop_duration_s": 178.4249243736267,
+    "slope_no_loop_poses": 2744,
+    "slope_source_poses": 2750,
+    "slope_no_loop_endpoint_m": 0.7936761972001249,
+    "slope_live_vs_replay_max_position_difference_m": 0.5329499386429234,
+    "note": "Replay frontend differs from live. Causal loop-weight conclusions use frozen live inputs/constraints, not an unmatched raw-replay vs live comparison.",
+    "circle_repeat": {
+      "run": "run-20260909-173041-kqwhwrdk",
+      "poses": 1370,
+      "duration_s": 89.0528073310852,
+      "endpoint_m": null,
+      "trace": "ws/log/lidar3d/circle-no-loop-repeat.csv",
+      "native_frontend_poses": 2439,
+      "native_frontend_endpoint_m": 0.033302998826836704
+    },
+    "circle_native_frontend": {
+      "poses": 2439,
+      "duration_s": 158.57907247543335,
+      "endpoint_m": 0.033302998826836704,
+      "identical_endpoint_in_both_replays": true,
+      "live_frontend_endpoint_m": 1.0278699931230986
+    }
+  },
+  "next_step": "Prioritize establishing identical accepted live/replay measurements, using existing optional input trace rather than more blind tuning. Separately fix empty-submap trajectory export. Then test larger loop context/global initial alignment on controlled inputs. Current production settings unchanged.",
+  "export_bug": {
+    "file": "legkilo/src/core/slam/tool/slam_result_saver.cc",
+    "behavior": "Frames referencing an absent submap are skipped. Backend can assign non-keyframes to an empty current submap after prior finalization; empty submap is not recorded. On circle no-loop replay 1069 stationary native poses are omitted in exported backend TUM.",
+    "status": "Diagnosed, not patched or deployed in this analysis."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "aligned_run": "run-20260909-120212-k_att2eq",
+  "unaligned_run": "run-20260909-120242-yg5gdgqo",
+  "poses_matched": 173,
+  "rigid_transform_position_max_m": 1.2533759081485306e-09,
+  "rigid_transform_rotation_max_deg": 1.3808283413434185e-07,
+  "floor_initial_residual_deg": 0.1352481224616132,
+  "floor_final_residual_deg": 0.43546432338057833,
+  "map_points": 45162,
+  "map_rigid_transform_max_m": 2.2351275568480464e-06,
+  "source_walk": "run-20260909-113920-3yygoyla",
+  "original_initial_floor_tilt_deg": 20.324,
+  "original_final_floor_change_from_initial_deg": 0.741,
+  "method": "Fit floor planes in recorded input; rotate into original trajectory world. Apply the constant transform fitted by native backend to the initial 12s replay. Residual full-walk tilt is evaluated by applying this same transform to original normals; full walk not rerun. Separately compare enabled/disabled native 12s replays pointwise and at matching timestamps.",
+  "jetson_live_run": "run-20260909-120414-1p2vk7pv",
+  "jetson_live_floor_inliers": 940,
+  "live_auto_archive_sha256_files": 10,
+  "live_auto_archive_bytes": 2171411,
+  "remote_results_after_stop_bytes": 4096,
+  "tests_passed": 102,
+  "patch_sha256": "a1e8d3e215bb9f38e4e45269e1a9fbd07341193113d70e962b38ae669877b738",
+  "limitations": [
+    "Floor must be horizontal and visible at initialization; plane selection can fail or select the wrong surface.",
+    "Constant output transform does not correct estimator drift.",
+    "No ground truth trajectory accuracy or loop closure."
+  ]
+}

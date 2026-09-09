@@ -1,0 +1,113 @@
+{
+  "runs": [
+    {
+      "run": "run-20260909-135812-7de0al0m",
+      "duration_s": 72.40157628059387,
+      "poses": 1112,
+      "max_displacement_m": 3.1460395072263942,
+      "endpoint_distance_m": 3.1009373922184684,
+      "step_p95_m": 0.03489651559636614,
+      "variant": "two-step baseline"
+    },
+    {
+      "run": "run-20260909-140152-pf_j78re",
+      "duration_s": 72.40157628059387,
+      "poses": 1112,
+      "max_displacement_m": 9.879625161470402,
+      "endpoint_distance_m": 9.76238052352971,
+      "step_p95_m": 0.07794974713210373,
+      "variant": "rejected initial force patch + two-step"
+    },
+    {
+      "run": "run-20260909-140343-hcxqh5ar",
+      "duration_s": 72.40157628059387,
+      "poses": 1112,
+      "max_displacement_m": 0.09472133173744363,
+      "endpoint_distance_m": 0.04124808196259122,
+      "step_p95_m": 0.01133060359498789,
+      "variant": "initial force patch + single-step"
+    },
+    {
+      "run": "run-20260909-140437-uwmkgxxh",
+      "duration_s": 72.40157628059387,
+      "poses": 1112,
+      "max_displacement_m": 0.0946948019341751,
+      "endpoint_distance_m": 0.04548347212298464,
+      "step_p95_m": 0.011684679040094594,
+      "variant": "original binary + single-step"
+    },
+    {
+      "run": "run-20260909-134315-2xh4qib0",
+      "duration_s": 62.057557821273804,
+      "poses": 955,
+      "max_displacement_m": 0.010414342544083471,
+      "endpoint_distance_m": 0.004751409143262344,
+      "step_p95_m": 0.00441925483172758,
+      "variant": "standing baseline two-step"
+    },
+    {
+      "run": "run-20260909-140731-vmjzkvmm",
+      "duration_s": 62.057557821273804,
+      "poses": 955,
+      "max_displacement_m": 0.003491235110160586,
+      "endpoint_distance_m": 0.0016829545149732955,
+      "step_p95_m": 0.0019857650810704186,
+      "variant": "standing single-step"
+    },
+    {
+      "run": "run-20260909-133839-qa4ai3lo",
+      "duration_s": 199.39942979812622,
+      "poses": 3065,
+      "max_displacement_m": 4.688380290539118,
+      "endpoint_distance_m": 0.9310410929707972,
+      "step_p95_m": 0.053362926138267285,
+      "floor_tilt_median_p95_deg": [
+        0.5807831996186541,
+        1.443640665609265
+      ],
+      "variant": "walking baseline two-step"
+    },
+    {
+      "run": "run-20260909-140537-48nx5uhl",
+      "duration_s": 199.39942979812622,
+      "poses": 3065,
+      "max_displacement_m": 4.772727571211154,
+      "endpoint_distance_m": 1.467411505641267,
+      "step_p95_m": 0.04975113440954516,
+      "floor_tilt_median_p95_deg": [
+        0.6824665865562521,
+        1.475471715330813
+      ],
+      "variant": "walking single-step"
+    }
+  ],
+  "selected_change": {
+    "two_step_lidar_eskf": false,
+    "kin_meas_noise": 0.05,
+    "cpp_patch_changed": false
+  },
+  "interpretation": "Second cloud update is implicated by controlled replay. Disabling it mitigates large startup displacement without added nodes, motion gates or resets. Exact numerical failure mechanism not proven. Initial-force-only patch rejected and removed.",
+  "limitations": [
+    "Standing and lying recordings are stationary per user context; maximum displacement is pose stability, not map accuracy.",
+    "Walking endpoint was approximately near start, not a marked return. Endpoint distance changed from 0.93 to 1.47 m; no accuracy improvement claimed.",
+    "Replays performed on laptop at 2x; live Jetson check tracked separately."
+  ],
+  "live_jetson": {
+    "run": "run-20260909-140749-_2dhlqkf",
+    "duration_s": 75.71795749664307,
+    "poses": 1165,
+    "max_displacement_m": 0.11845642521203663,
+    "contacts": 0,
+    "record_bag": false,
+    "archive": {
+      "files_verified_sha256": 18,
+      "bytes": 3874732,
+      "removed_from_jetson": true
+    },
+    "sessions_stopped": true
+  },
+  "tests": {
+    "unittest_passed": 107,
+    "git_diff_check": "passed"
+  }
+}

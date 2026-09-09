@@ -15,12 +15,30 @@ from rclpy.executors import ExternalShutdownException
 from geometry_msgs.msg import TransformStamped
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
+
+
+def compose_pose(position, quaternion, offset):
+    """T_world_sensor * T_sensor_body; quaternion order xyzw."""
+    x, y, z, w = quaternion
+    a, b, c = offset[:3]
+    # Rotate translation using q * v * inverse(q).
+    tx, ty, tz = 2*(y*c-z*b), 2*(z*a-x*c), 2*(x*b-y*a)
+    p = (position[0]+a+w*tx+y*tz-z*ty,
+         position[1]+b+w*ty+z*tx-x*tz,
+         position[2]+c+w*tz+x*ty-y*tx)
+    i, j, k, l = offset[3:]
+    return p, (w*i+x*l+y*k-z*j, w*j-x*k+y*l+z*i,
+               w*k+x*j-y*i+z*l, w*l-x*i-y*j-z*k)
 from tf2_ros import TransformBroadcaster
 
 
 class OdomTf(Node):
     def __init__(self) -> None:
         super().__init__("go2_odom_tf")
+        self.declare_parameter("sensor_from_base", [0., 0., 0., 0., 0., 0., 1.])
+        self.declare_parameter("best_effort", False)
+        self._sensor_from_base = self.get_parameter("sensor_from_base").value
         self.declare_parameter("odom_topic", "/utlidar/robot_odom_sync")
         self.declare_parameter("odom_frame", "odom")
         self.declare_parameter("base_frame", "base_link")
@@ -53,7 +71,8 @@ class OdomTf(Node):
         self._odom_pub = (
             self.create_publisher(Odometry, odom_out, 10) if self._publish_odom else None
         )
-        self._sub = self.create_subscription(Odometry, topic, self._on_odom, 50)
+        self._sub = self.create_subscription(Odometry, topic, self._on_odom,
+            qos_profile_sensor_data if self.get_parameter("best_effort").value else 50)
         self._have_state = False
         self._got_odom = False
         self._x = self._y = self._z = 0.0
@@ -91,6 +110,9 @@ class OdomTf(Node):
         qy = msg.pose.pose.orientation.y
         qz = msg.pose.pose.orientation.z
         qw = msg.pose.pose.orientation.w
+
+        offset = getattr(self, "_sensor_from_base", (0., 0., 0., 0., 0., 0., 1.))
+        (x, y, z), (qx, qy, qz, qw) = compose_pose((x, y, z), (qx, qy, qz, qw), offset)
 
         if self._alpha >= 1.0:
             self._x, self._y, self._z = x, y, z

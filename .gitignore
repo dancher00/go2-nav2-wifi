@@ -11,6 +11,8 @@ ws/maps/.*.save.lock
 ws/maps/.*-saving-*/
 ws/maps/room_rtab.*
 ws/maps/rtabmap*
+ws/maps/lidar3d/
+ws/lidar3d/
 ws/frames_*.gv
 ws/frames_*.pdf
 ref/

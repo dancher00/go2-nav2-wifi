@@ -1,0 +1,140 @@
+{
+  "date": "2026-09-09",
+  "source_circle": "run-20260909-151627-bjedi0db",
+  "source_horizontal_return_distance_m": 1.5898277172891186,
+  "return_method": "Median first 2 s versus stationary standing 65–85 s; subsequent lying excluded. User confirms same physical location, no surveyed ground truth.",
+  "ablation_results": {
+    "no_ndt": {
+      "run": "run-20260909-152309-72wap921",
+      "poses": 1913,
+      "duration_s": 124.58600378036499,
+      "accepted_loop_edges": 0,
+      "return_delta_xyz_m": [
+        1.1271881455,
+        -0.075549575,
+        -0.0023384095
+      ],
+      "horizontal_return_distance_m": 1.1297171564769695
+    },
+    "weak_kin_2x": {
+      "run": "run-20260909-152436-b6a4l92u",
+      "poses": 1913,
+      "duration_s": 124.58600378036499,
+      "accepted_loop_edges": 0,
+      "return_delta_xyz_m": [
+        -0.037416742,
+        -0.011349121,
+        -0.004765178
+      ],
+      "horizontal_return_distance_m": 0.039100065592875995
+    },
+    "wide_loop": {
+      "run": "run-20260909-152616-h7m7r2u1",
+      "poses": 1913,
+      "duration_s": 124.58600378036499,
+      "accepted_loop_edges": 1,
+      "return_delta_xyz_m": [
+        1.3525968350000002,
+        0.691671215,
+        0.017548908499999998
+      ],
+      "horizontal_return_distance_m": 1.5191863834670167
+    },
+    "weak_kin_1x": {
+      "run": "run-20260909-152805-m55ir668",
+      "poses": 1913,
+      "duration_s": 124.58600378036499,
+      "accepted_loop_edges": 0,
+      "return_delta_xyz_m": [
+        -0.7154305044999999,
+        -0.159499681,
+        -0.0002488729999999997
+      ],
+      "horizontal_return_distance_m": 0.7329945122633772
+    },
+    "heldout_walls": {
+      "run": "run-20260909-153039-rvp0h_yb",
+      "poses": 3063,
+      "duration_s": 199.18481755256653,
+      "accepted_loop_edges": 44,
+      "wall_normal_p95_minus_p5_m": 0.19121066932486586,
+      "roi_points": 974,
+      "previous_strong_kin_m": 0.33766243,
+      "method": "Same fixed ROI/normal as legkilo-backend-map-2026-09-09.json; includes physical structure/noise."
+    },
+    "standing": {
+      "run": "run-20260909-153229-xw75pr1k",
+      "poses": 955,
+      "duration_s": 62.057557821273804,
+      "accepted_loop_edges": 0,
+      "max_displacement_m": 0.006274376713316551
+    },
+    "lying": {
+      "run": "run-20260909-153308-3lhiwczx",
+      "poses": 1112,
+      "duration_s": 72.40157628059387,
+      "accepted_loop_edges": 0,
+      "max_displacement_m": 0.0946948019341751
+    }
+  },
+  "input_diagnosis": {
+    "source_run": "run-20260909-151627-bjedi0db",
+    "clock": {
+      "unique_shared_offsets": 1,
+      "nonincreasing_stamps": 0,
+      "clouds": 1913,
+      "cloud_gap_over_100ms": [
+        {
+          "elapsed_s": 74.89,
+          "gap_s": 0.27018714,
+          "phase": "standing after return"
+        }
+      ],
+      "scope": "Accepted clock-output trace; does not prove acquisition-to-output latency or unknown cross-sensor hardware skew."
+    },
+    "kinematic_pairing": {
+      "sport_messages": 36834,
+      "matched_identical_six_axis_imu": 36643,
+      "matched_fraction": 0.9948145734918825,
+      "method": "Replay bag ordering, 512-key LowState cache and eight pending Sport packets as backend; unique six-axis IMU key. Callback scheduling can differ live.",
+      "record_receive_skew_ms_p50_p95": [
+        2.95143,
+        5.4349217
+      ],
+      "note": "Bag arrival skew is not measurement timestamp skew."
+    },
+    "stance_velocity_disagreement": {
+      "method": "Each force>35 leg implies body velocity -(J*dq + gyro cross foot_position). Deviation from mean of currently selected legs. Every fifteenth matched packet. Diagnostic uses threshold, not contact hysteresis.",
+      "walking_5_55s_p50_p95_m_s": [
+        0.03693266,
+        0.35692507
+      ],
+      "standing_65_85s_p50_p95_m_s": [
+        0.01374397,
+        0.02626779
+      ],
+      "interpretation": "Larger disagreement during walking; consistent with imperfect contact/kinematic velocity observations. Does not individually identify slip, encoder filtering or force calibration."
+    }
+  },
+  "decision": {
+    "kin_meas_noise_before": 0.05,
+    "kin_meas_noise_after": 0.5,
+    "meaning": "Ten times larger observation covariance reduces trust in stance-foot velocity. Existing contact/FK/IMU processing retained.",
+    "ndt_enable": true,
+    "loop_icp_max_corr_dist": 0.3,
+    "two_step_lidar_eskf": false,
+    "config_sha256": "dbff9e4edfef847405d07ffd8475dd2d6a86f17529b4e3eaeb615efb75d96450",
+    "installed_on_jetson": true,
+    "binary_unchanged": true,
+    "new_nodes_or_guards": false
+  },
+  "interpretation": "Excessive weight on imperfect stance-foot velocity is a demonstrated contributor to this walk drift. Reduced weight improved circle return at both playback rates and held-out wall spread. Widening loop correspondences alone did not solve return. This is parameter correction of existing backend, not a new SLAM algorithm.",
+  "limitations": [
+    "Weak-kinematics circle return varies 0.039 m at 2x versus 0.733 m at 1x. Both have 1913 identical output timestamps and identical initial pose/bias; numerical poses first differ at frame 579 (~37.663 s). Exact cause of replay sensitivity not established; scheduling, matching and numerical ordering not isolated. Do not claim 4 cm accuracy.",
+    "Floor-normal tilt median/p95 on circle changed from 1.644/3.467 degrees to 1.057/4.303 degrees in 2x replay: endpoint gain is not uniform geometry improvement.",
+    "Force-based contact velocity disagreement does not uniquely diagnose slip, encoder filtering or calibration.",
+    "No walking test on updated live Jetson configuration yet.",
+    "No new end-to-end Wi-Fi latency measurement; accepted source clock traces do not establish acquisition timing."
+  ],
+  "validation": "Seven offline runs on unchanged amd64 binary; saved map and trajectories nonempty. YAML copied to isolated Jetson checkout and SHA256 verified. Existing session ownership retained."
+}

@@ -6,6 +6,10 @@
 
 **SLAM mapping and Nav2 on a laptop over Wi‑Fi** — built-in Unitree lidar, no external sensors, Docker ROS 2 Humble, no Ethernet cable, no WebRTC, no CycloneDDS patch on the robot.
 
+**3D experiment branch:** `./mapping.sh --3d` computes Point-LIO on the Jetson;
+the laptop runs RViz. `./mapping.sh --3d --laptop` keeps the raw-sensor Wi-Fi
+experiment. The 2D workflow below is preserved. See [3D setup and results](docs/LIDAR-3D-SLAM.md).
+
 Robot + RViz in the demos below.
 
 ### Nav A → B
@@ -143,3 +147,13 @@ logs. They do not replace supervised walking, navigation or stopping tests.
 ## License
 
 MIT · https://github.com/dancher00/go2-nav2-wifi
+
+### Эксперимент 3D LiDAR
+
+В ветке `experiment/lidar-3d-slam`: `./mapping.sh --3d` запускает отдельный
+Point-LIO на Jetson (raw L1 + гироскоп, без камеры, ускорений и loop closure);
+на ноутбуке — только RViz через Wi-Fi. `--3d --laptop` сохраняет вычисления на ноутбуке.
+Установка, измерения и ограничения: [3D LiDAR SLAM](docs/LIDAR-3D-SLAM.md).
+Обычный `./mapping.sh` сохраняет 2D-профиль.
+
+Проверенный 3D Point-LIO baseline: [снимок сборки и запуск](docs/POINTLIO-BASELINE.md).
