@@ -1,0 +1,19 @@
+{
+  "calibration_verified": false,
+  "timing_verified": false,
+  "profile": "nominal-camera-preview-only",
+  "source": "720p third-party go2_ros2_sdk calibration scaled 1.5x; sensor_from_base from lidar3d_robot_viz.yaml; camera position from go2_description.urdf. Not verified on this camera.",
+  "width": 1920,
+  "height": 1080,
+  "camera_matrix": [[1296.59907, 0, 958.79697], [0, 1295.607735, 559.92177], [0, 0, 1]],
+  "distortion_model": "plumb_bob",
+  "distortion_coefficients": [-0.354630, 0.102054, -0.001614, -0.001249, 0],
+  "sensor_from_base": [-0.14056185097700238, 0.24211459251444103, -0.08014714132241024, 0.8713242364998213, -0.47301693680109264, 0.11500275477832939, 0.06183379966256489],
+  "base_from_camera_optical": [0.32715, -0.00003, 0.04297, -0.5, 0.5, -0.5, 0.5],
+  "image_time_offset_seconds": 0,
+  "map_frame": "lidar3d_map",
+  "sensor_frame": "aft_mapped",
+  "max_time_difference_seconds": 0.12,
+  "unverified_max_speed_m_s": 0.05,
+  "unverified_max_angular_speed_rad_s": 0.12
+}
