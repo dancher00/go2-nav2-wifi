@@ -15,7 +15,7 @@ if os.environ.get('FUSION_RESUME')=='1': native.append('--resume')
 if os.environ.get('FUSION_DA3')=='1': native.append('--da3')
 children=[]
 try:
-    for command,domain,config in [(native,'0','native.xml'),(['python3','-u',str(root/'wifi_bridge.py'),*common],os.environ['FUSION_DOMAIN'],'wifi.xml')]:
+    for command,domain,config in [(native,'0','native.xml'),(['python3','-u',str(root/'wifi_bridge.py'),*common],os.environ['FUSION_DOMAIN'],'wifi.xml'),(['python3','-u',str(root/'camera_preview.py')],os.environ['FUSION_DOMAIN'],'wifi.xml')]:
         env=dict(os.environ,ROS_DOMAIN_ID=domain,CYCLONEDDS_URI='file:///ipc/'+config)
         children.append(subprocess.Popen(command,env=env))
     while not stop and all(p.poll() is None for p in children): time.sleep(.2)

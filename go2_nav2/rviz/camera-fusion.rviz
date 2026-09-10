@@ -52,9 +52,18 @@ Visualization Manager:
         Depth: 1
     - Class: rviz_default_plugins/Image
       Name: LiDAR projection on camera
-      Enabled: true
+      Enabled: false
       Topic:
         Value: /camera_fusion/projection_overlay
+        Reliability Policy: Best Effort
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Depth: 1
+    - Class: rviz_default_plugins/Image
+      Name: Robot camera LIVE
+      Enabled: true
+      Topic:
+        Value: /camera_fusion/camera_preview
         Reliability Policy: Best Effort
         Durability Policy: Volatile
         History Policy: Keep Last
