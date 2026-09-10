@@ -74,6 +74,10 @@ fi
 printf 'Fusion session: %s; preview=%s; DA3=%s. Point-LIO remains independently owned.\n' "$session" "$preview" "$da3"
 REMOTE
   ;;
+ check-projection)
+  "${SCP[@]}" "$ROOT/ws/scripts/camera_fusion/check_projection.py" "$target:go2-pointlio-camera-fusion/work/camera_fusion/check_projection.py"
+  "${SSH[@]}" "$target" 'docker exec go2-camera-fusion python3 /work/camera_fusion/check_projection.py /data/session'
+  ;;
  status)
   "${SSH[@]}" "$target" 'docker ps -a --filter name=^/go2-camera-fusion$; cat "/dev/shm/go2-camera-fusion-$(id -u)/status.json" 2>/dev/null; docker logs --tail 8 go2-camera-fusion'
   ;;
@@ -99,5 +103,5 @@ XML
    --entrypoint /bin/bash "${GO2_RVIZ_IMAGE:-go2-humble:local}" \
    -c 'source /opt/ros/humble/setup.bash && exec rviz2 -d /tmp/fusion.rviz'
   ;;
- *) echo 'Usage: bash camera-fusion.sh {start|start-preview|start-da3|status|save|stop|rviz}' ;;
+ *) echo 'Usage: bash camera-fusion.sh {start|start-preview|start-da3|check-projection|status|save|stop|rviz}' ;;
 esac

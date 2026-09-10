@@ -57,6 +57,6 @@ CONFIG
   "${SSH[@]}" "$target" 'docker stop go2-camera-pointlio && docker logs go2-camera-pointlio > ~/go2-pointlio-camera-fusion/pointlio/latest/launch.log 2>&1 && docker rm go2-camera-pointlio'
   ;;
  rviz) GO2_FUSION_MAP_FRAME=camera_fusion_map bash "$ROOT/camera-fusion.sh" rviz ;;
- status|save) bash "$ROOT/camera-fusion.sh" "$1" ;;
- *) echo 'Usage: bash fusion-mapping.sh {start-preview|restart-preview|status|save|rviz|stop}' ;;
+ status|save|check-projection) bash "$ROOT/camera-fusion.sh" "$1" ;;
+ *) echo 'Usage: bash fusion-mapping.sh {start-preview|restart-preview|check-projection|status|save|rviz|stop}' ;;
 esac
