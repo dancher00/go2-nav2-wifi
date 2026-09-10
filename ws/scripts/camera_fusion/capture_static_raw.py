@@ -11,7 +11,7 @@ import rclpy
 from sensor_msgs.msg import PointCloud2
 from rclpy.qos import qos_profile_sensor_data
 from core import load_calibration
-from native_node import xyz_from_cloud, atomic_npz
+from native_node import atomic_npz
 
 
 def main():
@@ -33,8 +33,19 @@ def main():
     def cloud(msg):
         stamp = msg.header.stamp.sec * 10**9 + msg.header.stamp.nanosec
         # Same nominal LiDAR->IMU translation as the Point-LIO baseline.
-        xyz = xyz_from_cloud(msg) + np.array([.007698, .014655, -.00667])
-        latest[:] = [(stamp, xyz, time.monotonic())]
+        fields={f.name:f for f in msg.fields}
+        names=['x','y','z','intensity']
+        if any(n not in fields or fields[n].datatype!=7 for n in names):
+            raise ValueError('Expected FLOAT32 XYZ and intensity')
+        endian='>' if msg.is_bigendian else '<'
+        dtype=np.dtype({'names':names,'formats':[endian+'f4']*4,
+                        'offsets':[fields[n].offset for n in names],'itemsize':msg.point_step})
+        points=np.ndarray((msg.height,msg.width),dtype=dtype,buffer=bytes(msg.data),
+                          strides=(msg.row_step,msg.point_step))
+        xyzi=np.column_stack([points[n].ravel() for n in names])
+        xyzi=xyzi[np.isfinite(xyzi).all(axis=1)]
+        xyz=xyzi[:,:3]+np.array([.007698,.014655,-.00667])
+        latest[:] = [(stamp, xyz, xyzi[:,3], time.monotonic())]
 
     node.create_subscription(PointCloud2, '/camera_fusion/lio/cloud_sync', cloud, qos_profile_sensor_data)
     start = time.monotonic()
@@ -54,14 +65,14 @@ def main():
                 continue
             if stamp == last or not 0 <= age < .5:
                 continue
-            cloud_stamp, xyz, receipt = latest[0]
+            cloud_stamp, xyz, intensity, receipt = latest[0]
             if abs(cloud_stamp - stamp) > 120000000 or time.monotonic() - receipt > .2:
                 continue
             image = cv2.imdecode(jpeg, cv2.IMREAD_GRAYSCALE)
             if image is None:
                 continue
             jpeg.tofile(str(folder / (str(stamp) + '.jpg')))
-            atomic_npz(folder / (str(stamp) + '.npz'), xyz=xyz,
+            atomic_npz(folder / (str(stamp) + '.npz'), xyz=xyz, intensity=intensity,
                        t_world_sensor=np.eye(4), t_world_camera=sensor_camera,
                        cloud_stamp_ns=np.int64(cloud_stamp), image_stamp_ns=np.int64(stamp))
             images.append(cv2.resize(image, (640, 360)))
