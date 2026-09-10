@@ -28,7 +28,7 @@ PY
   "${SCP[@]}" "$ROOT"/ws/scripts/camera_fusion/*.py "$target:go2-pointlio-camera-fusion/work/camera_fusion/"
   "${SCP[@]}" "$ROOT/ws/scripts/da3/live_worker.py" "$ROOT/ws/scripts/da3/benchmark.py" "$target:go2-pointlio-camera-fusion/work/da3/"
   "${SCP[@]}" "$calibration" "$target:go2-pointlio-camera-fusion/work/calibration.json"
-  "${SSH[@]}" "$target" bash -s -- "$robot" "$host" "$domain" "$mode" <<'REMOTE'
+  "${SSH[@]}" "$target" bash -s -- "$robot" "$host" "$domain" "$mode" "${GO2_FUSION_RESUME:-0}" <<'REMOTE'
 set -euo pipefail
 cd ~/go2-pointlio-camera-fusion
 if docker inspect go2-camera-fusion >/dev/null 2>&1; then echo 'Fusion container exists; use status/stop before a new session.'; exit 1; fi
@@ -38,6 +38,10 @@ ipc="/dev/shm/go2-camera-fusion-$(id -u)"
 mkdir -p "$ipc"
 rm -f "$ipc"/*.npz "$ipc/status.json" "$ipc/save.request"
 cp work/calibration.json "$ipc/calibration.json"
+if [[ "$5" == 1 ]]; then
+ cp data/latest/session/colored_map.npz "$ipc/seed.npz"
+ cp data/latest/session/source.json "$ipc/seed-source.json"
+fi
 cat > "$ipc/native.xml" <<XML
 <CycloneDDS><Domain Id="0"><General><Interfaces><NetworkInterface name="eth0"/></Interfaces></General></Domain></CycloneDDS>
 XML
@@ -60,7 +64,7 @@ mkdir -p "data/$session"
 ln -sfn "$session" data/latest
 docker run -d --name go2-camera-fusion --network host --init --cpus 1.5 --memory 1200m \
  --stop-signal SIGINT --stop-timeout 25 --user "$(id -u):$(id -g)" \
- -e FUSION_DOMAIN="$3" -e FUSION_PREVIEW="$preview" -e FUSION_DA3="$da3" \
+ -e FUSION_RESUME="$5" -e FUSION_DOMAIN="$3" -e FUSION_PREVIEW="$preview" -e FUSION_DA3="$da3" \
  -e ROS_LOG_DIR=/tmp/fusion-ros -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
  -v "$PWD/work:/work:ro" -v "$ipc:/ipc" -v "$PWD/data/$session:/data" \
  --entrypoint /bin/bash go2-stock-camera:local \
@@ -73,6 +77,15 @@ if [[ "$da3" == 1 ]]; then
 fi
 printf 'Fusion session: %s; preview=%s; DA3=%s. Point-LIO remains independently owned.\n' "$session" "$preview" "$da3"
 REMOTE
+  ;;
+ resume-preview)
+  "${SCP[@]}" "$ROOT/ws/scripts/camera_fusion/source_identity.py" "$target:go2-pointlio-camera-fusion/work/camera_fusion/"
+  "${SSH[@]}" "$target" 'docker exec -e ROS_DOMAIN_ID=0 -e CYCLONEDDS_URI=file:///ipc/native.xml go2-camera-fusion bash -lc "source /opt/ros/humble/setup.bash && python3 /work/camera_fusion/source_identity.py"'
+  # Keep the exact topic/frame/calibration profile used by this running add-on.
+  mkdir -p "$ROOT/ws/log"
+  "${SCP[@]}" "$target:go2-pointlio-camera-fusion/work/calibration.json" "$ROOT/ws/log/resume-camera-calibration.json"
+  bash "$ROOT/camera-fusion.sh" stop
+  GO2_FUSION_RESUME=1 GO2_FUSION_CALIBRATION="$ROOT/ws/log/resume-camera-calibration.json" bash "$ROOT/camera-fusion.sh" start-preview
   ;;
  check-projection)
   "${SCP[@]}" "$ROOT/ws/scripts/camera_fusion/check_projection.py" "$target:go2-pointlio-camera-fusion/work/camera_fusion/check_projection.py"
@@ -103,5 +116,5 @@ XML
    --entrypoint /bin/bash "${GO2_RVIZ_IMAGE:-go2-humble:local}" \
    -c 'source /opt/ros/humble/setup.bash && exec rviz2 -d /tmp/fusion.rviz'
   ;;
- *) echo 'Usage: bash camera-fusion.sh {start|start-preview|start-da3|check-projection|status|save|stop|rviz}' ;;
+ *) echo 'Usage: bash camera-fusion.sh {start|start-preview|start-da3|resume-preview|check-projection|status|save|stop|rviz}' ;;
 esac

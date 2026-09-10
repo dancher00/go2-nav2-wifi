@@ -48,6 +48,33 @@ class FusionTests(unittest.TestCase):
         np.testing.assert_allclose(xyz,[[.1,0,1]])
         self.assertEqual(rgb.tolist(),[[0,255,0]]);self.assertTrue(colored[0]);self.assertTrue(mapping.saturated)
 
+    def test_colors_existing_map_with_occlusion_without_new_scans(self):
+        mapping=ColorMap()
+        points=np.array([[0,0,2],[0,0,4],[.2,0,2],[0,0,-1]],np.float32)
+        mapping.add(points,[],[],1)
+        before=mapping.arrays()[0].copy()
+        k=np.array([[100,0,50],[0,100,50],[0,0,1]])
+        image=np.zeros((100,100,3),np.uint8);image[:]=[10,20,30]
+        count=mapping.color_view(np.eye(4),k,image,np.ones((100,100),bool),2)
+        xyz,rgb,colored=mapping.arrays()
+        self.assertEqual(count,2)
+        np.testing.assert_array_equal(xyz,before)
+        self.assertEqual(colored.tolist(),[True,False,True,False])
+        self.assertEqual(rgb[0].tolist(),[30,20,10])
+
+    def test_snapshot_restores_geometry_and_color_mask(self):
+        mapping=ColorMap()
+        xyz=np.array([[.1,0,2],[.2,0,4]],np.float32)
+        mapping.add(xyz,[1],np.array([[20,40,60]],np.uint8),1)
+        points,rgb,colored=mapping.arrays()
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'snapshot.npz'
+            np.savez(path,xyz=points,rgb=rgb,colored=colored)
+            restored=ColorMap();restored.restore(path)
+            for expected,actual in zip(mapping.arrays(),restored.arrays()):
+                np.testing.assert_array_equal(actual,expected)
+            with self.assertRaises(ValueError): restored.restore(path)
+
     def test_da3_scale_has_independent_spatial_holdout(self):
         v,u=np.mgrid[0:64:4,0:64:4];uv=np.column_stack([u.ravel(),v.ravel()])
         relative=np.ones((64,64));z=np.full(len(uv),2.)

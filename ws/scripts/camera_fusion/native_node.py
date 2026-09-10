@@ -33,6 +33,7 @@ def main():
     p.add_argument('--calibration',required=True)
     p.add_argument('--allow-unverified-color',action='store_true')
     p.add_argument('--da3',action='store_true')
+    p.add_argument('--resume',action='store_true')
     a=p.parse_args()
     cfg,k,d,sensor_camera=load_calibration(a.calibration)
     verified=cfg['calibration_verified'] and cfg['timing_verified']
@@ -45,6 +46,16 @@ def main():
     state={'images':0,'clouds':0,'odom':0,'colored_frames':0,'colored_points':0,'rejected':0,'last_error':'waiting for inputs','calibration_verified':verified,'da3_enabled':a.da3,'geometry_source':'Point-LIO registered measured points','profile':cfg['profile']}
     last_image=None;last_publish=0.;last_da3=None;contexts={};gid=None
     rclpy.init(args=[]);node=rclpy.create_node('pointlio_camera_fusion')
+    if a.resume:
+        from source_identity import identity
+        previous=json.loads((ipc/'seed-source.json').read_text())
+        current=identity(node,cfg)
+        if current!=previous:
+            node.destroy_node();rclpy.try_shutdown()
+            raise RuntimeError('Cannot resume color map: SLAM publisher or frames changed')
+        mapping.restore(ipc/'seed.npz')
+        gid=bytes.fromhex(current['gid'])
+        state['restored_points']=len(mapping.cells)
     trace=(session/'frames.jsonl').open('x',buffering=1)
 
     def stamp(msg): return msg.header.stamp.sec*10**9+msg.header.stamp.nanosec
@@ -93,7 +104,8 @@ def main():
             world_camera=world_sensor@sensor_camera
             indices,uv,z=project_visible(xyz,world_camera,small_k,640,360,valid)
             rgb=rectified[uv[:,1],uv[:,0],::-1]
-            mapping.add(xyz,indices,rgb,image_stamp)
+            painted=mapping.color_view(world_camera,small_k,rectified,valid,image_stamp)
+            state['map_projected_points']=painted
             state.update(colored_frames=state['colored_frames']+1,last_error='',last_image_stamp_ns=image_stamp,
                          last_pair_difference_seconds=difference,speed_m_s=speed,angular_speed_rad_s=angular,
                          projected_points=len(indices),last_success_monotonic_ns=time.monotonic_ns())
@@ -154,6 +166,7 @@ def main():
             current=bytes(publishers[0].endpoint_gid)
             if gid is not None and gid!=current: raise RuntimeError('Point-LIO publisher changed; start a new fusion session')
             gid=current
+            state['source_gid']=gid.hex()
         if (ipc/'save.request').exists():
             (ipc/'save.request').unlink()
             prefix=session/('snapshot-'+str(time.time_ns()))

@@ -11,6 +11,7 @@ signal.signal(signal.SIGTERM,shutdown);signal.signal(signal.SIGINT,shutdown)
 common=['--ipc','/ipc']
 native=['python3','-u',str(root/'native_node.py'),*common,'--session','/data/session','--calibration','/ipc/calibration.json']
 if os.environ.get('FUSION_PREVIEW')=='1': native.append('--allow-unverified-color')
+if os.environ.get('FUSION_RESUME')=='1': native.append('--resume')
 if os.environ.get('FUSION_DA3')=='1': native.append('--da3')
 children=[]
 try:

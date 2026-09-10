@@ -123,6 +123,28 @@ class ColorMap:
         if not items: return np.empty((0,3),np.float32),np.empty((0,3),np.uint8),np.empty(0,bool)
         return np.array([v[0] for v in items],np.float32),np.array([v[1] for v in items],np.uint8),np.array([v[2] for v in items],bool)
 
+    def color_view(self, world_camera, k, image, valid_pixels, stamp):
+        """Color visible representatives of the EXISTING map, without moving XYZ."""
+        items=list(self.cells.values())
+        if not items: return 0
+        xyz=np.array([v[0] for v in items],np.float32)
+        indices,uv,_=project_visible(xyz,world_camera,k,image.shape[1],image.shape[0],valid_pixels)
+        rgb=image[uv[:,1],uv[:,0],::-1]
+        for i,color in zip(indices,rgb):
+            items[i][1]=color.copy();items[i][2]=True;items[i][3]=stamp
+        return len(indices)
+
+    def restore(self, path):
+        """Load our voxel snapshot; caller must verify the SLAM source identity."""
+        if self.cells: raise ValueError('Restore requires an empty map')
+        with np.load(path,allow_pickle=False) as data:
+            xyz=data['xyz'];rgb=data['rgb'];colored=data['colored']
+            if xyz.ndim!=2 or xyz.shape[1]!=3 or rgb.shape!=xyz.shape or colored.shape!=(len(xyz),):
+                raise ValueError('Invalid map snapshot shapes')
+            if not np.isfinite(xyz).all() or len(xyz)>self.limit:
+                raise ValueError('Invalid or oversized map snapshot')
+            self.add(xyz,np.flatnonzero(colored),rgb[colored],0)
+
 
 def fit_depth_scale(relative,uv,z):
     """Fit scale on spatial tiles, validate on held-out tiles; no affine shift."""
