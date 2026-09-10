@@ -50,12 +50,16 @@ def sample_image(xyz,t,k,gray):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('session',type=Path)
+    p.add_argument('--calibration',type=Path,help='Override intrinsics/profile without modifying the capture')
+    p.add_argument('--output',type=Path,help='Separate output directory for this fit')
     args=p.parse_args();folder=args.session
+    output=args.output or folder
+    output.mkdir(parents=True,exist_ok=True)
     capture=json.loads((folder/'capture.json').read_text())
     flow=capture.get('image_displacement_px_at_640x360_p50_p90')
     if flow is None or flow[0]>.5 or flow[1]>2:
         raise SystemExit('Image movement too large for stationary calibration')
-    cfg,k,d,t=load_calibration(folder/'calibration.json')
+    cfg,k,d,t=load_calibration(args.calibration or folder/'calibration.json')
     paths=sorted(x for x in folder.glob('*.npz') if x.stem.isdigit())
     points=[];intensities=[]
     for path in paths:
@@ -93,7 +97,7 @@ def main():
         results.append(report);print(json.dumps(report),flush=True)
     best=min(results,key=lambda r:r['train_nid'])
     boundary=max(abs(v) for v in best['parameters'])>2.8
-    report={'method':'local soft-histogram NID, fixed nominal intrinsics',
+    report={'method':'local soft-histogram NID, fixed intrinsics',
             'source':'https://arxiv.org/abs/2302.05094','initial_train_nid':initial_train,
             'initial_holdout_nid':initial_test,'training_points':int(train.sum()),
             'heldout_points':int((~train).sum()),'candidates':results,'best':best,
@@ -101,10 +105,11 @@ def main():
             'holdout_improved':bool(best['holdout_nid']<initial_test),
             'candidate_rejected':bool(boundary or best['holdout_nid']>=initial_test),
             'independent_view_verified':False,
-            'intrinsics_verified':False,'timing_verified':False,
+            'intrinsics_verified':bool(cfg.get('intrinsics_verified',False)),'timing_verified':False,
+            'calibration_source':str(args.calibration or folder/'calibration.json'),
             'calibration_verified':False,
             'warning':'Lower objective is not proof of correct calibration; another viewpoint and geometric validation are required.'}
-    (folder/'extrinsic-fit.json').write_text(json.dumps(report,indent=2)+'\n')
+    (output/'extrinsic-fit.json').write_text(json.dumps(report,indent=2)+'\n')
     after=np.array(best['sensor_from_camera'])
     panels=[]
     for transform,label in [(t,'BEFORE: nominal extrinsic'),(after,'CANDIDATE ONLY: not verified')]:
@@ -117,7 +122,7 @@ def main():
             cv2.circle(panel,tuple(pixel),1,color,-1)
         cv2.putText(panel,label,(10,25),cv2.FONT_HERSHEY_SIMPLEX,.7,(0,255,255),2)
         panels.append(panel)
-    cv2.imwrite(str(folder/'extrinsic-candidate.jpg'),np.vstack(panels))
+    cv2.imwrite(str(output/'extrinsic-candidate.jpg'),np.vstack(panels))
     print(json.dumps({k:report[k] for k in ['initial_train_nid','initial_holdout_nid','hit_search_boundary']}),flush=True)
 
 
