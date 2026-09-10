@@ -72,6 +72,11 @@ def main():
             if image_stamp==last_image: return
             if not 0<=(time.monotonic_ns()-receipt)/1e9<1.5: raise ValueError('Camera input stale')
             adjusted=image_stamp+int(cfg['image_time_offset_seconds']*1e9)
+            if history.samples:
+                lag = (adjusted-history.samples[-1][0])/1e9
+                state['camera_minus_latest_odom_seconds'] = lag
+                if lag > .5:
+                    raise ValueError(f'Point-LIO output behind camera by {lag:.2f} s')
             world_sensor,speed,angular=history.at(adjusted)
             if not clouds: raise ValueError('No Point-LIO registered cloud')
             cloud_stamp,xyz=min(clouds,key=lambda item:abs(item[0]-adjusted))

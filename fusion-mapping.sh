@@ -48,6 +48,15 @@ CONFIG
    exit 1
   fi
   ;;
+ capture-static)
+  "${SCP[@]}" "$ROOT/ws/scripts/camera_fusion/capture_static_raw.py" "$ROOT/ws/scripts/camera_fusion/check_projection.py" "$target:go2-pointlio-camera-fusion/work/camera_fusion/"
+  "${SSH[@]}" "$target" bash -s <<'CAPTURE'
+set -euo pipefail
+folder="/data/static-raw-$(date -u +%Y%m%dT%H%M%S)"
+docker exec -e ROS_DOMAIN_ID=0 -e CYCLONEDDS_URI=file:///ipc/native.xml go2-camera-fusion bash -lc 'source /opt/ros/humble/setup.bash && exec python3 /work/camera_fusion/capture_static_raw.py --output "$1"' bash "$folder"
+docker exec go2-camera-fusion python3 /work/camera_fusion/check_projection.py "$folder"
+CAPTURE
+  ;;
  restart-preview)
   bash "$ROOT/camera-fusion.sh" stop
   GO2_FUSION_CALIBRATION="$ROOT/ws/log/owned-fusion-preview.json" bash "$ROOT/camera-fusion.sh" start-preview
@@ -58,5 +67,5 @@ CONFIG
   ;;
  rviz) GO2_FUSION_MAP_FRAME=camera_fusion_map bash "$ROOT/camera-fusion.sh" rviz ;;
  status|save|check-projection) bash "$ROOT/camera-fusion.sh" "$1" ;;
- *) echo 'Usage: bash fusion-mapping.sh {start-preview|restart-preview|check-projection|status|save|rviz|stop}' ;;
+ *) echo 'Usage: bash fusion-mapping.sh {start-preview|capture-static|restart-preview|check-projection|status|save|rviz|stop}' ;;
 esac

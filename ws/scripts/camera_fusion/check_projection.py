@@ -35,6 +35,13 @@ def main():
     # Reject accumulation across physically inconsistent poses. These limits
     # measure estimated motion, not calibration quality or exposure timing.
     coherent = translation_diameter < .03 and rotation_diameter < np.deg2rad(1)
+    capture_report = {}
+    if (folder / 'capture.json').exists():
+        capture_report = json.loads((folder / 'capture.json').read_text())
+        flow = capture_report.get('image_displacement_px_at_640x360_p50_p90')
+        # Raw captures have identity placeholder poses: use an explicit image
+        # consistency gate instead of treating these as measured stable poses.
+        coherent = flow is not None and flow[0] < .5 and flow[1] < 2
     selected = captures if coherent else [captures[anchor]]
     xyz = np.concatenate([c['xyz'] for c in selected])
     _, uv, depth = project_visible(xyz, captures[anchor]['t_world_camera'],
@@ -57,8 +64,10 @@ def main():
     report = {
         'profile': cfg['profile'], 'calibration_verified': False,
         'pairs': len(captures), 'combined_pairs': len(selected),
-        'pose_translation_diameter_m': float(translation_diameter),
-        'pose_rotation_diameter_deg': float(np.rad2deg(rotation_diameter)),
+        'capture_source': cfg.get('capture_source', 'Point-LIO registered clouds'),
+        'capture_diagnostic': capture_report,
+        'pose_translation_diameter_m': None if capture_report else float(translation_diameter),
+        'pose_rotation_diameter_deg': None if capture_report else float(np.rad2deg(rotation_diameter)),
         'stationary_accumulation_allowed': bool(coherent),
         'projected_pixels': len(uv),
         'image_coverage_fraction': len(uv) / (960 * 540),
