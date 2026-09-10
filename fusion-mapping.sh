@@ -20,7 +20,8 @@ case "${1:-help}" in
   fi
   "${SSH[@]}" "$target" 'mkdir -p ~/go2-pointlio-camera-fusion/mapper/go2_nav2'
   "${SCP[@]}" "$ROOT/go2_nav2/go2_nav2/cloud_stamp_sync.py" "$ROOT/go2_nav2/go2_nav2/sensor_time.py" "$ROOT/go2_nav2/go2_nav2/__init__.py" "$target:go2-pointlio-camera-fusion/mapper/go2_nav2/"
-  "${SCP[@]}" "$ROOT/go2_nav2/config/pointlio_go2.yaml" "$ROOT/ws/scripts/camera_fusion/mapper.py" "$target:go2-pointlio-camera-fusion/mapper/"
+  "${SCP[@]}" "${GO2_FUSION_LIO_CONFIG:-$ROOT/go2_nav2/config/pointlio_go2.yaml}" "$target:go2-pointlio-camera-fusion/mapper/pointlio_go2.yaml"
+  "${SCP[@]}" "$ROOT/ws/scripts/camera_fusion/mapper.py" "$target:go2-pointlio-camera-fusion/mapper/"
   "${SSH[@]}" "$target" bash -s <<'REMOTE'
 set -euo pipefail
 cd ~/go2-pointlio-camera-fusion
@@ -28,7 +29,7 @@ if docker inspect go2-camera-pointlio >/dev/null 2>&1; then echo 'Owned Point-LI
 session="$(date -u +%Y%m%dT%H%M%S)-$$"
 mkdir -p "pointlio/$session"
 ln -sfn "$session" pointlio/latest
-docker run -d --name go2-camera-pointlio --network host --init --cpus 2 --memory 2500m \
+docker run -d --name go2-camera-pointlio --network host --init --memory 2500m \
  --stop-signal SIGINT --stop-timeout 50 -e ROS_DOMAIN_ID=0 \
  -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
  -e 'CYCLONEDDS_URI=<CycloneDDS><Domain><General><Interfaces><NetworkInterface name="eth0"/></Interfaces></General></Domain></CycloneDDS>' \
