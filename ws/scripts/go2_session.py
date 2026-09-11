@@ -35,7 +35,10 @@ def runtime_dir():
 def acquire_locks(root, mode):
     locks = []
     try:
-        for name in RESOURCES[mode]:
+        resources = RESOURCES[mode]
+        if mode == 'lidar3d-viz' and os.environ.get('GO2_LIDAR3D_NAV') == '1':
+            resources = (*resources, 'motion')
+        for name in resources:
             fd = os.open(str(root / (name + '.lock')), os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
             locks.append(fd)
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -189,6 +192,13 @@ def session_commands(mode, map_path, output_dir=None, bag=None, config=None):
             commands.append(['ros2', 'launch', 'go2_nav2', 'lidar3d_planning.launch.py'])
         rviz_file = 'legkilo.rviz' if os.environ.get('GO2_LIDAR3D_BACKEND') == 'legkilo' else 'lidar3d.rviz'
         if planning: rviz_file = 'lidar3d_planning.rviz'
+        if os.environ.get('GO2_LIDAR3D_NAV') == '1':
+            if not planning:
+                raise ValueError('3D navigation requires planning')
+            commands.append(['ros2', 'launch', '/ws/src/go2_nav2/launch/lidar3d_controller.launch.py'])
+            commands.append([sys.executable, str(scripts / 'go2_cmd_vel_tcp.py'), '--role', 'client',
+                             '--host', os.environ['GO2_ROBOT_IP'], '--port', '17999'])
+            rviz_file = 'lidar3d_navigation.rviz'
         commands.append(['ros2', 'run', 'rviz2', 'rviz2', '-d', '/ws/src/go2_nav2/rviz/' + rviz_file])
     elif mode == 'navigation':
         from go2_nav2.map_bundle import validate_map

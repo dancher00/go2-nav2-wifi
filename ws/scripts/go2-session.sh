@@ -25,6 +25,9 @@ if [[ "${1:-}" == start ]]; then
   else
     source "$SESSION_SCRIPT_DIR/go2-env.sh"
   fi
+  if [[ "${2:-}" == lidar3d-viz && "${GO2_LIDAR3D_NAV:-0}" == 1 ]]; then
+    source /ws/install/go2_rviz_controls/share/go2_rviz_controls/local_setup.bash
+  fi
   if [[ -f /opt/go2-unitree-msgs/local_setup.bash ]]; then
     source /opt/go2-unitree-msgs/local_setup.bash
   fi

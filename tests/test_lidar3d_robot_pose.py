@@ -4,10 +4,20 @@ import sys
 import unittest
 import math
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'go2_nav2'))
-from go2_nav2.odom_tf import compose_pose
+from go2_nav2.odom_tf import compose_pose, planar_body_velocity
 
 
 class BodyPoseTests(unittest.TestCase):
+    def test_velocity_in_body_axes(self):
+        velocity = planar_body_velocity((0., 0., math.pi/2), (0., .02, math.pi/2), .1)
+        for actual, expected in zip(velocity, (.2, 0., 0.)):
+            self.assertAlmostEqual(actual, expected)
+
+    def test_velocity_wrap_and_gap(self):
+        self.assertAlmostEqual(planar_body_velocity((0., 0., math.pi-.01),
+                               (0., 0., -math.pi+.01), .1)[2], .2)
+        self.assertIsNone(planar_body_velocity((0., 0., 0.), (1., 0., 0.), 1.))
+
     def test_rotates_lever_arm_and_body_axes(self):
         s = math.sqrt(.5)
         p, q = compose_pose((1., 2., 3.), (0., 0., s, s), (1., 0., 0., 1., 0., 0., 0.))

@@ -457,6 +457,33 @@ index b7203c7..4531a79 100644
  
      // First-frame initialization
      if (init_flag_) {
+diff --git a/legkilo/src/core/slam/tool/slam_result_saver.cc b/legkilo/src/core/slam/tool/slam_result_saver.cc
+index 3d38396..fff16a7 100644
+--- a/legkilo/src/core/slam/tool/slam_result_saver.cc
++++ b/legkilo/src/core/slam/tool/slam_result_saver.cc
+@@ -709,10 +709,22 @@ std::vector<SLAMResultSaver::StampedPose> SLAMResultSaver::buildBackendTrajector
+     std::vector<StampedPose> trajectory;
+     trajectory.reserve(frames_.size());
+ 
++    // A stationary tail can belong to a newly allocated submap with no
++    // keyframes. Backend does not persist that empty submap. Use the latest
++    // completed submap correction, as live backend visualization does.
++    const auto latest = std::max_element(submaps_.begin(), submaps_.end(),
++        [](const auto& a, const auto& b) { return a.first < b.first; });
+     size_t missing_submap_count = 0;
+     for (const auto& frame : frames_) {
+         const auto it = submaps_.find(frame.submap_id);
+         if (it == submaps_.end()) {
++            if (latest != submaps_.end() && frame.submap_id > latest->first) {
++                const auto& last = latest->second;
++                const Eigen::Isometry3d corrected =
++                    last.backend_origin * last.frontend_origin.inverse() * frame.pose;
++                trajectory.push_back({frame.timestamp, convertPose(corrected, traj_coord_type_, T_imu_lidar_)});
++                continue;
++            }
+             ++missing_submap_count;
+             continue;
+         }
 diff --git a/legkilo/src/interface/common/ros_compat.h b/legkilo/src/interface/common/ros_compat.h
 index d1a6ddc..4505f85 100644
 --- a/legkilo/src/interface/common/ros_compat.h

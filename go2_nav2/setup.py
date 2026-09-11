@@ -15,6 +15,7 @@ setup(
                 "launch/sport_bridge.launch.py",
                 "launch/slam_mapping.launch.py",
                 "launch/lidar3d_mapping.launch.py",
+                "launch/lidar3d_controller.launch.py",
                 "launch/lidar3d_planning.launch.py",
                 "launch/legkilo_mapping.launch.py",
                 "launch/lidar3d_robot_viz.launch.py",
@@ -27,7 +28,7 @@ setup(
         ),
         (
             "share/" + package_name + "/rviz",
-            ["rviz/nav.rviz", "rviz/slam.rviz", "rviz/bringup.rviz", "rviz/lidar3d.rviz", "rviz/lidar3d_planning.rviz"],
+            ["rviz/nav.rviz", "rviz/slam.rviz", "rviz/bringup.rviz", "rviz/lidar3d.rviz", "rviz/lidar3d_planning.rviz", "rviz/lidar3d_navigation.rviz"],
         ),
         (
             "share/" + package_name + "/urdf",
@@ -42,6 +43,7 @@ setup(
                 "config/slam_toolbox_mapping.yaml",
                 "config/pointlio_go2.yaml",
                 "config/lidar3d_planner.yaml",
+                "config/go2_footprint.yaml",
                 "config/legkilo_go2.yaml",
                 "config/lidar3d_robot_viz.yaml",
                 "config/go2_nav2_minimal.yaml",
@@ -58,6 +60,7 @@ setup(
     license="MIT",
     entry_points={
         "console_scripts": [
+            "go2_urdf_self_filter = go2_nav2.urdf_self_filter:main",
             "sport_bridge = go2_nav2.sport_bridge:main",
             "go2_odom_tf = go2_nav2.odom_tf:main",
             "go2_joint_state_bridge = go2_nav2.joint_state_bridge:main",

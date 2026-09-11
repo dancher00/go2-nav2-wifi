@@ -1,0 +1,19 @@
+{
+  "corridor_width_m": 0.65,
+  "footprint": {
+    "footprint": "[[0.360,0.200],[0.360,-0.200],[-0.450,-0.200],[-0.450,0.200]]",
+    "footprint_padding": 0.03
+  },
+  "checks": [
+    {
+      "start_yaw": 0.0,
+      "status": 4,
+      "path_poses": 29
+    },
+    {
+      "start_yaw": 1.5707963267948966,
+      "status": 6,
+      "path_poses": 0
+    }
+  ]
+}

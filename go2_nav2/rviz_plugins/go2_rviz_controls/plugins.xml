@@ -1,0 +1,5 @@
+<library path="go2_rviz_controls">
+  <class name="go2_rviz_controls/SpeedPanel" type="go2_rviz_controls::SpeedPanel" base_class_type="rviz_common::Panel">
+    <description>Set and confirm the Go2 Nav2 linear speed limit.</description>
+  </class>
+</library>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>go2_rviz_controls</name>
+  <version>0.1.0</version>
+  <description>RViz speed limit panel for the Go2 Nav2 controller.</description>
+  <maintainer email="danya@localhost.local">danya</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>rcl_interfaces</depend>
+  <depend>rviz_common</depend>
+  <depend>pluginlib</depend>
+  <build_depend>qtbase5-dev</build_depend>
+  <exec_depend>libqt5widgets5</exec_depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

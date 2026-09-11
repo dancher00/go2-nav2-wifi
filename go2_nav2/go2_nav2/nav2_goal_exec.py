@@ -119,7 +119,7 @@ class Nav2GoalExecutor:
             self._finish(False, f"planner result failed: {exc}")
             return
         if not path.poses:
-            self._finish(False, "Empty path — goal in obstacle or bad TF?")
+            self._finish(False, "No valid path. Check obstacles and unknown space around the robot and goal.")
             return
 
         start = path.poses[0].pose.position

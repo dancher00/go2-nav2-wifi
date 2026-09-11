@@ -44,7 +44,7 @@ class ShutdownTests(unittest.TestCase):
             for active in (False, True):
                 with self.subTest(filename=filename, active=active):
                     ros, node, signals = Mock(), Mock(), Mock()
-                    signals.SIGINT, signals.SIGTERM = 2, 15
+                    signals.SIGINT, signals.SIGTERM, signals.SIGHUP = 2, 15, 1
                     ros.ok.return_value = active
                     ros.spin.side_effect = KeyboardInterrupt()
                     order = []
@@ -56,7 +56,9 @@ class ShutdownTests(unittest.TestCase):
                     exec(compile(ast.Module(body=[main], type_ignores=[]), filename, "exec"), scope)
                     scope["main"]()
                     self.assertEqual(order, ["stop", "destroy", "shutdown"] if active else ["destroy"])
-                    self.assertEqual(signals.signal.call_count, 4)
+                    expected = [2, 15, 1] if filename.startswith('ws/') else [2, 15]
+                    self.assertEqual([call.args[0] for call in signals.signal.call_args_list],
+                                     expected + expected)
 
     def test_signal_shutdown_does_not_shutdown_context_twice(self):
         for filename, class_name in NODES.items():

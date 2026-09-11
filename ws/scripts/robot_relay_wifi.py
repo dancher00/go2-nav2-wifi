@@ -231,7 +231,9 @@ def _run_subscriber(socket_path: str, ready_path: str, topics: List, name: str) 
         def make_cb(topic_id: int):
             def cb(msg) -> None:
                 if os.environ.get('GO2_RELAY_PROFILE') == 'lidar3d-map':
-                    interval = {'/lidar3d/registered': .2, '/lidar3d/path': 1.0, '/lf/lowstate': .05}.get(topics[topic_id][0], 0)
+                    # Up to 10 Hz for navigation input. The previous 0.2 s cap
+                    # yielded only ~4 Hz after source-frame quantization.
+                    interval = {'/lidar3d/registered': .1, '/lidar3d/path': 1.0, '/lf/lowstate': .05}.get(topics[topic_id][0], 0)
                     now = time.monotonic()
                     if now - last_sent[topic_id] < interval:
                         return

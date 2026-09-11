@@ -42,9 +42,9 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Depth: 5
-      Color: 255; 180; 50
+      Color: 255; 0; 0
       Line Style: Billboards
-      Line Width: 0.03
+      Line Width: 0.02
     - Class: rviz_default_plugins/RobotModel
       Name: Go2
       Enabled: true

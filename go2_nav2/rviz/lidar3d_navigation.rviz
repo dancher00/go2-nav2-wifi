@@ -1,4 +1,6 @@
 Panels:
+- Class: go2_rviz_controls/SpeedPanel
+  Name: Go2 Speed
 - Class: rviz_common/Displays
   Name: Displays
 - Class: rviz_common/Views
@@ -136,11 +138,23 @@ Visualization Manager:
     Color: 50; 255; 80
     Line Style: Billboards
     Line Width: 0.06
+  - Class: rviz_default_plugins/Polygon
+    Name: Go2 navigation footprint (with 3 cm padding)
+    Enabled: true
+    Topic:
+      Value: /local_costmap/published_footprint
+      Reliability Policy: Reliable
+      Durability Policy: Volatile
+      Depth: 1
+    Color: 255; 210; 30
+    Alpha: 1
   Tools:
   - Class: rviz_default_plugins/Interact
   - Class: rviz_default_plugins/MoveCamera
   - Class: rviz_default_plugins/Select
   - Class: rviz_default_plugins/FocusCamera
+  - Class: rviz_default_plugins/SetGoal
+    Topic: /goal_pose
   Views:
     Current:
       Class: rviz_default_plugins/Orbit

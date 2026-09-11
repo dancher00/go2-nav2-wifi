@@ -19,6 +19,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            DeclareLaunchArgument("joint_stamp_odom_topic", default_value=""),
             DeclareLaunchArgument(
                 "lowstate_topic",
                 default_value="/lf/lowstate",
@@ -43,7 +44,8 @@ def generate_launch_description():
                 executable="go2_joint_state_bridge",
                 name="go2_joint_state_bridge",
                 output="screen",
-                parameters=[{"lowstate_topic": LaunchConfiguration("lowstate_topic")}],
+                parameters=[{"lowstate_topic": LaunchConfiguration("lowstate_topic"),
+                             "stamp_odom_topic": ParameterValue(LaunchConfiguration("joint_stamp_odom_topic"), value_type=str)}],
             ),
         ]
     )

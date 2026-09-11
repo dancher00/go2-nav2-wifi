@@ -23,3 +23,7 @@ debs/
 __pycache__/
 *.pyc
 .deps/
+
+# Separate local worktrees and Telegram bridge (includes local credentials).
+/.worktrees/
+/telecodex/

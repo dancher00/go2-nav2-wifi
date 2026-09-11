@@ -26,6 +26,7 @@ def stamp(msg, ns):
 def odom_node():
     node = SimpleNamespace(_alpha=1.0, _got_odom=False, _stamp=None, _last_stamp_ns=0,
                            _odom_frame='odom', _base_frame='base_link',
+                           _publish_tf_enabled=True, _derive_twist=False,
                            _br=Mock(), _odom_pub=Mock(),
                            get_clock=Mock(side_effect=AssertionError('arrival time must not be read')))
     node._publish_tf = MethodType(odom_tf.OdomTf._publish_tf, node)

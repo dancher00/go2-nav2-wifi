@@ -28,6 +28,21 @@ raise SystemExit(supervise(Path(root), mode, commands, preflight, owner='test-ow
 
 
 class SessionTests(unittest.TestCase):
+    def test_3d_navigation_owns_motion(self):
+        with patch.dict(os.environ, GO2_LIDAR3D_NAV='1', GO2_LIDAR3D_PLAN='1',
+                        GO2_ROBOT_IP='192.0.2.2'):
+            commands = sessions.session_commands('lidar3d-viz', None)
+            self.assertIn('lidar3d_controller.launch.py', str(commands))
+            self.assertIn('go2_cmd_vel_tcp.py', str(commands))
+            self.assertIn('lidar3d_navigation.rviz', str(commands))
+            locks = sessions.acquire_locks(self.root, 'lidar3d-viz')
+            try:
+                with self.assertRaises(BlockingIOError):
+                    sessions.acquire_locks(self.root, 'teleop')
+            finally:
+                for fd in locks:
+                    os.close(fd)
+
     def test_jetson_uses_local_backend_and_output_relay_only(self):
         with patch.dict(os.environ, GO2_LIDAR3D_COMPUTE='jetson', GO2_ODOM_SOURCE='utlidar'):
             commands = sessions.session_commands('lidar3d', None, '/tmp/result')

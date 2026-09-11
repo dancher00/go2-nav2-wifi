@@ -17,15 +17,18 @@ if [[ "$mapping_mode" == lidar3d && "${1:-}" == --laptop ]]; then
 fi
 planning=0
 if [[ "$mapping_mode" == lidar3d && "${1:-}" == --plan ]]; then planning=1; shift; fi
+navigation=0
+if [[ "$mapping_mode" == lidar3d && "${1:-}" == --nav ]]; then navigation=1; planning=1; shift; fi
 if [[ "${1:-}" == --help ]]; then
-  echo 'Usage: ./mapping.sh [--3d [--legkilo|--laptop|--plan]]  (close RViz or press Ctrl+C to stop)'
+  echo 'Usage: ./mapping.sh [--3d [--legkilo|--laptop|--plan|--nav]]  (close RViz or press Ctrl+C to stop)'
+  echo '--nav enables supervised level-floor driving from RViz goals; stand the robot first.'
   echo '3D computes on Jetson by default; --laptop preserves the Wi-Fi raw-sensor experiment.'
   echo 'Optional: GO2_CONTAINER=go2-humble GO2_ROBOT_USER=unitree ./mapping.sh'
   echo 'GO2_RVIZ=0 disables the window; 3D sessions save automatically on stop.'
   echo 'GO2_RECORD=1 records 3D backend inputs for offline diagnosis.'
   exit 0
 fi
-[[ $# == 0 ]] || { echo 'Usage: ./mapping.sh [--3d [--legkilo|--laptop|--plan]]' >&2; exit 2; }
+[[ $# == 0 ]] || { echo 'Usage: ./mapping.sh [--3d [--legkilo|--laptop|--plan|--nav]]' >&2; exit 2; }
 [[ "$compute" == jetson || "$compute" == laptop ]] || { echo 'GO2_LIDAR3D_COMPUTE must be jetson or laptop' >&2; exit 2; }
 [[ "$backend" == pointlio || "$backend" == legkilo ]] || { echo "Unknown 3D backend" >&2; exit 2; }
 [[ "$backend" != legkilo || "$compute" == jetson ]] || { echo "Leg-KILO launcher currently supports Jetson; replay is available through go2-session." >&2; exit 2; }
@@ -53,6 +56,10 @@ if [[ -z "${GO2_CONTAINER:-}" ]]; then
   done
 fi
 : "${GO2_CONTAINER:?Start the project Docker container first}"
+if [[ "$navigation" == 1 ]]; then
+  docker exec "$GO2_CONTAINER" test -f /ws/install/go2_rviz_controls/lib/libgo2_rviz_controls.so ||
+    docker exec "$GO2_CONTAINER" bash /ws/scripts/build-rviz-controls.sh
+fi
 container_env="$(docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' "$GO2_CONTAINER")"
 while IFS='=' read -r key value; do
   case "$key" in
@@ -80,11 +87,16 @@ ssh_socket="$log_dir/ssh"
 target="$robot_user@$robot_ip"
 mapping_started=0
 jetson_started=0
+motion_pid=''
 session_mode="$mapping_mode"
 if [[ "$mapping_mode" == lidar3d && "$compute" == jetson ]]; then session_mode=lidar3d-viz; fi
 x_added=0
 cleanup() {
   trap '' INT TERM HUP
+  if [[ -n "$motion_pid" ]]; then
+    kill -TERM "$motion_pid" 2>/dev/null || true
+    wait "$motion_pid" 2>/dev/null || true
+  fi
   if [[ "$mapping_started" == 1 ]]; then
     docker exec "$GO2_CONTAINER" bash /ws/scripts/go2-session.sh stop "$session_mode" --owner "$owner" >/dev/null 2>&1 || true
   fi
@@ -127,13 +139,25 @@ if [[ "$mapping_mode" == lidar3d && "$compute" == jetson ]]; then
       x_added=1
     fi
     mapping_started=1
-    docker exec -e GO2_LIDAR3D_PLAN="$planning" -e GO2_LIDAR3D_BACKEND="$backend" -e DISPLAY="$DISPLAY" -e QT_QPA_PLATFORM=xcb -e QT_X11_NO_MITSHM=1 \
+    if [[ "$navigation" == 1 ]]; then
+      scp -q -o "ControlPath=$ssh_socket" "$MAPPING_ROOT/ws/scripts/robot-motion-wifi.sh" \
+        "$MAPPING_ROOT/ws/scripts/robot_sport_bridge.py" "$MAPPING_ROOT/ws/scripts/go2_cmd_vel_tcp.py" \
+        "$MAPPING_ROOT/ws/scripts/robot-source-unitree-ros.sh" "$target:go2-nav2-lidar3d-onboard/"
+      ssh -tt -o BatchMode=yes -o ServerAliveInterval=2 -o ServerAliveCountMax=2 -S "$ssh_socket" "$target" \
+        'exec bash ~/go2-nav2-lidar3d-onboard/robot-motion-wifi.sh' >"$log_dir/motion.log" 2>&1 &
+      motion_pid=$!
+    fi
+    docker exec -e GO2_LIDAR3D_NAV="$navigation" -e GO2_LIDAR3D_PLAN="$planning" -e GO2_LIDAR3D_BACKEND="$backend" -e DISPLAY="$DISPLAY" -e QT_QPA_PLATFORM=xcb -e QT_X11_NO_MITSHM=1 \
       -e LIBGL_ALWAYS_SOFTWARE=1 -e XDG_CONFIG_HOME=/tmp/go2-mapping-config \
       "$GO2_CONTAINER" bash /ws/scripts/go2-session.sh start lidar3d-viz --owner "$owner" \
       >"$log_dir/rviz.log" 2>&1 &
     viz_pid=$!
     set +e
-    wait -n "$mapping_pid" "$viz_pid"
+    if [[ -n "$motion_pid" ]]; then
+      wait -n "$mapping_pid" "$viz_pid" "$motion_pid"
+    else
+      wait -n "$mapping_pid" "$viz_pid"
+    fi
   else
     set +e
     wait "$mapping_pid"

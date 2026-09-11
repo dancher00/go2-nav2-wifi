@@ -162,7 +162,7 @@ def main() -> None:
         raise KeyboardInterrupt()
 
     previous_handlers = {sig: signal.signal(sig, interrupt)
-                         for sig in (signal.SIGINT, signal.SIGTERM)}
+                         for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)}
     try:
         rclpy.spin(node)
     except (KeyboardInterrupt, ExternalShutdownException):

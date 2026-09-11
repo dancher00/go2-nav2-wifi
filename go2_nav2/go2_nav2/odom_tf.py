@@ -33,6 +33,16 @@ def compose_pose(position, quaternion, offset):
 from tf2_ros import TransformBroadcaster
 
 
+def planar_body_velocity(previous, current, dt):
+    """Body-pose finite difference, expressed in current planar body axes."""
+    if not 0.001 <= dt <= 0.5:
+        return None
+    dx, dy = (current[0] - previous[0]) / dt, (current[1] - previous[1]) / dt
+    yaw = current[2]
+    dyaw = math.atan2(math.sin(yaw - previous[2]), math.cos(yaw - previous[2])) / dt
+    return math.cos(yaw)*dx + math.sin(yaw)*dy, -math.sin(yaw)*dx + math.cos(yaw)*dy, dyaw
+
+
 class OdomTf(Node):
     def __init__(self) -> None:
         super().__init__("go2_odom_tf")
@@ -49,6 +59,11 @@ class OdomTf(Node):
         self.declare_parameter("max_jump_xy", 0.5)
         self.declare_parameter("max_jump_yaw", 0.8)
         self.declare_parameter("publish_odom", True)
+        self.declare_parameter("derive_planar_twist", False)
+        self.declare_parameter("publish_tf", True)
+        self._publish_tf_enabled = self.get_parameter("publish_tf").value
+        self._derive_twist = self.get_parameter("derive_planar_twist").value
+        self._previous_body = None
         self.declare_parameter("odom_out_topic", "/odom")
         # Acquisition time has already been translated by the shared clock node.
         self.declare_parameter("use_current_stamp", False)
@@ -82,6 +97,8 @@ class OdomTf(Node):
         # No timer: old poses must never masquerade as fresh measurements.
 
     def _publish_tf(self) -> None:
+        if not self._publish_tf_enabled:
+            return
         if self._stamp is None:
             return
         t = TransformStamped()
@@ -187,6 +204,18 @@ class OdomTf(Node):
             out.pose.pose.orientation.z = self._qz
             out.pose.pose.orientation.w = self._qw
             out.twist = msg.twist
+            if self._derive_twist:
+                yaw = math.atan2(2*(self._qw*self._qz+self._qx*self._qy),
+                                 1-2*(self._qy*self._qy+self._qz*self._qz))
+                body = (self._x, self._y, yaw)
+                previous = self._previous_body
+                self._previous_body = (incoming_ns, body)
+                if previous is None:
+                    return
+                velocity = planar_body_velocity(previous[1], body, (incoming_ns-previous[0])*1e-9)
+                if velocity is None:
+                    return
+                out.twist.twist.linear.x, out.twist.twist.linear.y, out.twist.twist.angular.z = velocity
             out.pose.covariance = msg.pose.covariance
             self._odom_pub.publish(out)
 
