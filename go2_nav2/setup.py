@@ -19,11 +19,12 @@ setup(
                 "launch/nav2_slam_loc.launch.py",
                 "launch/patrol.launch.py",
                 "launch/bringup_viz.launch.py",
+                "launch/d435i_mapping.launch.py",
             ],
         ),
         (
             "share/" + package_name + "/rviz",
-            ["rviz/nav.rviz", "rviz/slam.rviz", "rviz/bringup.rviz"],
+            ["rviz/nav.rviz", "rviz/slam.rviz", "rviz/bringup.rviz", "rviz/d435i.rviz"],
         ),
         (
             "share/" + package_name + "/urdf",
@@ -33,6 +34,7 @@ setup(
             "share/" + package_name + "/config",
             [
                 "config/sport_bridge.yaml",
+                "config/d435i_camera.yaml",
                 "config/odom_tf.yaml",
                 "config/pointcloud_to_laserscan.yaml",
                 "config/slam_toolbox_mapping.yaml",

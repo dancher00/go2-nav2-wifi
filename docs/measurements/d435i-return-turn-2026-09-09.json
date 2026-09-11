@@ -1,0 +1,50 @@
+{
+  "keyframes": 18,
+  "position_span_m": [
+    0.22963,
+    0.255028,
+    0.016111999999999987
+  ],
+  "yaw_span_deg": 108.38294049385735,
+  "yaw_start_end_deg": [
+    -0.0018094053011959543,
+    -30.75086842166001
+  ],
+  "position_start_end_m": [
+    [
+      0.199209,
+      0.004853,
+      0.151044
+    ],
+    [
+      0.202262,
+      -0.146356,
+      0.154428
+    ]
+  ],
+  "max_graph_correction_m": 0.10518365874982673,
+  "integrity": "ok",
+  "return_loop_pairs": [
+    [
+      196,
+      1351
+    ],
+    [
+      197,
+      1350
+    ],
+    [
+      198,
+      1349
+    ],
+    [
+      212,
+      1347
+    ],
+    [
+      213,
+      1344
+    ]
+  ],
+  "interpretation": "Local overlapping-view turn test: dominant wall contours visibly align after graph optimization; room-scale accuracy unverified. Final heading differs from initial heading; endpoint difference is not a measured drift error."
+}

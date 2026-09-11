@@ -1,0 +1,105 @@
+Panels:
+- Class: rviz_common/Displays
+  Name: Displays
+- Class: rviz_common/Views
+  Name: Views
+Visualization Manager:
+  Class: ''
+  Global Options:
+    Fixed Frame: d435i_map
+    Frame Rate: 5
+    Background Color: 32; 35; 40
+  Displays:
+  - Class: rviz_default_plugins/Grid
+    Name: Grid
+    Enabled: true
+    Reference Frame: d435i_map
+  - Class: rviz_default_plugins/PointCloud2
+    Name: Dense color map
+    Enabled: true
+    Topic:
+      Value: /d435i/cloud_map
+      Reliability Policy: Reliable
+      Durability Policy: Transient Local
+      History Policy: Keep Last
+      Depth: 1
+    Size (m): 0.03
+    Style: Points
+    Color Transformer: RGB8
+    Position Transformer: XYZ
+  - Class: rviz_default_plugins/Map
+    Name: Occupancy grid
+    Enabled: false
+    Topic:
+      Value: /d435i/grid_map
+      Reliability Policy: Reliable
+      Durability Policy: Transient Local
+      History Policy: Keep Last
+      Depth: 1
+    Alpha: 0.6
+  - Class: rviz_default_plugins/Odometry
+    Name: Go2 / camera pose
+    Enabled: true
+    Topic:
+      Value: /d435i/odom
+      Reliability Policy: Best Effort
+      Durability Policy: Volatile
+      History Policy: Keep Last
+      Depth: 5
+    Keep: 1
+    Position Tolerance: 0.03
+    Angle Tolerance: 0.05
+    Shape: Axes
+    Axes Length: 0.35
+    Axes Radius: 0.015
+    Covariance:
+      Position:
+        Value: false
+      Orientation:
+        Value: false
+  - Class: rviz_default_plugins/TF
+    Name: Camera TF
+    Enabled: false
+    Show Names: true
+    Show Axes: true
+    Marker Scale: 0.2
+  - Class: rviz_default_plugins/Path
+    Name: Mapping trajectory
+    Enabled: true
+    Topic:
+      Value: /d435i/mapPath
+      Reliability Policy: Reliable
+      Durability Policy: Volatile
+      History Policy: Keep Last
+      Depth: 1
+    Line Style: Billboards
+    Line Width: 0.035
+    Color: 255; 210; 40
+    Alpha: 1.0
+  - Class: rviz_default_plugins/Marker
+    Name: Live status
+    Enabled: true
+    Topic:
+      Value: /d435i/status
+      Reliability Policy: Reliable
+      Durability Policy: Volatile
+      History Policy: Keep Last
+      Depth: 1
+  Tools:
+  - Class: rviz_default_plugins/MoveCamera
+  - Class: rviz_default_plugins/FocusCamera
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 7
+      Pitch: 0.8
+      Yaw: 0.8
+      Target Frame: d435i_map
+      Focal Point:
+        X: 1.5
+        Y: 0.0
+        Z: 0.0
+  Value: true
+Window Geometry:
+  Width: 1280
+  Height: 800

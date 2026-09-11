@@ -1,0 +1,10 @@
+# Flat dictionary consumed by RealSense rs_launch.py, not a ROS node YAML.
+# D435 RGB exposure uses UVC units of 100 us; 78 = 7.8 ms.
+# Manual exposure avoids the long indoor exposures observed in the failed walk.
+rgb_camera.enable_auto_exposure: false
+rgb_camera.exposure: 78
+rgb_camera.gain: 64
+# Keep stereo auto exposure: gain 64 saturated both IR sensors in this room.
+# RGB and stereo exposure controls have different units and sensitivities.
+depth_module.enable_auto_exposure: true
+depth_module.gain: 16

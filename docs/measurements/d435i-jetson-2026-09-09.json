@@ -1,0 +1,99 @@
+{
+  "ok": true,
+  "seconds": 20,
+  "counts": {
+    "rgb": 273,
+    "depth": 297,
+    "imu_raw": 3995,
+    "imu": 3993,
+    "cloud": 1,
+    "tf_static": 1,
+    "odom": 270,
+    "valid_odom": 270,
+    "tf": 666
+  },
+  "stamp_rate_hz": {
+    "rgb": 13.586394992283026,
+    "depth": 14.785194550425645,
+    "imu_raw": 199.54867228522986,
+    "imu": 199.49874293830294,
+    "odom": 13.481659997616893
+  },
+  "details": {
+    "rgb": {
+      "width": 640,
+      "height": 480,
+      "encoding": "rgb8"
+    },
+    "depth": {
+      "width": 640,
+      "height": 480,
+      "encoding": "16UC1"
+    },
+    "cloud": {
+      "points": 1691,
+      "frame": "d435i_map"
+    },
+    "odom": {
+      "position": [
+        -0.0031337470281869173,
+        0.0037815936375409365,
+        0.0008056301157921553
+      ],
+      "covariance_x": 0.00013537458897451871,
+      "frame": "d435i_odom",
+      "child": "camera_link"
+    }
+  },
+  "tf_edges": [
+    [
+      "camera_accel_frame",
+      "camera_accel_optical_frame"
+    ],
+    [
+      "camera_color_frame",
+      "camera_color_optical_frame"
+    ],
+    [
+      "camera_depth_frame",
+      "camera_depth_optical_frame"
+    ],
+    [
+      "camera_gyro_frame",
+      "camera_gyro_optical_frame"
+    ],
+    [
+      "camera_gyro_frame",
+      "camera_imu_frame"
+    ],
+    [
+      "camera_imu_frame",
+      "camera_imu_optical_frame"
+    ],
+    [
+      "camera_link",
+      "camera_accel_frame"
+    ],
+    [
+      "camera_link",
+      "camera_color_frame"
+    ],
+    [
+      "camera_link",
+      "camera_depth_frame"
+    ],
+    [
+      "camera_link",
+      "camera_gyro_frame"
+    ],
+    [
+      "d435i_map",
+      "d435i_odom"
+    ],
+    [
+      "d435i_odom",
+      "camera_link"
+    ]
+  ],
+  "failures": []
+}

@@ -1,0 +1,37 @@
+{
+  "left": {
+    "median": 255.0,
+    "saturated_fraction": 0.7632942708333333,
+    "usable_depth_0_4_to_4_m_fraction": null
+  },
+  "right": {
+    "median": 255.0,
+    "saturated_fraction": 0.752216796875,
+    "usable_depth_0_4_to_4_m_fraction": null
+  },
+  "depth_raw": {
+    "median": 0.0,
+    "saturated_fraction": null,
+    "usable_depth_0_4_to_4_m_fraction": 0.21608072916666668
+  },
+  "left_auto": {
+    "median": 95.0,
+    "saturated_fraction": 0.0,
+    "usable_depth_0_4_to_4_m_fraction": null
+  },
+  "right_auto": {
+    "median": 96.0,
+    "saturated_fraction": 0.0,
+    "usable_depth_0_4_to_4_m_fraction": null
+  },
+  "depth_auto": {
+    "median": 1330.0,
+    "saturated_fraction": null,
+    "usable_depth_0_4_to_4_m_fraction": 0.822353515625
+  },
+  "aligned_auto": {
+    "median": 1627.0,
+    "saturated_fraction": null,
+    "usable_depth_0_4_to_4_m_fraction": 0.890732421875
+  }
+}

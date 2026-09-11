@@ -1,3 +1,6 @@
+> D435i / Jetson visual SLAM: [setup, run and validation](docs/D435I-VISUAL-SLAM.md).
+> Run `./d435i.sh start` on the laptop to launch onboard; `./d435i.sh rviz` opens visualization.
+
 # go2-nav2-wifi — Unitree Go2 Edu · SLAM + Nav2 over Wi‑Fi
 
 [![CI](https://github.com/dancher00/go2-nav2-wifi/actions/workflows/ci.yml/badge.svg)](https://github.com/dancher00/go2-nav2-wifi/actions/workflows/ci.yml)

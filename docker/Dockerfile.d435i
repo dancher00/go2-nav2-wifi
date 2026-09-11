@@ -1,0 +1,10 @@
+FROM ros:humble-ros-base-jammy
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-realsense2-camera ros-humble-realsense2-description \
+    ros-humble-rtabmap-odom ros-humble-rtabmap-slam \
+    ros-humble-imu-filter-madgwick ros-humble-rmw-cyclonedds-cpp \
+    && rm -rf /var/lib/apt/lists/*
+ENV ROS_DOMAIN_ID=65 RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+WORKDIR /work
+CMD ["bash", "-c", "source /opt/ros/humble/setup.bash && exec ros2 launch /work/go2_nav2/launch/d435i_mapping.launch.py"]

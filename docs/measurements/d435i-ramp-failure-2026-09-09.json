@@ -1,0 +1,46 @@
+{
+  "keyframes": 187,
+  "native_height_range_m": 0.04087567329406738,
+  "optimized_height_range_m": 3.998893,
+  "native_start_end_xyz": [
+    [
+      0.199209,
+      0.004853,
+      0.151044
+    ],
+    [
+      -0.120314,
+      -0.515889,
+      0.143164
+    ]
+  ],
+  "optimized_start_end_xyz": [
+    [
+      0.199209,
+      0.004853,
+      0.151045
+    ],
+    [
+      -0.004632,
+      -0.471165,
+      -3.82539
+    ]
+  ],
+  "max_graph_correction_m": 4.167655273455327,
+  "last_keyframe": 1941,
+  "sqlite_integrity": "ok",
+  "last_loop_target_id": 1738,
+  "offline_replays": {
+    "icp6d": {
+      "frames": 261,
+      "lost": 252,
+      "tracked": 9
+    },
+    "visual6d": {
+      "frames": 261,
+      "lost": 253,
+      "tracked": 8
+    }
+  },
+  "interpretation": "User reports descent and return to starting wall. Native height spans only 0.041 m, while optimized endpoint is 3.976 m below optimized start. No loop closes the final return to initial wall. This configuration failed the ramp traversal; map remains paused. Maximum graph correction is not map accuracy or true floor height."
+}

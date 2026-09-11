@@ -1,0 +1,119 @@
+{
+  "ok": false,
+  "seconds": 90.0,
+  "counts": {
+    "imu_raw": 17893,
+    "imu": 17825,
+    "odom": 13309,
+    "valid_odom": 13309,
+    "tf": 15107,
+    "tf_static": 1,
+    "depth": 1234,
+    "rgb": 1004,
+    "cloud": 68,
+    "mapping": 95
+  },
+  "stamp_rate_hz": {
+    "imu_raw": 198.78005603196314,
+    "imu": 198.03559838332086,
+    "odom": 147.86495020068546,
+    "depth": 13.710354515391316,
+    "rgb": 11.152867460614347,
+    "cloud": 0.7689657394521967,
+    "mapping": 1.0788474553508431
+  },
+  "details": {
+    "odom": {
+      "position": [
+        -0.4272847096014027,
+        1.1337146936029436,
+        0.25416646525263786
+      ],
+      "covariance_x": 0.01,
+      "frame": "d435i_odom",
+      "child": "d435i_base"
+    },
+    "depth": {
+      "width": 640,
+      "height": 480,
+      "encoding": "16UC1"
+    },
+    "rgb": {
+      "width": 640,
+      "height": 480,
+      "encoding": "rgb8"
+    },
+    "cloud": {
+      "points": 812267,
+      "frame": "d435i_map"
+    },
+    "mapping": {
+      "reference_id": 298,
+      "working_memory_nodes": 79
+    }
+  },
+  "tf_edges": [
+    [
+      "camera_accel_frame",
+      "camera_accel_optical_frame"
+    ],
+    [
+      "camera_color_frame",
+      "camera_color_optical_frame"
+    ],
+    [
+      "camera_depth_frame",
+      "camera_depth_optical_frame"
+    ],
+    [
+      "camera_gyro_frame",
+      "camera_gyro_optical_frame"
+    ],
+    [
+      "camera_gyro_frame",
+      "camera_imu_frame"
+    ],
+    [
+      "camera_imu_frame",
+      "camera_imu_optical_frame"
+    ],
+    [
+      "camera_link",
+      "camera_accel_frame"
+    ],
+    [
+      "camera_link",
+      "camera_color_frame"
+    ],
+    [
+      "camera_link",
+      "camera_depth_frame"
+    ],
+    [
+      "camera_link",
+      "camera_gyro_frame"
+    ],
+    [
+      "d435i_map",
+      "d435i_odom"
+    ],
+    [
+      "d435i_odom",
+      "d435i_base"
+    ]
+  ],
+  "position_span_m": [
+    4.377387824207553,
+    5.531059343225212,
+    0.04042714834213257
+  ],
+  "loop_closures": [
+    [
+      264,
+      248
+    ]
+  ],
+  "failures": [
+    "missing TF d435i_base -> camera_link"
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "ok": true,
+  "scope": "transport and sampled input quality; not map accuracy",
+  "warnings": [],
+  "depth_usable_fraction_median": 0.8036458333333333,
+  "infra_saturated_fraction_median": null,
+  "seconds": 20,
+  "counts": {
+    "rgb": 488,
+    "depth": 560,
+    "imu_raw": 3988,
+    "imu": 3976,
+    "odom": 2962,
+    "valid_odom": 2962,
+    "cloud": 1,
+    "tf": 3351,
+    "tf_static": 2,
+    "mapping": 40
+  },
+  "stamp_rate_hz": {
+    "rgb": 24.37145014447709,
+    "depth": 27.928011780523722,
+    "imu_raw": 199.29987691041018,
+    "imu": 198.70002776997254,
+    "odom": 148.06480364213164,
+    "mapping": 1.9882182848712449
+  },
+  "details": {
+    "rgb": {
+      "width": 640,
+      "height": 480,
+      "encoding": "rgb8"
+    },
+    "depth": {
+      "width": 640,
+      "height": 480,
+      "encoding": "16UC1"
+    },
+    "odom": {
+      "position": [
+        0.00010716620556803872,
+        -0.00013527966397550807,
+        1.2814998626708984e-06
+      ],
+      "covariance_x": 0.01,
+      "frame": "d435i_odom",
+      "child": "d435i_base"
+    },
+    "cloud": {
+      "points": 5786,
+      "frame": "d435i_map"
+    },
+    "mapping": {
+      "reference_id": 55,
+      "working_memory_nodes": 1
+    }
+  },
+  "tf_edges": [
+    [
+      "camera_accel_frame",
+      "camera_accel_optical_frame"
+    ],
+    [
+      "camera_color_frame",
+      "camera_color_optical_frame"
+    ],
+    [
+      "camera_depth_frame",
+      "camera_depth_optical_frame"
+    ],
+    [
+      "camera_gyro_frame",
+      "camera_gyro_optical_frame"
+    ],
+    [
+      "camera_gyro_frame",
+      "camera_imu_frame"
+    ],
+    [
+      "camera_imu_frame",
+      "camera_imu_optical_frame"
+    ],
+    [
+      "camera_link",
+      "camera_accel_frame"
+    ],
+    [
+      "camera_link",
+      "camera_color_frame"
+    ],
+    [
+      "camera_link",
+      "camera_depth_frame"
+    ],
+    [
+      "camera_link",
+      "camera_gyro_frame"
+    ],
+    [
+      "d435i_base",
+      "camera_link"
+    ],
+    [
+      "d435i_map",
+      "d435i_odom"
+    ],
+    [
+      "d435i_odom",
+      "d435i_base"
+    ]
+  ],
+  "position_span_m": [
+    0.0007073477695690145,
+    0.0003787367236969413,
+    2.1666288375854492e-05
+  ],
+  "loop_closures": [],
+  "failures": []
+}
