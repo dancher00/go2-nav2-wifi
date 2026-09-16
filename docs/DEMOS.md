@@ -2,6 +2,8 @@
 
 ## 3D Point-LIO mapping — September 16, 2026
 
+[![Robot and live 3D map](media/go2-3d-slam-demo.jpg)](https://github.com/user-attachments/assets/1047e3c6-c59f-4fdb-b2e1-90f5f6ce2ec8)
+
 The featured README video combines an external camera with the RViz screen
 recording from the same session: robot motion, live 3D mapping, and a final map
 overview. Point-LIO runs on the onboard Jetson with the built-in LiDAR and IMU;

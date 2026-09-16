@@ -8,9 +8,9 @@
 
 ### 3D mapping · Go2 + Point-LIO
 
-[![Go2 walking alongside its live 3D map in RViz](docs/media/go2-3d-slam-demo.jpg)](https://github.com/dancher00/go2-nav2-wifi/tree/experiment/lidar-3d-slam)
-
 Built-in LiDAR + IMU · Point-LIO on the onboard Jetson · RViz over Wi-Fi
+
+https://github.com/user-attachments/assets/1047e3c6-c59f-4fdb-b2e1-90f5f6ce2ec8
 
 Robot and live map side by side, followed by a closer view of the reconstructed
 room. **42 seconds · 2× playback · recorded September 16, 2026.**
