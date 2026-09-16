@@ -6,19 +6,20 @@
 
 **SLAM mapping and Nav2 on a laptop over Wi‑Fi** — built-in Unitree lidar, no external sensors, Docker ROS 2 Humble, no Ethernet cable, no WebRTC, no CycloneDDS patch on the robot.
 
-Robot + RViz in the demos below.
+### 3D mapping · Go2 + Point-LIO
 
-### Nav A → B
+Built-in LiDAR + IMU · Point-LIO on the onboard Jetson · RViz over Wi-Fi
 
-https://github.com/user-attachments/assets/44ae54a9-09f1-490c-ab3b-6291595e3324
+https://github.com/user-attachments/assets/1047e3c6-c59f-4fdb-b2e1-90f5f6ce2ec8
 
-### LiDAR + RViz
+Robot and live map side by side, followed by a closer view of the reconstructed
+room. **42 seconds · 2× playback · recorded September 16, 2026.**
 
-https://github.com/user-attachments/assets/2c817478-9fc5-4000-8211-b8b47e07eafb
+The demo uses the [3D experimental branch](https://github.com/dancher00/go2-nav2-wifi/tree/experiment/lidar-3d-slam).
+The instructions below cover the 2D SLAM + Nav2 workflow on `main`.
 
-### SLAM mapping
-
-https://github.com/user-attachments/assets/16ffa9da-6469-4384-a56e-00d0343bb375
+[3D setup & results](https://github.com/dancher00/go2-nav2-wifi/blob/experiment/lidar-3d-slam/docs/LIDAR-3D-SLAM.md)
+· [Earlier demos & recording details](docs/DEMOS.md)
 
 ---
 
