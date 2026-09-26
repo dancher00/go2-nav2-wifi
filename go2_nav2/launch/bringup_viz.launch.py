@@ -4,7 +4,8 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, EmitEvent, IncludeLaunchDescription
+from launch.events import Shutdown
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
@@ -30,6 +31,7 @@ def generate_launch_description():
                 name="rviz2",
                 output="screen",
                 arguments=["-d", LaunchConfiguration("rviz_config")],
+                on_exit=[EmitEvent(event=Shutdown(reason="RViz closed"))],
             ),
         ]
     )

@@ -19,10 +19,11 @@ GO2_RECORD=1 ./mapping.sh --3d
 
 Built-in LiDAR + IMU · Point-LIO on the onboard Jetson · RViz over Wi-Fi
 
-https://github.com/user-attachments/assets/1047e3c6-c59f-4fdb-b2e1-90f5f6ce2ec8
+[![Watch the Go2 and live 3D map demo](docs/media/go2-3d-slam-demo.jpg)](docs/media/go2-3d-slam-demo.mp4)
 
 Robot and live map side by side, followed by a closer view of the reconstructed
-room. **42 seconds · 2× playback · recorded September 16, 2026.**
+room. The map is visible from the first frame, before the walk begins.
+**37 seconds · 2× playback · recorded September 16, 2026.** Click the preview to watch.
 
 [Earlier 2D mapping and navigation demos](docs/DEMOS.md).
 
@@ -81,7 +82,7 @@ For a live 3D LiDAR cloud and front-camera view without SLAM or map output:
 
 [Managed sessions](docs/SESSIONS.md) provide scoped start/stop/status,
 duplicate-start refusal and map-bundle checks. Navigation keeps its direct command path.
-D435i work is reserved for `experiment/d435i-visual-slam`, not `main`.
+D435i experiments are preserved at tag `archive/2026-09-11/d435i-visual-slam`.
 
 Full setup: **[docs/RELAY-WIFI.md](docs/RELAY-WIFI.md)** · Mapping & nav: **[docs/NAVIGATION.md](docs/NAVIGATION.md)**
 
@@ -135,6 +136,8 @@ ros2 launch go2_nav2 sport_bridge.launch.py
 | [NAVIGATION.md](docs/NAVIGATION.md) | Mapping, save map, nav to goal, troubleshooting |
 | [MAPPING-SESSION.md](docs/MAPPING-SESSION.md) | Handheld mapping: terminal roles, restart and checks |
 | [SESSIONS.md](docs/SESSIONS.md) | Owned processes, startup checks and map validation |
+| [Release notes](docs/releases/v0.2.0.md) | Changes, upgrade steps and validation limits |
+| [Repository audit](docs/REPOSITORY-AUDIT-2026-09-27.md) | Findings, checks and archived branches |
 | [SENSOR-TIMING.md](docs/SENSOR-TIMING.md) | Shared acquisition clock and stationary verification |
 | [ROADMAP.md](docs/ROADMAP.md) | Current-stack acceptance criteria, then optional D435i visual SLAM |
 

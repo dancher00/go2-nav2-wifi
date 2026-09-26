@@ -3,7 +3,7 @@ ARG BASE_IMAGE=go2-humble:local
 FROM ${BASE_IMAGE}
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      git patch python3-dev python3-scipy libpcl-dev \
+      git patch python3-dev python3-scipy python3-pytest libpcl-dev \
       ros-humble-pcl-ros ros-humble-tf2-eigen ros-humble-tf2-sensor-msgs \
       ros-humble-diagnostic-updater ros-humble-nav2-rotation-shim-controller \
     && rm -rf /var/lib/apt/lists/*

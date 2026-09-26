@@ -21,4 +21,4 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec \
   --entrypoint /bin/bash \
   -v "${TEST_REPO_ROOT}:/repo:ro" \
   "$TEST_IMAGE" \
-  -c 'source /opt/ros/humble/setup.bash && source /opt/go2-unitree-msgs/local_setup.bash && source /opt/go2-lidar3d/local_setup.bash && python3 -B -m unittest discover -s /repo/tests -v'
+  -c 'source /opt/ros/humble/setup.bash && source /opt/go2-unitree-msgs/local_setup.bash && source /opt/go2-lidar3d/local_setup.bash && python3 -B -m pytest -p no:cacheprovider /repo/tests -q -ra'

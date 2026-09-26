@@ -1,9 +1,10 @@
 from pathlib import Path
 import sys
 import math
-import json
+from unittest.mock import patch
 import numpy as np
 import pytest
+import xacro
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'go2_nav2'))
 from go2_nav2.urdf_filter_geometry import RobotGeometry
 
@@ -23,11 +24,13 @@ def test_articulated_link_moves_without_erasing_gap_or_old_position():
 
 def test_real_go2_visual_meshes_load_and_leave_gap_below_trunk():
     root = Path(__file__).resolve().parents[1]
-    urdf = root / 'ws/log/mapping.llk4ul/robot.urdf'
-    if not urdf.exists():
-        pytest.skip('Recorded expanded robot model is unavailable')
-    model = RobotGeometry(urdf.read_text(), lambda _: root / 'go2_description')
-    joints = json.loads((urdf.parent / 'joints.json').read_text())[0]
+    # Expand the tracked model so a clean CI checkout runs this test too.
+    description = root / 'go2_description'
+    with patch('ament_index_python.packages.get_package_share_directory', return_value=str(description)):
+        urdf = xacro.process_file(str(description / 'xacro/robot.xacro')).toxml()
+    model = RobotGeometry(urdf, lambda _: description)
+    joints = {f'{leg}_{joint}_joint': angle for leg in ('FL', 'FR', 'RL', 'RR')
+              for joint, angle in (('hip', 0.), ('thigh', .8), ('calf', -1.5))}
     assert len(model.required_joints) == 12
     assert len(model.parts) >= 25
     # In the trunk vs open air below it; floor point is not body-wide masked.
