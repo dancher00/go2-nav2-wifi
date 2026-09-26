@@ -1,0 +1,79 @@
+{
+  "live-gyro": {
+    "poses": 1361,
+    "duration_s": 88.4088077545166,
+    "points": 725179,
+    "position_range_m": [
+      3.988835292,
+      7.167277739999999,
+      0.13754465700000001
+    ],
+    "endpoint_displacement_m": 3.9606586865763758,
+    "local_plane_spread": {
+      "cells": 869,
+      "median_m": 0.026788036299364514,
+      "p90_m": 0.049814655562642404
+    }
+  },
+  "live-plane005": {
+    "poses": 1361,
+    "duration_s": 88.4088077545166,
+    "points": 725179,
+    "position_range_m": [
+      4.036581345,
+      7.105641423,
+      0.11004440099999999
+    ],
+    "endpoint_displacement_m": 3.9660334874054337,
+    "local_plane_spread": {
+      "cells": 868,
+      "median_m": 0.027118599521645984,
+      "p90_m": 0.04999117769488629
+    }
+  },
+  "live-lidarcov001": {
+    "poses": 1361,
+    "duration_s": 88.4088077545166,
+    "points": 725179,
+    "position_range_m": [
+      3.898479102,
+      7.034079113,
+      0.10640377299999998
+    ],
+    "endpoint_displacement_m": 3.9051859169938594,
+    "local_plane_spread": {
+      "cells": 875,
+      "median_m": 0.026973120031161132,
+      "p90_m": 0.050416475247959204
+    }
+  },
+  "live-gyrotrust001": {
+    "poses": 1361,
+    "duration_s": 88.4088077545166,
+    "points": 725179,
+    "position_range_m": [
+      3.909396913,
+      7.156840651,
+      0.14536071
+    ],
+    "endpoint_displacement_m": 3.9240186364435212,
+    "local_plane_spread": {
+      "cells": 859,
+      "median_m": 0.02747978085560735,
+      "p90_m": 0.05011235712342876
+    }
+  },
+  "limitations": [
+    "Walking prefix does not contain a confirmed same-position return. Endpoint displacement is motion, not error.",
+    "Local plane spread is a geometric diagnostic, not independent map accuracy; cell coverage varies.",
+    "Configuration-only tests; no leg observations, body-IMU replacement or loop closure."
+  ],
+  "control": {
+    "stock_vs_disabled_experiment_bitwise_identical": true,
+    "poses": 1361,
+    "source_run": "run-20260911-181720-bj8yn462",
+    "recording_prefix_s": 90,
+    "replay_rate": 1.0,
+    "baseline_yaml_sha256": "303e3c1c3c591635bb11dcde40607a486e53f2540c193f7eccf820161b67e31c"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "log_dir": "ws/log/mapping.llk4ul",
+  "goal_xy": [
+    0.32053245,
+    2.04001214
+  ],
+  "sampled_body_xy": [
+    0.37171318,
+    1.88827294
+  ],
+  "goal_tolerance_m": 0.25,
+  "follow_path_seconds": 9.5,
+  "result": "Reached the goal",
+  "max_linear_cap_m_s": 0.3,
+  "prior_failures": [
+    "unknown footprint region",
+    "insufficient progress at 0.15 m/s",
+    "invalid trajectories after restart"
+  ],
+  "remaining": [
+    "repeatability after fresh launch",
+    "robot/laptop clock offset about 1 s"
+  ],
+  "note": "Controller RESET/STARTUP preceded successful final attempt; pose sample near completion."
+}

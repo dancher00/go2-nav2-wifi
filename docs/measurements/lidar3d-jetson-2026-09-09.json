@@ -1,0 +1,176 @@
+{
+  "date": "2026-09-09",
+  "compute": "Jetson Orin Nano Developer Kit ARM64, nominal 8 GB RAM",
+  "host": "Ubuntu 20.04, L4T R35.3.1",
+  "runtime": "ROS2 Humble in Docker, CPU backend; no CUDA dependency",
+  "image": "sha256:3ab70ff5f47f0d9a81bfe7b69ce7d28664348ef7e74abe1c7027c4b7167ceac9",
+  "backend_commit": "43d5f54b389b251713f0097893c30fa76c870d54",
+  "factory_repo_status": "clean, 4bab4ab; no factory DDS changes",
+  "first_live": {
+    "backend": "CMU Point-LIO ROS2 adaptation",
+    "loop_closure": false,
+    "map": "/ws/maps/lidar3d/run-20260909-113211-kukb7xvu/PCD/scans.pcd",
+    "trajectory": "/ws/maps/lidar3d/run-20260909-113211-kukb7xvu/trajectory.tum",
+    "points": 657509,
+    "trajectory_poses": 1987,
+    "trajectory_duration_s": 129.17338609695435,
+    "max_displacement_from_first_m": 0.42848468107865384,
+    "trajectory_format": "TUM: stamp x y z qx qy qz qw; camera_init -> aft_mapped (initial IMU coordinates)",
+    "note": "File integrity and nonempty geometry do not establish mapping accuracy.",
+    "imu_enabled": true,
+    "imu_acceleration_used": false,
+    "imu_as_input": false,
+    "replay_rate": null,
+    "compute": "jetson"
+  },
+  "first_live_stop": "Stopping owned laptop lidar3d-viz session caused launcher owner-scoped remote stop, native PCD/TUM/bag save; Jetson then reported not-managed. No motion commands sent.",
+  "replay": {
+    "backend": "CMU Point-LIO ROS2 adaptation",
+    "loop_closure": false,
+    "map": "/ws/maps/lidar3d/run-20260909-113524-_xmjw_0d/PCD/scans.pcd",
+    "trajectory": "/ws/maps/lidar3d/run-20260909-113524-_xmjw_0d/trajectory.tum",
+    "points": 979356,
+    "trajectory_poses": 2434,
+    "trajectory_duration_s": 158.21244978904724,
+    "max_displacement_from_first_m": 2.0493236816534655,
+    "trajectory_format": "TUM: stamp x y z qx qy qz qw; camera_init -> aft_mapped (initial IMU coordinates)",
+    "note": "File integrity and nonempty geometry do not establish mapping accuracy.",
+    "imu_enabled": true,
+    "imu_acceleration_used": false,
+    "imu_as_input": false,
+    "replay_rate": 1.0,
+    "compute": "jetson"
+  },
+  "replay_comparison": {
+    "poses": 2434,
+    "same_timestamps": true,
+    "max_position_difference_m": 0.04141589171085642,
+    "end_position_difference_m": 0.0009711012081745347,
+    "max_rotation_difference_deg": 1.180755561770692,
+    "note": "ARM replay vs x86 live of identical recorded input; numerical reproducibility, not mapping ground truth"
+  },
+  "final_live_run": "run-20260909-113920-3yygoyla",
+  "jetson_resources_after_cdr_forwarding": {
+    "side": "resources",
+    "duration_s": 30.006051136000224,
+    "wall_start_ns": 1788953987063683959,
+    "wall_end_ns": 1788954017070530097,
+    "ros_domain": "0",
+    "sample_columns": [
+      "source_stamp_ns",
+      "observer_wall_ns",
+      "observer_monotonic_ns",
+      "serialized_cdr_bytes",
+      "cloud_data_crc32"
+    ],
+    "interface_mbit_s_ALL_traffic": {
+      "rx": 0.0652929634466109,
+      "tx": 0.9106920426198596
+    },
+    "processes": {
+      "338": {
+        "name": "robot_relay_wifi.py",
+        "cpu_percent_one_core": 7.199863638243134,
+        "rss_peak_mib": 51.015625
+      },
+      "343": {
+        "name": "go2_cloud_stamp_sync",
+        "cpu_percent_one_core": 55.5802557494283,
+        "rss_peak_mib": 59.2265625
+      },
+      "345": {
+        "name": "pointlio_mapping",
+        "cpu_percent_one_core": 46.429027199885624,
+        "rss_peak_mib": 164.9453125
+      },
+      "371": {
+        "name": "robot_relay_wifi.py",
+        "cpu_percent_one_core": 5.1139218365091414,
+        "rss_peak_mib": 52.015625
+      }
+    },
+    "topics": {}
+  },
+  "laptop_resources_visualization_only": {
+    "side": "resources",
+    "duration_s": 30.013874477000172,
+    "wall_start_ns": 1788953575144536066,
+    "wall_end_ns": 1788953605159131773,
+    "ros_domain": "0",
+    "sample_columns": [
+      "source_stamp_ns",
+      "observer_wall_ns",
+      "observer_monotonic_ns",
+      "serialized_cdr_bytes",
+      "cloud_data_crc32"
+    ],
+    "interface_mbit_s_ALL_traffic": {
+      "rx": 1.4136136949767304,
+      "tx": 0.1692867744846993
+    },
+    "processes": {
+      "18793": {
+        "name": "rviz2",
+        "cpu_percent_one_core": 99.68858351168971,
+        "rss_peak_mib": 218.3125
+      }
+    },
+    "topics": {}
+  },
+  "regressions": 99,
+  "limits": [
+    "One live sensor session and one recorded short walk are not general map accuracy validation",
+    "Resource figures are CPU percent of one core and sampled peak RSS",
+    "Network counters include all interface traffic, not only DDS",
+    "Resource collector does not create DDS nodes; its ros_domain field is not the domain of measured processes",
+    "Wi-Fi output is decimated visualization; full saved PCD remains on Jetson",
+    "No loop closure, no Nav2 in the 3D chain, no raw acceleration integration",
+    "Stop over a broken Wi-Fi link may not reach Jetson; repeat explicit stop after reconnect",
+    "First live recording included a height change after the initial stationary interval; its full displacement is not stationary drift"
+  ],
+  "files_sha256": {
+    "go2_nav2/config/pointlio_go2.yaml": "4adaf6cb1dd563a900751278110847bafe5ffad547aa5152b91bf413bda18528",
+    "ws/scripts/pointlio-wifi.patch": "bb418054bb0c348cbe68493e1688d5a6227feb10d2acfffc4fd89fb52bb424e1",
+    "ws/scripts/robot_relay_wifi.py": "b0dfaeb215fcd95e0582c88a95588de340e25f732dcce94436ce7624692f80cf",
+    "ws/scripts/go2_session.py": "54d5861283f5e02c67eb8d9c46f43ae663d11858ca5382bf4d4d9e8c02f53098"
+  },
+  "final_wifi_received_topics_10s": {
+    "/cmd_vel": {
+      "count": 0,
+      "window_hz": 0.0
+    },
+    "/lidar3d/cloud_sync": {
+      "count": 0,
+      "window_hz": 0.0
+    },
+    "/lidar3d/imu_sync": {
+      "count": 0,
+      "window_hz": 0.0
+    },
+    "/lidar3d/odom": {
+      "count": 154,
+      "window_hz": 15.376398516818345,
+      "duplicates": 0,
+      "reordered": 0,
+      "frame": "camera_init"
+    },
+    "/lidar3d/registered": {
+      "count": 39,
+      "window_hz": 3.894023001012438,
+      "duplicates": 0,
+      "reordered": 0,
+      "frame": "camera_init"
+    },
+    "/lidar3d/path": {
+      "count": 10,
+      "window_hz": 0.9984674361570354,
+      "duplicates": 0,
+      "reordered": 0,
+      "frame": "camera_init"
+    },
+    "/go2/sensor_time_offset_ns": {
+      "count": 0,
+      "window_hz": 0.0
+    }
+  }
+}

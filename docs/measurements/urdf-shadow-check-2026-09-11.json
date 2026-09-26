@@ -1,0 +1,30 @@
+{
+  "near_obstacle_returns": 4,
+  "near_obstacle_shadowed": 4,
+  "cloud_points": 12597,
+  "shadowed_total": 642,
+  "processing_ms": 177.31798499880824,
+  "sensor_in_base": [
+    0.29082659830599017,
+    0.013971268602992727,
+    -0.005036615139015113
+  ],
+  "method": "URDF per-link ray intersections, max range 1m, padding 0.015m",
+  "live_session": "mapping.mdsxuf",
+  "live_check": {
+    "stamp": 1789133436,
+    "lethal_cells_inside_padded_footprint": 0,
+    "unknown_cells_inside_padded_footprint": 17,
+    "nearby_lethal_cells_within_0_7m": 1
+  },
+  "live_processing_p95_ms": [
+    27.2,
+    31.2,
+    29.8
+  ],
+  "live_reception_to_publication_p95_ms": [
+    46.9,
+    49.5,
+    42.3
+  ]
+}

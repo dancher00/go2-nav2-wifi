@@ -1,0 +1,2306 @@
+{
+  "date": "2026-09-08",
+  "main_commit": "4bab4ab38c64a84a0e3a6a9b7b09b3ec310d8317",
+  "pointlio_commit": "43d5f54b389b251713f0097893c30fa76c870d54",
+  "robot_state": "lying, no movement commanded",
+  "laptop": "Ryzen 7 3700U, 8 logical CPUs, 6.7 GiB RAM",
+  "loop_closure": false,
+  "limitations": [
+    "stationary only, no ground truth",
+    "IMU calibration and raw extrinsics not dynamically verified",
+    "large jitter and insufficient bandwidth fail mapping"
+  ],
+  "runs": {
+    "pointlio-first.json": {
+      "side": "backend",
+      "duration_s": 30.000081523000063,
+      "wall_start_ns": 1788893683165639241,
+      "wall_end_ns": 1788893713328090620,
+      "ros_domain": "64",
+      "sample_columns": [
+        "source_stamp_ns",
+        "observer_wall_ns",
+        "observer_monotonic_ns",
+        "serialized_cdr_bytes",
+        "cloud_data_crc32"
+      ],
+      "interface_mbit_s_ALL_traffic": {
+        "rx": 19.201682754040522,
+        "tx": 0.38533415288012773
+      },
+      "processes": {
+        "5739": {
+          "name": "go2_cloud_stamp_sync",
+          "cpu_percent_one_core": 53.72911878785595,
+          "rss_peak_mib": 50.421875
+        },
+        "5741": {
+          "name": "pointlio_mapping",
+          "cpu_percent_one_core": 61.46664551584018,
+          "rss_peak_mib": 159.55078125
+        }
+      },
+      "topics": {
+        "/cmd_vel": {
+          "count": 0
+        },
+        "/lidar3d/cloud_sync": {
+          "frame": "utlidar_lidar",
+          "schema": {
+            "point_step": 32,
+            "row_step": 131456,
+            "width": 4108,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "ring",
+                "offset": 20,
+                "datatype": 4,
+                "count": 1
+              },
+              {
+                "name": "time",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -10.531410217285156,
+                4.913822174072266
+              ],
+              "y": [
+                -13.154746055603027,
+                0.5956379771232605
+              ],
+              "z": [
+                0.020626870915293694,
+                2.925328016281128
+              ],
+              "intensity": [
+                41.0,
+                255.0
+              ],
+              "ring": [
+                1,
+                1
+              ],
+              "time": [
+                0.0,
+                0.0628349781036377
+              ]
+            }
+          },
+          "count": 462,
+          "hz": 15.370145756028082,
+          "cdr_payload_mbit_s": 16.29435732117024,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 45.89186,
+            "median": 65.17791,
+            "p95": 69.634326,
+            "max": 83.477431
+          },
+          "source_interval_ms": {
+            "min": 63.324214,
+            "median": 65.022946,
+            "p95": 65.584898,
+            "max": 66.094399
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 121.810613,
+            "median": 126.3741195,
+            "p95": 134.345674,
+            "max": 150.021493
+          }
+        },
+        "/lidar3d/imu_sync": {
+          "frame": "utlidar_imu",
+          "orientation_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "acceleration_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "count": 7526,
+          "hz": 250.84874725302905,
+          "cdr_payload_mbit_s": 0.6502446330035582,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 0.395251,
+            "median": 1.457456,
+            "p95": 17.008751,
+            "max": 66.670275
+          },
+          "source_interval_ms": {
+            "min": 0.104188,
+            "median": 4.473448,
+            "p95": 5.059719,
+            "max": 9.500265
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 49.094676,
+            "median": 56.476958999999994,
+            "p95": 77.880117,
+            "max": 137.468496
+          },
+          "imu_mean": [
+            3.8053429606681233,
+            -0.0004903847048752215,
+            9.805603887500707,
+            0.012473098781124962,
+            0.0005489867288563886,
+            0.000508368092241912
+          ],
+          "imu_std": [
+            0.11905280935464851,
+            0.06898167792797466,
+            0.10325419960190048,
+            0.006004874070176354,
+            0.0067715666624005326,
+            0.003186945140617971
+          ]
+        },
+        "/lidar3d/odom": {
+          "frame": "camera_init",
+          "child_frame": "aft_mapped",
+          "count": 461,
+          "hz": 15.37564341128416,
+          "cdr_payload_mbit_s": 0.08900349147227864,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 45.107299,
+            "median": 65.55293850000001,
+            "p95": 72.456529,
+            "max": 82.474413
+          },
+          "source_interval_ms": {
+            "min": 62.142373,
+            "median": 65.0402305,
+            "p95": 67.468881,
+            "max": 68.081141
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 66.629168,
+            "median": 73.946138,
+            "p95": 83.738802,
+            "max": 98.06346
+          },
+          "displacement_from_first_m": {
+            "min": 0.0,
+            "median": 0.019188646908140292,
+            "p95": 0.02924527440072169,
+            "max": 0.04578977673515219
+          }
+        },
+        "/lidar3d/registered": {
+          "frame": "camera_init",
+          "schema": {
+            "point_step": 48,
+            "row_step": 16464,
+            "width": 343,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 32,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_x",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_y",
+                "offset": 20,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_z",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "curvature",
+                "offset": 36,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -4.947959899902344,
+                10.456328392028809
+              ],
+              "y": [
+                -0.5622228980064392,
+                13.3124418258667
+              ],
+              "z": [
+                0.0269894041121006,
+                3.1459803581237793
+              ],
+              "intensity": [
+                41.0,
+                255.0
+              ],
+              "normal_x": [
+                0.0,
+                0.0
+              ],
+              "normal_y": [
+                0.0,
+                0.0
+              ],
+              "normal_z": [
+                0.0,
+                0.0
+              ],
+              "curvature": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "count": 461,
+          "hz": 15.374736634517399,
+          "cdr_payload_mbit_s": 1.666661337625589,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 3.881273,
+            "median": 65.22250199999999,
+            "p95": 74.013392,
+            "max": 124.120211
+          },
+          "source_interval_ms": {
+            "min": 62.142373,
+            "median": 65.0402305,
+            "p95": 67.468881,
+            "max": 68.081141
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 67.507082,
+            "median": 75.243223,
+            "p95": 86.952465,
+            "max": 134.300711
+          }
+        },
+        "/lidar3d/path": {
+          "frame": "camera_init",
+          "path_pose_count": 461,
+          "count": 461,
+          "hz": 15.362019423640845,
+          "cdr_payload_mbit_s": 2.2762274145037447,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 29.101586,
+            "median": 65.4711835,
+            "p95": 75.847973,
+            "max": 101.603187
+          },
+          "source_interval_ms": {
+            "min": 62.142373,
+            "median": 65.0402305,
+            "p95": 67.468881,
+            "max": 68.081141
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 70.134599,
+            "median": 89.767388,
+            "p95": 111.837694,
+            "max": 137.762813
+          }
+        },
+        "/go2/sensor_time_offset_ns": {
+          "offset_ns": 757999533984,
+          "count": 1,
+          "hz": null,
+          "cdr_payload_mbit_s": 3.1999913042369567e-06,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {},
+          "source_interval_ms": {},
+          "wall_minus_header_ms_NOT_latency": {}
+        }
+      }
+    },
+    "final-rviz-production.json": {
+      "side": "backend",
+      "duration_s": 30.039431897000213,
+      "wall_start_ns": 1788894671716920536,
+      "wall_end_ns": 1788894701949695216,
+      "ros_domain": "64",
+      "sample_columns": [
+        "source_stamp_ns",
+        "observer_wall_ns",
+        "observer_monotonic_ns",
+        "serialized_cdr_bytes",
+        "cloud_data_crc32"
+      ],
+      "interface_mbit_s_ALL_traffic": {
+        "rx": 19.05031206855636,
+        "tx": 0.31537054470547576
+      },
+      "processes": {
+        "42956": {
+          "name": "rviz2",
+          "cpu_percent_one_core": 239.5254619143048,
+          "rss_peak_mib": 237.26171875
+        },
+        "42986": {
+          "name": "go2_cloud_stamp_sync",
+          "cpu_percent_one_core": 53.69722897599186,
+          "rss_peak_mib": 49.56640625
+        },
+        "42988": {
+          "name": "pointlio_mapping",
+          "cpu_percent_one_core": 55.35309066247619,
+          "rss_peak_mib": 166.015625
+        }
+      },
+      "topics": {
+        "/cmd_vel": {
+          "count": 0,
+          "window_hz": 0.0
+        },
+        "/lidar3d/cloud_sync": {
+          "frame": "utlidar_lidar",
+          "schema": {
+            "point_step": 32,
+            "row_step": 131584,
+            "width": 4112,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "ring",
+                "offset": 20,
+                "datatype": 4,
+                "count": 1
+              },
+              {
+                "name": "time",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -9.632802963256836,
+                4.902240753173828
+              ],
+              "y": [
+                -13.427278518676758,
+                0.4076201915740967
+              ],
+              "z": [
+                0.020894227549433708,
+                2.915949821472168
+              ],
+              "intensity": [
+                30.0,
+                255.0
+              ],
+              "ring": [
+                1,
+                1
+              ],
+              "time": [
+                0.0,
+                0.06285759806632996
+              ]
+            }
+          },
+          "count": 462,
+          "window_hz": 15.37978486357913,
+          "hz": 15.37377130711656,
+          "cdr_payload_mbit_s": 16.27106936229409,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 40.012827,
+            "median": 64.938442,
+            "p95": 73.493775,
+            "max": 98.102396
+          },
+          "source_interval_ms": {
+            "min": 62.345505,
+            "median": 65.016985,
+            "p95": 65.6991,
+            "max": 68.066597
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 121.213773,
+            "median": 125.9668565,
+            "p95": 134.113533,
+            "max": 159.07354
+          }
+        },
+        "/lidar3d/imu_sync": {
+          "frame": "utlidar_imu",
+          "orientation_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "acceleration_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "count": 7481,
+          "window_hz": 249.03933022605082,
+          "hz": 249.7260523734602,
+          "cdr_payload_mbit_s": 0.6455099439459238,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 0.452985,
+            "median": 1.214911,
+            "p95": 19.514704,
+            "max": 87.692382
+          },
+          "source_interval_ms": {
+            "min": 0.164509,
+            "median": 4.47464,
+            "p95": 5.049944,
+            "max": 9.50098
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 48.264391,
+            "median": 61.275799,
+            "p95": 120.11421,
+            "max": 261.335715
+          },
+          "imu_mean": [
+            3.7993857991550395,
+            -0.00022089655925195152,
+            9.805603963680852,
+            0.011991918127335098,
+            0.0006393506872358564,
+            0.0005882132126533243
+          ],
+          "imu_std": [
+            0.1201546452619294,
+            0.06958155908806495,
+            0.10467497308397472,
+            0.005960228186286594,
+            0.006769169395960479,
+            0.0032405179252212846
+          ]
+        },
+        "/lidar3d/odom": {
+          "frame": "camera_init",
+          "child_frame": "aft_mapped",
+          "count": 462,
+          "window_hz": 15.37978486357913,
+          "hz": 15.39229090085164,
+          "cdr_payload_mbit_s": 0.08907971392985031,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 26.400639,
+            "median": 64.979785,
+            "p95": 76.453238,
+            "max": 92.39482
+          },
+          "source_interval_ms": {
+            "min": 62.150956,
+            "median": 65.006733,
+            "p95": 67.502022,
+            "max": 68.92848
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 66.497604,
+            "median": 74.7572305,
+            "p95": 86.665615,
+            "max": 112.611076
+          },
+          "displacement_from_first_m": {
+            "min": 0.0,
+            "median": 0.027597694123233214,
+            "p95": 0.03942010258855166,
+            "max": 0.0478699477080171
+          }
+        },
+        "/lidar3d/registered": {
+          "frame": "camera_init",
+          "schema": {
+            "point_step": 48,
+            "row_step": 16896,
+            "width": 352,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 32,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_x",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_y",
+                "offset": 20,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_z",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "curvature",
+                "offset": 36,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -4.969902038574219,
+                9.827977180480957
+              ],
+              "y": [
+                -0.3741294741630554,
+                13.32968807220459
+              ],
+              "z": [
+                0.0015566517831757665,
+                3.0440139770507812
+              ],
+              "intensity": [
+                30.0,
+                255.0
+              ],
+              "normal_x": [
+                0.0,
+                0.0
+              ],
+              "normal_y": [
+                0.0,
+                0.0
+              ],
+              "normal_z": [
+                0.0,
+                0.0
+              ],
+              "curvature": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "count": 462,
+          "window_hz": 15.37978486357913,
+          "hz": 15.391501576835363,
+          "cdr_payload_mbit_s": 1.6725743739853272,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 9.657966,
+            "median": 65.066325,
+            "p95": 87.363459,
+            "max": 117.681553
+          },
+          "source_interval_ms": {
+            "min": 62.150956,
+            "median": 65.006733,
+            "p95": 67.502022,
+            "max": 68.92848
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 67.788886,
+            "median": 76.7250215,
+            "p95": 102.808095,
+            "max": 125.080219
+          }
+        },
+        "/lidar3d/path": {
+          "frame": "camera_init",
+          "path_pose_count": 512,
+          "count": 462,
+          "window_hz": 15.37978486357913,
+          "hz": 15.375347419203237,
+          "cdr_payload_mbit_s": 2.7752514190631272,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 25.353101,
+            "median": 65.231701,
+            "p95": 79.139503,
+            "max": 102.441879
+          },
+          "source_interval_ms": {
+            "min": 62.150956,
+            "median": 65.006733,
+            "p95": 67.502022,
+            "max": 68.92848
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 73.796554,
+            "median": 97.9832355,
+            "p95": 119.211692,
+            "max": 151.907737
+          }
+        },
+        "/go2/sensor_time_offset_ns": {
+          "offset_ns": 757990415489,
+          "count": 1,
+          "window_hz": 0.03328957762679465,
+          "hz": null,
+          "cdr_payload_mbit_s": 3.1957994521722866e-06,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {},
+          "source_interval_ms": {},
+          "wall_minus_header_ms_NOT_latency": {}
+        }
+      }
+    },
+    "netem-30-0-25-v2.json": {
+      "side": "backend",
+      "duration_s": 30.017946475000826,
+      "wall_start_ns": 1788894384532512338,
+      "wall_end_ns": 1788894414699750158,
+      "ros_domain": "64",
+      "sample_columns": [
+        "source_stamp_ns",
+        "observer_wall_ns",
+        "observer_monotonic_ns",
+        "serialized_cdr_bytes",
+        "cloud_data_crc32"
+      ],
+      "interface_mbit_s_ALL_traffic": {
+        "rx": 19.11823143791465,
+        "tx": 0.3498200654313649
+      },
+      "processes": {
+        "38849": {
+          "name": "go2_cloud_stamp_sync",
+          "cpu_percent_one_core": 37.40581655236602,
+          "rss_peak_mib": 49.75
+        },
+        "38851": {
+          "name": "pointlio_mapping",
+          "cpu_percent_one_core": 62.264959395306946,
+          "rss_peak_mib": 164.375
+        }
+      },
+      "topics": {
+        "/cmd_vel": {
+          "count": 0
+        },
+        "/lidar3d/cloud_sync": {
+          "frame": "utlidar_lidar",
+          "schema": {
+            "point_step": 32,
+            "row_step": 131776,
+            "width": 4118,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "ring",
+                "offset": 20,
+                "datatype": 4,
+                "count": 1
+              },
+              {
+                "name": "time",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -0.6349879503250122,
+                4.42970085144043
+              ],
+              "y": [
+                -8.320923805236816,
+                0.23056229948997498
+              ],
+              "z": [
+                0.042483944445848465,
+                2.538630485534668
+              ],
+              "intensity": [
+                36.0,
+                255.0
+              ],
+              "ring": [
+                1,
+                1
+              ],
+              "time": [
+                0.0,
+                0.06276154518127441
+              ]
+            }
+          },
+          "count": 459,
+          "hz": 15.303433867430439,
+          "cdr_payload_mbit_s": 16.17900812783652,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 42.78168,
+            "median": 65.24933200000001,
+            "p95": 70.763274,
+            "max": 131.307718
+          },
+          "source_interval_ms": {
+            "min": 63.314438,
+            "median": 65.02032249999999,
+            "p95": 65.804958,
+            "max": 130.999088
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 187.700947,
+            "median": 191.773755,
+            "p95": 196.230535,
+            "max": 240.347353
+          }
+        },
+        "/lidar3d/imu_sync": {
+          "frame": "utlidar_imu",
+          "orientation_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "acceleration_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "count": 7521,
+          "hz": 250.91214939497078,
+          "cdr_payload_mbit_s": 0.6494259031421458,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 0.378183,
+            "median": 1.012191,
+            "p95": 27.139757,
+            "max": 103.811006
+          },
+          "source_interval_ms": {
+            "min": 0.101566,
+            "median": 4.478216,
+            "p95": 5.033493,
+            "max": 11.621237
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 73.48523,
+            "median": 125.54635,
+            "p95": 201.702436,
+            "max": 388.401067
+          },
+          "imu_mean": [
+            3.8021128868394163,
+            -0.0007919707644362785,
+            9.805652089519016,
+            0.012223586061124676,
+            0.0005686337385705476,
+            0.00048682438406271117
+          ],
+          "imu_std": [
+            0.11966404388792394,
+            0.06971510848901377,
+            0.10450139361361004,
+            0.00590523418283939,
+            0.006752368302163133,
+            0.003218095061583193
+          ]
+        },
+        "/lidar3d/odom": {
+          "frame": "camera_init",
+          "child_frame": "aft_mapped",
+          "count": 459,
+          "hz": 15.310336116883324,
+          "cdr_payload_mbit_s": 0.08856461924249356,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 40.820515,
+            "median": 65.14783800000001,
+            "p95": 74.032723,
+            "max": 131.109344
+          },
+          "source_interval_ms": {
+            "min": 62.021494,
+            "median": 65.0264025,
+            "p95": 67.521095,
+            "max": 132.408619
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 133.168087,
+            "median": 139.866223,
+            "p95": 147.022853,
+            "max": 179.295905
+          },
+          "displacement_from_first_m": {
+            "min": 0.0,
+            "median": 0.011338000329602143,
+            "p95": 0.02477966083915289,
+            "max": 0.044286127987650054
+          }
+        },
+        "/lidar3d/registered": {
+          "frame": "camera_init",
+          "schema": {
+            "point_step": 48,
+            "row_step": 12384,
+            "width": 258,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 32,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_x",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_y",
+                "offset": 20,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_z",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "curvature",
+                "offset": 36,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -4.451434135437012,
+                0.65879887342453
+              ],
+              "y": [
+                -0.22866472601890564,
+                8.32096004486084
+              ],
+              "z": [
+                0.034070227295160294,
+                2.5053443908691406
+              ],
+              "intensity": [
+                36.0,
+                255.0
+              ],
+              "normal_x": [
+                0.0,
+                0.0
+              ],
+              "normal_y": [
+                0.0,
+                0.0
+              ],
+              "normal_z": [
+                0.0,
+                0.0
+              ],
+              "curvature": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "count": 458,
+          "hz": 15.311885698684128,
+          "cdr_payload_mbit_s": 1.6611017692874552,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 15.48541,
+            "median": 64.890081,
+            "p95": 88.538773,
+            "max": 134.050892
+          },
+          "source_interval_ms": {
+            "min": 62.021494,
+            "median": 65.025568,
+            "p95": 67.521095,
+            "max": 132.408619
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 134.4062,
+            "median": 141.6537085,
+            "p95": 166.990468,
+            "max": 223.779396
+          }
+        },
+        "/lidar3d/path": {
+          "frame": "camera_init",
+          "path_pose_count": 644,
+          "count": 459,
+          "hz": 15.298310718052647,
+          "cdr_payload_mbit_s": 4.06565426124795,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 34.862738,
+            "median": 64.998729,
+            "p95": 77.744906,
+            "max": 134.256126
+          },
+          "source_interval_ms": {
+            "min": 62.021494,
+            "median": 65.0264025,
+            "p95": 67.521095,
+            "max": 132.408619
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 149.469347,
+            "median": 166.37474,
+            "p95": 182.255209,
+            "max": 219.256185
+          }
+        },
+        "/go2/sensor_time_offset_ns": {
+          "offset_ns": 758001370261,
+          "count": 1,
+          "hz": null,
+          "cdr_payload_mbit_s": 3.198086853807589e-06,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {},
+          "source_interval_ms": {},
+          "wall_minus_header_ms_NOT_latency": {}
+        }
+      }
+    },
+    "netem-80-20-25.json": {
+      "side": "backend",
+      "duration_s": 30.070202031999997,
+      "wall_start_ns": 1788894003802715699,
+      "wall_end_ns": 1788894033954855028,
+      "ros_domain": "64",
+      "sample_columns": [
+        "source_stamp_ns",
+        "observer_wall_ns",
+        "observer_monotonic_ns",
+        "serialized_cdr_bytes",
+        "cloud_data_crc32"
+      ],
+      "interface_mbit_s_ALL_traffic": {
+        "rx": 18.851796984827125,
+        "tx": 0.2947829878418158
+      },
+      "processes": {
+        "5916": {
+          "name": "rviz2",
+          "cpu_percent_one_core": 301.8524808977432,
+          "rss_peak_mib": 329.41796875
+        },
+        "5929": {
+          "name": "go2_cloud_stamp_sync",
+          "cpu_percent_one_core": 32.56193354880014,
+          "rss_peak_mib": 50.68359375
+        },
+        "5931": {
+          "name": "pointlio_mapping",
+          "cpu_percent_one_core": 48.876469326858775,
+          "rss_peak_mib": 190.66015625
+        }
+      },
+      "topics": {
+        "/cmd_vel": {
+          "count": 0
+        },
+        "/lidar3d/cloud_sync": {
+          "frame": "utlidar_lidar",
+          "schema": {
+            "point_step": 32,
+            "row_step": 132064,
+            "width": 4127,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "ring",
+                "offset": 20,
+                "datatype": 4,
+                "count": 1
+              },
+              {
+                "name": "time",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -0.9742681384086609,
+                4.734482765197754
+              ],
+              "y": [
+                -7.809607982635498,
+                0.28547239303588867
+              ],
+              "z": [
+                0.04136345535516739,
+                2.233401298522949
+              ],
+              "intensity": [
+                33.0,
+                255.0
+              ],
+              "ring": [
+                1,
+                1
+              ],
+              "time": [
+                0.0,
+                0.0633353665471077
+              ]
+            }
+          },
+          "count": 123,
+          "hz": 4.0866811267294985,
+          "cdr_payload_mbit_s": 4.325896043583988,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 143.744062,
+            "median": 169.228345,
+            "p95": 248.231735,
+            "max": 8499.688301
+          },
+          "source_interval_ms": {
+            "min": 64.401865,
+            "median": 194.62275499999998,
+            "p95": 390.980721,
+            "max": 9303.506374
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 273.58449,
+            "median": 665.409275,
+            "p95": 1125.441345,
+            "max": 1332.665741
+          }
+        },
+        "/lidar3d/imu_sync": {
+          "frame": "utlidar_imu",
+          "orientation_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "acceleration_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "count": 3216,
+          "hz": 107.68773123195123,
+          "cdr_payload_mbit_s": 0.2772137011626713,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 0.432387,
+            "median": 1.114594,
+            "p95": 50.517846,
+            "max": 209.780313
+          },
+          "source_interval_ms": {
+            "min": 0.312567,
+            "median": 4.490375,
+            "p95": 14.066696,
+            "max": 259.98807
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 137.368218,
+            "median": 208.12947,
+            "p95": 617.01476,
+            "max": 704.418817
+          },
+          "imu_mean": [
+            3.777142623763772,
+            -0.0015209438302076367,
+            9.804919504704166,
+            0.012294420641582341,
+            0.00031967175324659286,
+            0.0005699699950275037
+          ],
+          "imu_std": [
+            0.11927481825342273,
+            0.06920122392945469,
+            0.10307632160974202,
+            0.005946601316870398,
+            0.006741903768045087,
+            0.0031701062149673853
+          ]
+        },
+        "/lidar3d/odom": {
+          "frame": "camera_init",
+          "child_frame": "aft_mapped",
+          "count": 123,
+          "hz": 4.086937370059315,
+          "cdr_payload_mbit_s": 0.023691759677632485,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 143.514703,
+            "median": 168.160363,
+            "p95": 260.842186,
+            "max": 8590.164651
+          },
+          "source_interval_ms": {
+            "min": 62.450409,
+            "median": 193.044424,
+            "p95": 390.352726,
+            "max": 9303.566695
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 223.495301,
+            "median": 604.633513,
+            "p95": 1064.349665,
+            "max": 1273.246631
+          },
+          "displacement_from_first_m": {
+            "min": 0.0,
+            "median": 0.015531806242134929,
+            "p95": 0.03310514063212577,
+            "max": 2.246169927179521
+          }
+        },
+        "/lidar3d/registered": {
+          "frame": "camera_init",
+          "schema": {
+            "point_step": 48,
+            "row_step": 12000,
+            "width": 250,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 32,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_x",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_y",
+                "offset": 20,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_z",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "curvature",
+                "offset": 36,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -4.736260414123535,
+                0.9975142478942871
+              ],
+              "y": [
+                -0.2755604088306427,
+                7.811851978302002
+              ],
+              "z": [
+                0.0293593667447567,
+                2.2357945442199707
+              ],
+              "intensity": [
+                33.0,
+                255.0
+              ],
+              "normal_x": [
+                0.0,
+                0.0
+              ],
+              "normal_y": [
+                0.0,
+                0.0
+              ],
+              "normal_z": [
+                0.0,
+                0.0
+              ],
+              "curvature": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "count": 123,
+          "hz": 4.086511887962653,
+          "cdr_payload_mbit_s": 0.4383414513135986,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 2.008004,
+            "median": 165.486761,
+            "p95": 310.86298,
+            "max": 8780.722947
+          },
+          "source_interval_ms": {
+            "min": 62.450409,
+            "median": 193.044424,
+            "p95": 390.352726,
+            "max": 9303.566695
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 227.978132,
+            "median": 713.396653,
+            "p95": 1226.827581,
+            "max": 1421.24429
+          }
+        },
+        "/lidar3d/path": {
+          "frame": "camera_init",
+          "path_pose_count": 2060,
+          "count": 123,
+          "hz": 4.083559206482238,
+          "cdr_payload_mbit_s": 5.2343081643582625,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 134.466145,
+            "median": 165.640104,
+            "p95": 254.673966,
+            "max": 8615.527343
+          },
+          "source_interval_ms": {
+            "min": 62.450409,
+            "median": 193.044424,
+            "p95": 390.352726,
+            "max": 9303.566695
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 348.877124,
+            "median": 735.399612,
+            "p95": 1195.250619,
+            "max": 1395.351008
+          }
+        },
+        "/go2/sensor_time_offset_ns": {
+          "offset_ns": 758003988417,
+          "count": 1,
+          "hz": null,
+          "cdr_payload_mbit_s": 3.1925292652785994e-06,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {},
+          "source_interval_ms": {},
+          "wall_minus_header_ms_NOT_latency": {}
+        }
+      }
+    },
+    "netem-30-0-12.json": {
+      "side": "backend",
+      "duration_s": 30.010019618000115,
+      "wall_start_ns": 1788894448167674844,
+      "wall_end_ns": 1788894478301323067,
+      "ros_domain": "64",
+      "sample_columns": [
+        "source_stamp_ns",
+        "observer_wall_ns",
+        "observer_monotonic_ns",
+        "serialized_cdr_bytes",
+        "cloud_data_crc32"
+      ],
+      "interface_mbit_s_ALL_traffic": {
+        "rx": 21.112163472894856,
+        "tx": 0.40822765716060566
+      },
+      "processes": {
+        "38849": {
+          "name": "go2_cloud_stamp_sync",
+          "cpu_percent_one_core": 31.689790668626923,
+          "rss_peak_mib": 51.375
+        },
+        "38851": {
+          "name": "pointlio_mapping",
+          "cpu_percent_one_core": 56.8345876902034,
+          "rss_peak_mib": 170.59765625
+        }
+      },
+      "topics": {
+        "/cmd_vel": {
+          "count": 0
+        },
+        "/lidar3d/cloud_sync": {
+          "frame": "utlidar_lidar",
+          "schema": {
+            "point_step": 32,
+            "row_step": 132480,
+            "width": 4140,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "ring",
+                "offset": 20,
+                "datatype": 4,
+                "count": 1
+              },
+              {
+                "name": "time",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -10.53248405456543,
+                3.4435081481933594
+              ],
+              "y": [
+                -11.67104721069336,
+                0.6918913722038269
+              ],
+              "z": [
+                0.03193391114473343,
+                2.2987682819366455
+              ],
+              "intensity": [
+                43.0,
+                255.0
+              ],
+              "ring": [
+                1,
+                1
+              ],
+              "time": [
+                0.0,
+                0.06278476864099503
+              ]
+            }
+          },
+          "count": 3,
+          "hz": 0.2501230717130249,
+          "cdr_payload_mbit_s": 0.10557727186887933,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 2500.000084,
+            "median": 3998.0318214999998,
+            "p95": 5496.063559,
+            "max": 5496.063559
+          },
+          "source_interval_ms": {
+            "min": 2538.983107,
+            "median": 4001.337171,
+            "p95": 5463.691235,
+            "max": 5463.691235
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 314.138882,
+            "median": 320.752514,
+            "p95": 353.122045,
+            "max": 353.122045
+          }
+        },
+        "/lidar3d/imu_sync": {
+          "frame": "utlidar_imu",
+          "orientation_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "acceleration_covariance": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "count": 6317,
+          "hz": 210.60597262500832,
+          "cdr_payload_mbit_s": 0.5456065743515549,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 0.37972,
+            "median": 1.350844,
+            "p95": 42.362181,
+            "max": 109.027396
+          },
+          "source_interval_ms": {
+            "min": 0.147342,
+            "median": 4.488945,
+            "p95": 13.512849,
+            "max": 37.018537
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 161.488273,
+            "median": 226.717492,
+            "p95": 245.202037,
+            "max": 356.165428
+          },
+          "imu_mean": [
+            3.8030180708788723,
+            -0.0009258890667689859,
+            9.805828838460107,
+            0.012152014505467452,
+            0.0005632533845806104,
+            0.00041173745888056605
+          ],
+          "imu_std": [
+            0.11981618667411416,
+            0.06986981818851223,
+            0.10400071536738462,
+            0.005963404536337703,
+            0.006733753821845622,
+            0.0031975637901274895
+          ]
+        },
+        "/lidar3d/odom": {
+          "frame": "camera_init",
+          "child_frame": "aft_mapped",
+          "count": 3,
+          "hz": 0.25012296257444677,
+          "cdr_payload_mbit_s": 0.000579006619161882,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 2479.126184,
+            "median": 3998.033566,
+            "p95": 5516.940948,
+            "max": 5516.940948
+          },
+          "source_interval_ms": {
+            "min": 2538.454532,
+            "median": 4002.0636320000003,
+            "p95": 5465.672732,
+            "max": 5465.672732
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 276.763202,
+            "median": 284.821938,
+            "p95": 336.092109,
+            "max": 336.092109
+          },
+          "displacement_from_first_m": {
+            "min": 0.0,
+            "median": 0.03964147969830943,
+            "p95": 2.1722515921046064,
+            "max": 2.1722515921046064
+          }
+        },
+        "/lidar3d/registered": {
+          "frame": "camera_init",
+          "schema": {
+            "point_step": 48,
+            "row_step": 9264,
+            "width": 193,
+            "height": 1,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "intensity",
+                "offset": 32,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_x",
+                "offset": 16,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_y",
+                "offset": 20,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "normal_z",
+                "offset": 24,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "curvature",
+                "offset": 36,
+                "datatype": 7,
+                "count": 1
+              }
+            ],
+            "ranges": {
+              "x": [
+                -3.4378957748413086,
+                10.49660587310791
+              ],
+              "y": [
+                -0.6707138419151306,
+                11.723827362060547
+              ],
+              "z": [
+                0.03771626576781273,
+                2.2962646484375
+              ],
+              "intensity": [
+                43.0,
+                255.0
+              ],
+              "normal_x": [
+                0.0,
+                0.0
+              ],
+              "normal_y": [
+                0.0,
+                0.0
+              ],
+              "normal_z": [
+                0.0,
+                0.0
+              ],
+              "curvature": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "count": 3,
+          "hz": 0.25012087191183485,
+          "cdr_payload_mbit_s": 0.011529749210575762,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 2402.913495,
+            "median": 3998.066984,
+            "p95": 5593.220473,
+            "max": 5593.220473
+          },
+          "source_interval_ms": {
+            "min": 2538.454532,
+            "median": 4002.0636320000003,
+            "p95": 5465.672732,
+            "max": 5465.672732
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 278.590634,
+            "median": 286.585815,
+            "p95": 414.133556,
+            "max": 414.133556
+          }
+        },
+        "/lidar3d/path": {
+          "frame": "camera_init",
+          "path_pose_count": 1151,
+          "count": 3,
+          "hz": 0.24948221139591173,
+          "cdr_payload_mbit_s": 0.07360421712870575,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {
+            "min": 2511.145765,
+            "median": 4008.301812,
+            "p95": 5505.457859,
+            "max": 5505.457859
+          },
+          "source_interval_ms": {
+            "min": 2538.454532,
+            "median": 4002.0636320000003,
+            "p95": 5465.672732,
+            "max": 5465.672732
+          },
+          "wall_minus_header_ms_NOT_latency": {
+            "min": 360.855843,
+            "median": 373.332133,
+            "p95": 400.64097,
+            "max": 400.64097
+          }
+        },
+        "/go2/sensor_time_offset_ns": {
+          "offset_ns": 758001370261,
+          "count": 1,
+          "hz": null,
+          "cdr_payload_mbit_s": 3.1989315975794588e-06,
+          "duplicates": 0,
+          "reordered": 0,
+          "arrival_interval_ms": {},
+          "source_interval_ms": {},
+          "wall_minus_header_ms_NOT_latency": {}
+        }
+      }
+    }
+  },
+  "image": "sha256:f32ee96233c8c26709109bac2286eb444463536d517ed1d978f68b42f56d0087",
+  "final_rviz_frame_rate": 5,
+  "accepted_trace_run": {
+    "result": {
+      "backend": "CMU Point-LIO ROS2 adaptation",
+      "loop_closure": false,
+      "map": "/ws/maps/lidar3d/run-20260908-192408-1jtipabu/PCD/scans.pcd",
+      "trajectory": "/ws/maps/lidar3d/run-20260908-192408-1jtipabu/trajectory.tum",
+      "points": 466129,
+      "trajectory_poses": 1677,
+      "trajectory_duration_s": 109.03005528450012,
+      "max_displacement_from_first_m": 0.03760937479407758,
+      "trajectory_format": "TUM: stamp x y z qx qy qz qw; camera_init -> aft_mapped (initial IMU coordinates)",
+      "note": "File integrity and nonempty geometry do not establish mapping accuracy."
+    },
+    "transport": {
+      "clock_robot_minus_laptop_ms": -159.99082075,
+      "clock_uncertainty_ms": 3.97635825,
+      "latency_scope": "Existing robot relay subscription callback -> existing laptop clock translator before publish. Includes relay IPC, DDS/Wi-Fi and laptop scheduling; not acquisition-to-map latency.",
+      "loss_scope": "Relay-input stamps missing from accepted clock outputs in trimmed overlap; includes transport loss, queueing, stale/reference policy. No additional DDS observer.",
+      "transport": {
+        "/utlidar/cloud": {
+          "overlap_s": 108.463613272,
+          "source_observed": 1667,
+          "laptop_observed": 1667,
+          "matched": 1667,
+          "source_only": 0,
+          "laptop_only": 0,
+          "observer_transfer_ms": {
+            "min": 5.60016325,
+            "median": 10.37105425,
+            "p95": 13.97403325,
+            "max": 38.95372025
+          },
+          "cloud_payload_crc_mismatches": 0
+        },
+        "/utlidar/imu": {
+          "overlap_s": 107.82715416,
+          "source_observed": 27013,
+          "laptop_observed": 27013,
+          "matched": 27013,
+          "source_only": 0,
+          "laptop_only": 0,
+          "observer_transfer_ms": {
+            "min": -0.21426575,
+            "median": 4.52557025,
+            "p95": 11.04841225,
+            "max": 42.28887225
+          },
+          "cloud_payload_crc_mismatches": 0
+        },
+        "/utlidar/robot_odom": {
+          "overlap_s": 108.598898649,
+          "source_observed": 16368,
+          "laptop_observed": 16368,
+          "matched": 16368,
+          "source_only": 0,
+          "laptop_only": 0,
+          "observer_transfer_ms": {
+            "min": 0.23080825,
+            "median": 4.711245249999999,
+            "p95": 9.14015025,
+            "max": 36.83816425
+          },
+          "cloud_payload_crc_mismatches": 0
+        }
+      },
+      "locked_sensor_translation_ns": 757972361586
+    }
+  },
+  "interpretation": "Only accepted_trace_run is the final baseline without extra DDS observers. Observer/stress runs record limitations, not demonstrated accuracy.",
+  "resource_sampling_without_dds": {
+    "resources-laptop.json": {
+      "side": "resources",
+      "duration_s": 30.009720463999656,
+      "wall_start_ns": 1788895724660534451,
+      "wall_end_ns": 1788895754670754480,
+      "ros_domain": "64",
+      "sample_columns": [
+        "source_stamp_ns",
+        "observer_wall_ns",
+        "observer_monotonic_ns",
+        "serialized_cdr_bytes",
+        "cloud_data_crc32"
+      ],
+      "interface_mbit_s_ALL_traffic": {
+        "rx": 18.85365272491418,
+        "tx": 0.22818473128447594
+      },
+      "processes": {
+        "48972": {
+          "name": "rviz2",
+          "cpu_percent_one_core": 48.07339880278253,
+          "rss_peak_mib": 195.328125
+        },
+        "49002": {
+          "name": "go2_cloud_stamp_sync",
+          "cpu_percent_one_core": 49.419050273819124,
+          "rss_peak_mib": 50.62890625
+        },
+        "49004": {
+          "name": "pointlio_mapping",
+          "cpu_percent_one_core": 59.20866472561039,
+          "rss_peak_mib": 175.9765625
+        }
+      },
+      "topics": {}
+    },
+    "resources-robot.json": {
+      "side": "resources",
+      "duration_s": 30.002904638000473,
+      "wall_start_ns": 1788895725260306589,
+      "wall_end_ns": 1788895755263942263,
+      "ros_domain": "0",
+      "sample_columns": [
+        "source_stamp_ns",
+        "observer_wall_ns",
+        "observer_monotonic_ns",
+        "serialized_cdr_bytes",
+        "cloud_data_crc32"
+      ],
+      "interface_mbit_s_ALL_traffic": {
+        "rx": 0.18341797457270287,
+        "tx": 19.13039950382123
+      },
+      "processes": {
+        "10350": {
+          "name": "robot_relay_wifi.py",
+          "cpu_percent_one_core": 38.953007151781456,
+          "rss_peak_mib": 52.4140625
+        },
+        "10379": {
+          "name": "robot_relay_wifi.py",
+          "cpu_percent_one_core": 60.38390035985499,
+          "rss_peak_mib": 49.53125
+        }
+      },
+      "topics": {}
+    }
+  },
+  "repeat_trace_run": {
+    "result": {
+      "backend": "CMU Point-LIO ROS2 adaptation",
+      "loop_closure": false,
+      "map": "/ws/maps/lidar3d/run-20260908-192826-upfbj14e/PCD/scans.pcd",
+      "trajectory": "/ws/maps/lidar3d/run-20260908-192826-upfbj14e/trajectory.tum",
+      "points": 710204,
+      "trajectory_poses": 2560,
+      "trajectory_duration_s": 166.48349833488464,
+      "max_displacement_from_first_m": 0.04269556267383375,
+      "trajectory_format": "TUM: stamp x y z qx qy qz qw; camera_init -> aft_mapped (initial IMU coordinates)",
+      "note": "File integrity and nonempty geometry do not establish mapping accuracy."
+    },
+    "transport": {
+      "clock_robot_minus_laptop_ms": -149.352498,
+      "clock_uncertainty_ms": 5.909127,
+      "latency_scope": "Existing robot relay subscription callback -> existing laptop clock translator before publish. Includes relay IPC, DDS/Wi-Fi and laptop scheduling; not acquisition-to-map latency.",
+      "loss_scope": "Relay-input stamps missing from accepted clock outputs in trimmed overlap; includes transport loss, queueing, stale/reference policy. No additional DDS observer.",
+      "transport": {
+        "/utlidar/cloud": {
+          "overlap_s": 165.849482059,
+          "source_observed": 2549,
+          "laptop_observed": 2549,
+          "matched": 2549,
+          "source_only": 0,
+          "laptop_only": 0,
+          "observer_transfer_ms": {
+            "min": 6.126281,
+            "median": 11.510272,
+            "p95": 15.537952,
+            "max": 39.213275
+          },
+          "cloud_payload_crc_mismatches": 0
+        },
+        "/utlidar/imu": {
+          "overlap_s": 165.275042533,
+          "source_observed": 41403,
+          "laptop_observed": 41403,
+          "matched": 41403,
+          "source_only": 0,
+          "laptop_only": 0,
+          "observer_transfer_ms": {
+            "min": -0.390262,
+            "median": 5.742112,
+            "p95": 12.162398,
+            "max": 41.984857
+          },
+          "cloud_payload_crc_mismatches": 0
+        },
+        "/utlidar/robot_odom": {
+          "overlap_s": 166.023208618,
+          "source_observed": 24997,
+          "laptop_observed": 24997,
+          "matched": 24997,
+          "source_only": 0,
+          "laptop_only": 0,
+          "observer_transfer_ms": {
+            "min": 0.015409,
+            "median": 5.765769,
+            "p95": 10.377614,
+            "max": 36.747932
+          },
+          "cloud_payload_crc_mismatches": 0
+        }
+      },
+      "locked_sensor_translation_ns": 757963202050,
+      "laptop_wall_window_ns": [
+        null,
+        null
+      ]
+    }
+  },
+  "netem_without_dds_observers": {
+    "30-0-25": {
+      "transport": {
+        "clock_robot_minus_laptop_ms": -141.8590345,
+        "clock_uncertainty_ms": 4.5305895,
+        "latency_scope": "Existing robot relay subscription callback -> existing laptop clock translator before publish. Includes relay IPC, DDS/Wi-Fi and laptop scheduling; not acquisition-to-map latency.",
+        "loss_scope": "Relay-input stamps missing from accepted clock outputs in trimmed overlap; includes transport loss, queueing, stale/reference policy. No additional DDS observer.",
+        "transport": {
+          "/utlidar/cloud": {
+            "overlap_s": 27.863518953,
+            "source_observed": 428,
+            "laptop_observed": 425,
+            "matched": 425,
+            "source_only": 3,
+            "laptop_only": 0,
+            "observer_transfer_ms": {
+              "min": 80.1587675,
+              "median": 84.1442445,
+              "p95": 89.1937985,
+              "max": 94.5765255
+            },
+            "cloud_payload_crc_mismatches": 0
+          },
+          "/utlidar/imu": {
+            "overlap_s": 27.922963858,
+            "source_observed": 6995,
+            "laptop_observed": 6988,
+            "matched": 6988,
+            "source_only": 7,
+            "laptop_only": 0,
+            "observer_transfer_ms": {
+              "min": 33.6192685,
+              "median": 68.879969,
+              "p95": 86.2704205,
+              "max": 100.0793355
+            },
+            "cloud_payload_crc_mismatches": 0
+          },
+          "/utlidar/robot_odom": {
+            "overlap_s": 27.927054643,
+            "source_observed": 4210,
+            "laptop_observed": 4207,
+            "matched": 4207,
+            "source_only": 3,
+            "laptop_only": 0,
+            "observer_transfer_ms": {
+              "min": 32.8197555,
+              "median": 62.0744805,
+              "p95": 84.0777535,
+              "max": 143.1232785
+            },
+            "cloud_payload_crc_mismatches": 0
+          }
+        },
+        "locked_sensor_translation_ns": 757955056672,
+        "laptop_wall_window_ns": [
+          1788896005000000000,
+          1788896035000000000
+        ]
+      },
+      "pose_window_note": "Corrected pose stamps between wall window+1s and end-1s; not external trajectory ground truth.",
+      "poses": 427,
+      "max_displacement_from_session_start_m": 0.0277288585461592,
+      "kernel_drops": 43
+    },
+    "80-20-25": {
+      "transport": {
+        "clock_robot_minus_laptop_ms": -141.8590345,
+        "clock_uncertainty_ms": 4.5305895,
+        "latency_scope": "Existing robot relay subscription callback -> existing laptop clock translator before publish. Includes relay IPC, DDS/Wi-Fi and laptop scheduling; not acquisition-to-map latency.",
+        "loss_scope": "Relay-input stamps missing from accepted clock outputs in trimmed overlap; includes transport loss, queueing, stale/reference policy. No additional DDS observer.",
+        "transport": {
+          "/utlidar/cloud": {
+            "overlap_s": 17.776352882,
+            "source_observed": 273,
+            "laptop_observed": 92,
+            "matched": 92,
+            "source_only": 181,
+            "laptop_only": 0,
+            "observer_transfer_ms": {
+              "min": 150.4847135,
+              "median": 172.0796415,
+              "p95": 189.2707565,
+              "max": 198.9657245
+            },
+            "cloud_payload_crc_mismatches": 0
+          },
+          "/utlidar/imu": {
+            "overlap_s": 27.852020741,
+            "source_observed": 6970,
+            "laptop_observed": 5908,
+            "matched": 5908,
+            "source_only": 1062,
+            "laptop_only": 0,
+            "observer_transfer_ms": {
+              "min": 85.5697015,
+              "median": 140.3049615,
+              "p95": 172.8072165,
+              "max": 198.7940575
+            },
+            "cloud_payload_crc_mismatches": 0
+          },
+          "/utlidar/robot_odom": {
+            "overlap_s": 27.783773183,
+            "source_observed": 4186,
+            "laptop_observed": 3656,
+            "matched": 3656,
+            "source_only": 530,
+            "laptop_only": 0,
+            "observer_transfer_ms": {
+              "min": 105.6762395,
+              "median": 186.3249595,
+              "p95": 223.9455805,
+              "max": 253.9254215
+            },
+            "cloud_payload_crc_mismatches": 0
+          }
+        },
+        "locked_sensor_translation_ns": 757955056672,
+        "laptop_wall_window_ns": [
+          1788896043000000000,
+          1788896073000000000
+        ]
+      },
+      "pose_window_note": "Corrected pose stamps between wall window+1s and end-1s; not external trajectory ground truth.",
+      "poses": 100,
+      "max_displacement_from_session_start_m": 0.0271491055935172,
+      "kernel_drops": 10807
+    },
+    "session_result": {
+      "backend": "CMU Point-LIO ROS2 adaptation",
+      "loop_closure": false,
+      "map": "/ws/maps/lidar3d/run-20260908-193236-ivgvsxr5/PCD/scans.pcd",
+      "trajectory": "/ws/maps/lidar3d/run-20260908-193236-ivgvsxr5/trajectory.tum",
+      "points": 424293,
+      "trajectory_poses": 1545,
+      "trajectory_duration_s": 124.64568638801575,
+      "max_displacement_from_first_m": 1.0975426450987182,
+      "trajectory_format": "TUM: stamp x y z qx qy qz qw; camera_init -> aft_mapped (initial IMU coordinates)",
+      "note": "File integrity and nonempty geometry do not establish mapping accuracy."
+    }
+  }
+}

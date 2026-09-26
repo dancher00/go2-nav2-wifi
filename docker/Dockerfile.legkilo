@@ -1,0 +1,17 @@
+# Optional leg-assisted backend; retains Point-LIO for comparisons.
+ARG BASE_IMAGE=go2-lidar3d:local
+FROM ${BASE_IMAGE} AS dependencies
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgoogle-glog-dev libgflags-dev libyaml-cpp-dev libboost-filesystem-dev \
+    libboost-system-dev libtbb-dev liblz4-dev libceres-dev libglm-dev libglfw3-dev \
+    libpng-dev libjpeg-dev libassimp-dev && rm -rf /var/lib/apt/lists/*
+RUN git init /opt/go2-legkilo-src && git -C /opt/go2-legkilo-src remote add origin https://github.com/ouguangjun/Leg-KILO.git \
+    && git -C /opt/go2-legkilo-src fetch --depth 1 origin 4b29f2f7d175dcf661f23f01f77918bed2bf0502 \
+    && git -C /opt/go2-legkilo-src checkout --detach FETCH_HEAD
+FROM dependencies
+COPY ws/scripts/legkilo-go2.patch /opt/legkilo-go2.patch
+RUN --mount=type=cache,id=go2-legkilo-build,target=/opt/go2-legkilo-src/build patch -p1 -d /opt/go2-legkilo-src < /opt/legkilo-go2.patch \
+    && bash -c 'source /opt/ros/humble/setup.bash && source /opt/go2-unitree-msgs/local_setup.bash && cd /opt/go2-legkilo-src && MAKEFLAGS=-j1 colcon build --base-paths legkilo msg/unitree_legged_msgs msg/livox_ros_driver2 --merge-install --install-base /opt/go2-legkilo --executor sequential --cmake-args -DLEGKILO_ROS_VERSION=2 -DIRIDESCENCE_VIEWER=OFF -DLEGKILO_MARCH_NATIVE=OFF -DBUILD_TESTING=OFF' \
+    && sha256sum /opt/legkilo-go2.patch > /opt/go2-legkilo/patch.sha256 \
+    && rm -rf /opt/go2-legkilo-src/log

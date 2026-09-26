@@ -1,0 +1,243 @@
+{
+  "date": "2026-09-09",
+  "standing_comparison": [
+    {
+      "label": "Leg-KILO with encoder contacts, live Jetson",
+      "run": "run-20260909-132117-hirn0q_0",
+      "trajectory_duration_s": 62.057557821273804,
+      "trajectory_poses": 955,
+      "max_displacement_from_first_m": 0.0221050413595756,
+      "points": 612
+    },
+    {
+      "label": "Point-LIO, laptop replay",
+      "run": "run-20260909-132307-iepe3z6p",
+      "trajectory_duration_s": 61.668055295944214,
+      "trajectory_poses": 949,
+      "max_displacement_from_first_m": 0.02771597174886136,
+      "points": 509188
+    },
+    {
+      "label": "Leg-KILO without encoder adaptation; native Sport foot fields zero, laptop replay",
+      "run": "run-20260909-132436-ergvn4ma",
+      "trajectory_duration_s": 62.057557821273804,
+      "trajectory_poses": 955,
+      "max_displacement_from_first_m": 0.0546429203419693,
+      "points": 612
+    }
+  ],
+  "input": "run-20260909-132117-hirn0q_0/sensors",
+  "input_stats": {
+    "lowstate": {
+      "samples": 31620,
+      "forces_percentiles": [
+        [
+          46.0,
+          35.0,
+          38.0,
+          46.0
+        ],
+        [
+          46.0,
+          35.0,
+          39.0,
+          46.0
+        ],
+        [
+          46.0,
+          36.0,
+          40.0,
+          47.0
+        ],
+        [
+          47.0,
+          36.0,
+          40.0,
+          48.0
+        ],
+        [
+          47.0,
+          36.0,
+          40.0,
+          48.0
+        ]
+      ],
+      "q_extent": [
+        0.00021195411682128906,
+        0.0005753040313720703,
+        6.318092346191406e-05,
+        0.0002724975347518921,
+        0.0004844069480895996,
+        7.891654968261719e-05,
+        0.00018167495727539062,
+        0.0002422332763671875,
+        7.903575897216797e-05,
+        0.0003330707550048828,
+        0.0004239082336425781,
+        7.903575897216797e-05
+      ],
+      "dq_abs_p95": [
+        0.07363495230674744,
+        0.08138599991798401,
+        0.04246226325631142,
+        0.08138599991798401,
+        0.08138599991798401,
+        0.04852829873561859,
+        0.08138599991798401,
+        0.08138599991798401,
+        0.046506285667419434,
+        0.07751047611236572,
+        0.07751047611236572,
+        0.04246226325631142
+      ]
+    },
+    "/lidar3d/kinematic_sync": {
+      "extent_m": [
+        0.0011453628540039062,
+        0.0007520914077758789,
+        0.0005216002464294434
+      ],
+      "max_displacement_m": 0.0011036250507459044,
+      "modes": [
+        0
+      ]
+    },
+    "/lidar3d/factory_odom_clock_reference": {
+      "extent_m": [
+        0.0011453628540039062,
+        0.0007492899894714355,
+        0.0005197525024414062
+      ],
+      "max_displacement_m": 0.0011057095172927098
+    }
+  },
+  "transport": {
+    "native": {
+      "duration_s": 15.004048125998452,
+      "processes": {
+        "101": {
+          "name": "robot_relay_wifi.py",
+          "cpu_percent_one_core": 9.13019177483677,
+          "rss_peak_mib": 52.5390625
+        },
+        "105": {
+          "name": "go2_cloud_stamp_sync",
+          "cpu_percent_one_core": 51.737753390741695,
+          "rss_peak_mib": 53.0859375
+        },
+        "107": {
+          "name": "legkilo_node",
+          "cpu_percent_one_core": 35.438670296403465,
+          "rss_peak_mib": 57.59765625
+        },
+        "137": {
+          "name": "robot_relay_wifi.py",
+          "cpu_percent_one_core": 8.79203652391689,
+          "rss_peak_mib": 55.5859375
+        }
+      },
+      "topics": {
+        "/cmd_vel": {
+          "count": 0
+        },
+        "/lidar3d/cloud_sync": {
+          "count": 231,
+          "hz": 15.370971511913087,
+          "cdr_payload_mbit_s": 16.472159908081696,
+          "duplicates": 0,
+          "reordered": 0
+        },
+        "/lidar3d/imu_sync": {
+          "count": 0
+        },
+        "/lidar3d/odom": {
+          "count": 230,
+          "hz": 15.396087667891436,
+          "cdr_payload_mbit_s": 0.08878670534865075,
+          "duplicates": 0,
+          "reordered": 0
+        },
+        "/lidar3d/registered": {
+          "count": 230,
+          "hz": 15.39513197043633,
+          "cdr_payload_mbit_s": 11.766615417214386,
+          "duplicates": 0,
+          "reordered": 0
+        },
+        "/lidar3d/path": {
+          "count": 230,
+          "hz": 15.398369648042866,
+          "cdr_payload_mbit_s": 2.3736953987962486,
+          "duplicates": 0,
+          "reordered": 0
+        },
+        "/go2/sensor_time_offset_ns": {
+          "count": 1,
+          "hz": null,
+          "cdr_payload_mbit_s": 6.398273265576561e-06,
+          "duplicates": 0,
+          "reordered": 0
+        }
+      }
+    },
+    "wifi": {
+      "duration_s": 15.001880751000499,
+      "processes": {
+        "530722": {
+          "name": "rviz2",
+          "cpu_percent_one_core": 221.56018519676212,
+          "rss_peak_mib": 360.86328125
+        }
+      },
+      "topics": {
+        "/cmd_vel": {
+          "count": 0
+        },
+        "/lidar3d/cloud_sync": {
+          "count": 0
+        },
+        "/lidar3d/imu_sync": {
+          "count": 0
+        },
+        "/lidar3d/odom": {
+          "count": 230,
+          "hz": 15.372407457201712,
+          "cdr_payload_mbit_s": 0.08879953267933796,
+          "duplicates": 0,
+          "reordered": 0
+        },
+        "/lidar3d/registered": {
+          "count": 59,
+          "hz": 3.943393969545558,
+          "cdr_payload_mbit_s": 3.0236694153814563,
+          "duplicates": 0,
+          "reordered": 0
+        },
+        "/lidar3d/path": {
+          "count": 14,
+          "hz": 0.9572848034744791,
+          "cdr_payload_mbit_s": 0.14898611961376507,
+          "duplicates": 0,
+          "reordered": 0
+        },
+        "/go2/sensor_time_offset_ns": {
+          "count": 0
+        }
+      }
+    }
+  },
+  "limitations": [
+    "No ground truth or labelled walking trial yet; maximum displacement is a stationary stability statistic.",
+    "Live leg-assisted run used Jetson; comparison replays used laptop. Not a controlled repeated statistical experiment.",
+    "Transport rates and header continuity do not establish true acquisition-to-display latency.",
+    "Loop closure enabled but no accepted loop demonstrated; RViz frontend differs from optimized saved map.",
+    "Contact thresholds provisional. Lying/no-contact record produced 2.35 m displacement; initialize standing."
+  ],
+  "stop_and_offload": {
+    "run": "run-20260909-131926-94xmol_2",
+    "files_sha256_verified": 21,
+    "bytes": 3331356,
+    "removed_from_jetson": true
+  },
+  "tests_passed": 107
+}

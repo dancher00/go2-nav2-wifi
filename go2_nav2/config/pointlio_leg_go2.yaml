@@ -1,0 +1,93 @@
+# Experimental body IMU + stance-foot velocity in the Point-LIO input filter.
+# Contact thresholds and body/L1 extrinsics inherit the measured Leg-KILO setup.
+/**:
+  ros__parameters:
+    use_sim_time: false
+    use_imu_as_input: true
+    prop_at_freq_of_imu: false
+    check_satu: true
+    runtime_pos_log_enable: false
+    init_map_size: 2000
+    point_filter_num: 1
+    space_down_sample: true
+    filter_size_surf: 0.1
+    filter_size_map: 0.1
+    cube_side_length: 1000.0
+    common:
+      lid_topic: /lidar3d/cloud_sync
+      imu_topic: /lidar3d/imu_sync
+      con_frame: false
+      con_frame_num: 1
+      cut_frame: false
+      cut_frame_time_interval: 0.1
+      time_lag_imu_to_lidar: 0.0
+    preprocess:
+      lidar_type: 5
+      scan_line: 18
+      timestamp_unit: 0
+      blind: 0.5
+    mapping:
+      align_output_to_floor: false
+      output_frame: lidar3d_map
+      imu_en: true
+      use_acceleration: true
+      start_in_aggressive_motion: false
+      extrinsic_est_en: false
+      imu_time_inte: 0.0033333333333333335
+      satu_acc: 30.0
+      satu_gyro: 35.0
+      acc_norm: 9.81
+      lidar_meas_cov: 0.01
+      acc_cov_output: 500.0
+      gyr_cov_output: 1000.0
+      b_acc_cov: 0.0001
+      b_gyr_cov: 0.0001
+      imu_meas_acc_cov: 0.1
+      imu_meas_omg_cov: 0.1
+      gyr_cov_input: 0.01
+      acc_cov_input: 0.1
+      plane_thr: 0.1
+      match_s: 81.0
+      fov_degree: 180.0
+      det_range: 100.0
+      gravity_align: true
+      gravity:
+      - 0.0
+      - 0.0
+      - -9.81
+      gravity_init:
+      - 0.0
+      - 0.0
+      - -9.81
+      extrinsic_T:
+      - 0.2812775691608151
+      - -0.00046171124506249526
+      - -0.0006751630768806374
+      extrinsic_R:
+      - 0.5260586877854104
+      - -0.8100801280201871
+      - 0.2589062440195242
+      - -0.8385243572185935
+      - -0.5448631174371977
+      - -0.0010419250161294356
+      - 0.14191250599089075
+      - -0.21655107813959787
+      - -0.96590189522537
+    odometry:
+      publish_odometry_without_downsample: false
+    publish:
+      path_en: true
+      scan_publish_en: true
+      scan_bodyframe_pub_en: false
+    pcd_save:
+      pcd_save_en: true
+      interval: -1
+    leg:
+      body_imu: true
+      enabled: true
+      velocity_variance: 0.5
+      update_interval: 0.02
+      max_age: 0.01
+      innovation_gate: 11.345
+      force_up: 35
+      force_down: 25

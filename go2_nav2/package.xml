@@ -18,7 +18,8 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>python3-yaml</exec_depend>
-  <exec_depend>unitree_go</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  <exec_depend>sensor_msgs_py</exec_depend>
   <exec_depend>xacro</exec_depend>
   <exec_depend>slam_toolbox</exec_depend>
   <exec_depend>pointcloud_to_laserscan</exec_depend>
@@ -28,6 +29,7 @@
   <exec_depend>nav2_smac_planner</exec_depend>
   <exec_depend>nav2_dwb_controller</exec_depend>
   <exec_depend>nav2_controller</exec_depend>
+  <exec_depend>nav2_rotation_shim_controller</exec_depend>
   <exec_depend>nav2_lifecycle_manager</exec_depend>
   <exec_depend>nav2_msgs</exec_depend>
 

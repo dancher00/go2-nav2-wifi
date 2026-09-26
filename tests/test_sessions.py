@@ -28,6 +28,50 @@ raise SystemExit(supervise(Path(root), mode, commands, preflight, owner='test-ow
 
 
 class SessionTests(unittest.TestCase):
+    def test_sensor_view_launches_rviz_without_slam_or_motion(self):
+        with patch.dict(os.environ, GO2_NET='wifi', GO2_ODOM_SOURCE='utlidar'):
+            commands = sessions.session_commands('sensors-viz', None)
+        self.assertEqual(commands, [['ros2', 'launch', 'go2_nav2', 'bringup_viz.launch.py']])
+
+    def test_3d_navigation_owns_motion(self):
+        with patch.dict(os.environ, GO2_LIDAR3D_NAV='1', GO2_LIDAR3D_PLAN='1',
+                        GO2_ROBOT_IP='192.0.2.2'):
+            commands = sessions.session_commands('lidar3d-viz', None)
+            self.assertIn('lidar3d_controller.launch.py', str(commands))
+            self.assertIn('go2_cmd_vel_tcp.py', str(commands))
+            self.assertIn('lidar3d_navigation.rviz', str(commands))
+            locks = sessions.acquire_locks(self.root, 'lidar3d-viz')
+            try:
+                with self.assertRaises(BlockingIOError):
+                    sessions.acquire_locks(self.root, 'teleop')
+            finally:
+                for fd in locks:
+                    os.close(fd)
+
+    def test_jetson_uses_local_backend_and_output_relay_only(self):
+        with patch.dict(os.environ, GO2_LIDAR3D_COMPUTE='jetson', GO2_ODOM_SOURCE='utlidar'):
+            commands = sessions.session_commands('lidar3d', None, '/tmp/result')
+        self.assertEqual(len(commands), 2)
+        self.assertIn('lidar3d_mapping.launch.py', commands[0])
+        self.assertIn('GO2_RELAY_PROFILE=lidar3d-map', commands[1])
+        self.assertIn('--sensors-only', commands[1])
+        self.assertNotIn('sport', str(commands))
+
+    def test_visualization_has_no_backend_clock_or_motion_process(self):
+        with patch.dict(os.environ, GO2_NET='wifi', GO2_ODOM_SOURCE='utlidar'):
+            commands = sessions.session_commands('lidar3d-viz', None)
+        self.assertEqual(len(commands), 2)
+        self.assertIn('lidar3d_robot_viz.launch.py', commands[0])
+        self.assertEqual(commands[1][:4], ['ros2', 'run', 'rviz2', 'rviz2'])
+
+    def test_plan_preview_has_no_controller_or_motion_transport(self):
+        with patch.dict(os.environ, GO2_LIDAR3D_PLAN='1', GO2_NET='wifi'):
+            commands = sessions.session_commands('lidar3d-viz', None)
+        self.assertIn('lidar3d_planning.launch.py', commands[1])
+        self.assertIn('lidar3d_planning.rviz', commands[-1][-1])
+        self.assertNotIn('controller', str(commands))
+        self.assertNotIn('go2_cmd_vel_tcp', str(commands))
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
@@ -132,6 +176,20 @@ class SessionTests(unittest.TestCase):
         self.assertEqual(len(commands), 1)
         self.assertIn('slam_mapping.launch.py', commands[0])
 
+    def test_lidar3d_plan_has_no_factory_odom_tf_or_motion_process(self):
+        with patch.dict(os.environ, GO2_ODOM_SOURCE='utlidar', GO2_NET='wifi'):
+            commands = sessions.session_commands('lidar3d', None, self.root / 'result')
+        self.assertEqual(len(commands), 1)
+        self.assertIn('lidar3d_mapping.launch.py', commands[0])
+        self.assertIn(f'result_dir:={self.root}/result', commands[0])
+
+    def test_lidar3d_shares_stack_lock_with_2d_mapping(self):
+        owner = self.start('lidar3d')
+        self.running('lidar3d')
+        for mode in ('mapping', 'navigation', 'lidar3d'):
+            self.assertNotEqual(self.start(mode).wait(timeout=5), 0)
+            self.assertIsNone(owner.poll())
+
     def test_motion_modes_share_exclusive_lock(self):
         owner = self.start('teleop')
         self.running('teleop')
@@ -142,3 +200,11 @@ class SessionTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class LegKiloCommandTests(unittest.TestCase):
+    def test_backend_selection_reuses_session_and_sensor_only_relay(self):
+        with patch.dict(os.environ, GO2_LIDAR3D_BACKEND='legkilo', GO2_LIDAR3D_COMPUTE='jetson'):
+            commands = sessions.session_commands('lidar3d', None, '/tmp/result')
+        self.assertIn('legkilo_mapping.launch.py', commands[0])
+        self.assertEqual(len(commands), 2)
+        self.assertIn('--sensors-only', commands[1])

@@ -1,0 +1,79 @@
+{
+  "source_bag": "ws/maps/lidar3d/run-20260908-200220-mw9q1yu4/sensors",
+  "source_db_sha256": "bc0ac23fd4647437562eee8f2bb6cbbabfb3db0f2644dc9406e4bfa99b0cd569",
+  "backend_commit": "43d5f54b389b251713f0097893c30fa76c870d54",
+  "patch_sha256": "bb418054bb0c348cbe68493e1688d5a6227feb10d2acfffc4fd89fb52bb424e1",
+  "image_id": "sha256:8848f7acea14652359b79ca14d9f3bd6222605cac0175ee98415c298489a68ba",
+  "mode": "gyro-assisted LiDAR odometry; acceleration input disabled inside backend",
+  "loop_closure": false,
+  "new_guards": false,
+  "factory_pose_used_by_estimator": false,
+  "variants": {
+    "original_full_imu": {
+      "run": "run-20260908-200220-mw9q1yu4",
+      "max_displacement_from_first_m": 115.47389348626248,
+      "poses": 536
+    },
+    "original_replay": {
+      "run": "run-20260908-200340-lq7ssnpl",
+      "max_displacement_from_first_m": 115.47389348626248,
+      "poses": 536
+    },
+    "imu_input_model_only": {
+      "run": "run-20260908-200544-nkzu7o6t",
+      "max_displacement_from_first_m": 624.4485842981292,
+      "poses": 536
+    },
+    "imu_disabled": {
+      "run": "run-20260908-200759-akqk39zr",
+      "max_displacement_from_first_m": 80.05711710388283,
+      "poses": 554
+    },
+    "flip_acc_z_only": {
+      "run": "run-20260908-201053-_aarz0xa",
+      "max_displacement_from_first_m": 204.87233486401178,
+      "poses": 536
+    },
+    "gyro_only_old_rotation": {
+      "run": "run-20260908-201236-o0qv26oe",
+      "max_displacement_from_first_m": 0.773139842814116,
+      "poses": 536
+    },
+    "cmu_gyro_calibrated_old_rotation": {
+      "run": "run-20260908-201415-zdkis04j",
+      "max_displacement_from_first_m": 0.38487602280584904,
+      "poses": 536
+    },
+    "gyro_only_identity_prototype": {
+      "run": "run-20260908-201707-tsfj40km",
+      "max_displacement_from_first_m": 0.3919764877949196,
+      "poses": 536
+    },
+    "full_acceleration_identity": {
+      "run": "run-20260908-202352-0m_21z3o",
+      "max_displacement_from_first_m": 945.3770767267581,
+      "poses": 536
+    },
+    "installed_fix": {
+      "run": "run-20260908-202644-4idrcil8",
+      "max_displacement_from_first_m": 0.3919764877949196,
+      "poses": 536
+    }
+  },
+  "installed_fix_matches_prototype_tum_exactly": true,
+  "last_8s_position_span_m": 0.01085339137741096,
+  "estimated_total_rotation_deg": 146.4152071558706,
+  "floor_normal_consistency_deg_approx": 0.22178273411100796,
+  "floor_method": "RANSAC dominant raw-cloud plane at source-relative 3..3.5s and 32..32.5s, range .5..5m, threshold .04m; compare normals after endpoint pose transforms. Self-consistency, not absolute accuracy.",
+  "raw_gyro_axis_to_initial_floor_deg": 1.8,
+  "old_Rz_pi_axis_to_initial_floor_deg": 28.28,
+  "factory_reference_max_position_change_m": 0.05362751858296787,
+  "limits": [
+    "one recorded turn; revised live Wi-Fi run and walking unverified",
+    "sensor origin differs from factory body origin; displacement is not trajectory error",
+    "factory odometry is a reference estimate, not ground truth; total rotation differs by about 4 degrees",
+    "nominal translation and full spatial/temporal IMU calibration unverified"
+  ],
+  "github_related": "https://github.com/jizhang-cmu/autonomy_stack_go2/issues/27#issuecomment-3584395747",
+  "tests_passed": 93
+}

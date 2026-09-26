@@ -1,0 +1,9 @@
+# Shared navigation envelope in base_link, metres. NOT a body-centred circle.
+# Sources (Go2 configs):
+# https://github.com/abizovnuralem/go2_ros2_sdk/blob/master/go2_robot_sdk/config/nav2_params.yaml
+# https://github.com/botbotrobotics/BotBrain/blob/main/botbrain_ws/src/go2_pkg/config/nav2_params.yaml
+# Checked against visual meshes + 33 live joint samples, 2026-09-11:
+# x=[-0.35345, 0.33196], y=[-0.17027, 0.19290]. These are standing-pose bounds,
+# not the full swept volume of every gait. See docs/measurements/go2-standing-footprint-2026-09-11.json.
+footprint: '[[0.360,0.200],[0.360,-0.200],[-0.450,-0.200],[-0.450,0.200]]'
+footprint_padding: 0.03

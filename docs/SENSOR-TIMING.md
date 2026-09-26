@@ -85,3 +85,34 @@ Local evidence: `ws/log/time_fix_20260908/sensor-time-final.json`,
 `mapping-verified.log`, and `foxy-tests-final.log` in that directory. Walking
 mapping accuracy and the full localization launch have not been live-tested in
 this stationary run; the localization timestamp logic has regression tests.
+
+### Эксперимент 3D LiDAR
+
+В ветке `experiment/lidar-3d-slam`: `./mapping.sh --3d` запускает отдельный
+Point-LIO на Jetson (raw L1 + гироскоп, без камеры, ускорений и loop closure);
+на ноутбуке — только RViz через Wi-Fi. `--3d --laptop` сохраняет вычисления на ноутбуке.
+Установка, измерения и ограничения: [3D LiDAR SLAM](LIDAR-3D-SLAM.md).
+Обычный `./mapping.sh` сохраняет 2D-профиль.
+
+### Leg-KILO: пары IMU и энкодеров, 2026-09-09
+
+SportState и LowState связываются по совпадающим сырым float32 полям IMU.
+Firmware повторяет ключи IMU; даже одинаковый LowState.tick может сопровождаться
+разными энкодерами. Кеш сохраняет первый вариант LowState и допускает повторное
+использование для SportState. Это воспроизводимая привязка, но не доказательство
+одновременного аппаратного измерения суставов и IMU.
+
+В записи обнаружено отставание времени приёма LowState от SportState до
+389 мс в проверенном примере. Это хронология callback/записи, **не измеренная
+Wi-Fi end-to-end latency**. Существующая очередь увеличена с 8 до 512 пакетов;
+появление более поздней пары позволяет передать предшествующие IMU без
+недостающих наблюдений ног. Для них не меняется гистерезис контактов.
+Общая временная шкала и watchdog не изменены.
+
+Опциональный `GO2_LEGKILO_INPUT_TRACE` в окружении backend записывает хеши
+полей облака, IMU и кинематики плюс `.pairing` журнал приёма. По умолчанию
+отключён. Завершённые CSV сравнивает `ws/scripts/compare-legkilo-inputs.py`.
+На коротком круге все 1913 кадров и сохранённые позы совпали при 1×/2×.
+Остаётся ограничение обработки хвоста записи: последние ожидающие пары
+без последующего LowState не сбрасываются в frontend при остановке.
+[Подробные результаты](measurements/legkilo-input-pairing-2026-09-09.json).

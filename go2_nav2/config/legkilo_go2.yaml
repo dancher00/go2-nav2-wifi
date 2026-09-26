@@ -1,0 +1,82 @@
+# Stock L1 float32 relative point times; native float x/y/z/intensity/time reader.
+# Encoder FK and forces from LowState matched to SportModeState by identical IMU.
+# SportModeState is the stamped carrier; firmware foot fields are overwritten.
+# Contact thresholds are provisional until a labelled stand/walk measurement.
+lidar_topic: /lidar3d/cloud_sync
+imu_topic: /imu_raw
+kinematic_topic: /lidar3d/kinematic_sync
+sensor_type: KILO
+redundancy: false
+gravity: 9.81
+init_type: 2
+extrinsic_T:
+- 0.2812775691608151
+- -0.00046171124506249526
+- -0.0006751630768806374
+extrinsic_R:
+- 0.5260586877854104
+- -0.8100801280201871
+- 0.2589062440195242
+- -0.8385243572185935
+- -0.5448631174371977
+- -0.0010419250161294356
+- 0.14191250599089075
+- -0.21655107813959787
+- -0.96590189522537
+lidar_type: 1
+time_scale: 1
+min_range: 0.5
+max_range: 30.0
+filter_num: 1
+voxel_grid_resolution: 0.1
+voxel_grid_mode: 1
+voxel_grid_target_num: 3000
+voxel_grid_overshoot: 1.5
+ndt_enable: true
+p2plane_enable: true
+voxel_size: 0.3
+beam_err: 0.2
+dept_err: 0.04
+voxel_max_num: 50
+planar_ratio: 0.1
+planar_thickness: 0.1
+nearby_type: 0
+capacity: 100000
+ndt_min_points: 5
+kf_trans_threshold: 0.3
+kf_degree_threshold: 10.0
+kf_max_num_submap: 5
+kf_max_dist_submap: 5.0
+loop_closure_enable: true
+loop_search_radius: 10.0
+loop_min_id_separation: 3
+loop_icp_max_corr_dist: 0.3
+loop_icp_inlier_dist_threshold: 0.15
+loop_icp_max_iterations: 20
+# Minimum source inlier fraction (not an ICP mean-square-error threshold).
+loop_icp_fitness_threshold: 0.7
+loop_verify_max_attempts: 1
+loop_kiss_matcher_enabled: false
+loop_kiss_refine_min_id_gap: 100
+loop_kiss_inliers_threshold: 40
+loop_kiss_use_quatro: true
+leg_offset_x: 0.1934
+leg_offset_y: 0.0465
+leg_calf_length: 0.213
+leg_thigh_length: 0.213
+leg_thigh_offset: 0.0955
+contact_force_threshold_up: 35
+contact_force_threshold_down: 25
+pub_joint_tf_enable: false
+# Single per-point update: second cloud update caused startup drift on static L1 bags.
+two_step_lidar_eskf: false
+ieskf_max_iterations: 3
+imu_acc_meas_noise: 0.1
+imu_gyr_meas_noise: 0.01
+# Velocity covariance diagonal. 0.05 over-weighted inconsistent stance-foot
+# velocities on the marked-return walk; 0.5 also reduced held-out wall spread.
+# See docs/measurements/legkilo-kin-weight-diagnosis-2026-09-09.json.
+kin_meas_noise: 0.5
+p2plane_kernel_threshold: 5.0
+ndt_kernel_threshold: 5.0
+temp_result_save_folder: ''

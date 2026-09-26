@@ -6,11 +6,14 @@ from __future__ import annotations
 from typing import List
 
 import signal
+import time
 
 import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
+from nav_msgs.msg import Odometry
+from rclpy.qos import qos_profile_sensor_data
 from unitree_go.msg import LowState
 
 # Unitree Go2 motor index -> go2_description joint names (same order as SDK / URDF).
@@ -34,16 +37,39 @@ class JointStateBridge(Node):
     def __init__(self) -> None:
         super().__init__("go2_joint_state_bridge")
         self.declare_parameter("lowstate_topic", "/lf/lowstate")
+        self.declare_parameter("stamp_odom_topic", "")
+        self._stamp_odom_topic = self.get_parameter("stamp_odom_topic").value
+        self._latest_positions = None
+        self._received_positions = 0.0
         topic = self.get_parameter("lowstate_topic").value
         self._pub = self.create_publisher(JointState, "/joint_states", 10)
         self._sub = self.create_subscription(LowState, topic, self._on_lowstate, 10)
+        if self._stamp_odom_topic:
+            self._odom_sub = self.create_subscription(Odometry, self._stamp_odom_topic,
+                                                       self._on_odom, qos_profile_sensor_data)
         self.get_logger().info(f"JointState from {topic} -> /joint_states")
 
     def _on_lowstate(self, msg: LowState) -> None:
+        positions = [float(msg.motor_state[i].q) for i in range(len(MOTOR_JOINTS))]
+        if self._stamp_odom_topic:
+            self._latest_positions = positions
+            self._received_positions = time.monotonic()
+            return
+        self._publish(positions, self.get_clock().now().to_msg())
+
+    def _on_odom(self, msg: Odometry) -> None:
+        # LowState has no acquisition stamp. Associate only fresh received joint
+        # measurements with this body pose; never combine laptop-clock joint TF
+        # with robot-clock body TF. This is reception pairing, not hardware sync.
+        if self._latest_positions is None or time.monotonic() - self._received_positions > 0.2:
+            return
+        self._publish(self._latest_positions, msg.header.stamp)
+
+    def _publish(self, positions, stamp) -> None:
         js = JointState()
-        js.header.stamp = self.get_clock().now().to_msg()
+        js.header.stamp = stamp
         js.name = list(MOTOR_JOINTS)
-        js.position = [float(msg.motor_state[i].q) for i in range(len(MOTOR_JOINTS))]
+        js.position = positions
         self._pub.publish(js)
 
 

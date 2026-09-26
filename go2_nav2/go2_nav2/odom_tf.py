@@ -15,12 +15,42 @@ from rclpy.executors import ExternalShutdownException
 from geometry_msgs.msg import TransformStamped
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
+
+
+def compose_pose(position, quaternion, offset):
+    """T_world_sensor * T_sensor_body; quaternion order xyzw."""
+    x, y, z, w = quaternion
+    a, b, c = offset[:3]
+    # Rotate translation using q * v * inverse(q).
+    tx, ty, tz = 2*(y*c-z*b), 2*(z*a-x*c), 2*(x*b-y*a)
+    p = (position[0]+a+w*tx+y*tz-z*ty,
+         position[1]+b+w*ty+z*tx-x*tz,
+         position[2]+c+w*tz+x*ty-y*tx)
+    i, j, k, l = offset[3:]
+    return p, (w*i+x*l+y*k-z*j, w*j-x*k+y*l+z*i,
+               w*k+x*j-y*i+z*l, w*l-x*i-y*j-z*k)
 from tf2_ros import TransformBroadcaster
+
+
+def planar_body_velocity(previous, current, dt):
+    """Body-pose finite difference, expressed in current planar body axes."""
+    if not 0.001 <= dt <= 0.5:
+        return None
+    dx, dy = (current[0] - previous[0]) / dt, (current[1] - previous[1]) / dt
+    yaw = current[2]
+    dyaw = math.atan2(math.sin(yaw - previous[2]), math.cos(yaw - previous[2])) / dt
+    return math.cos(yaw)*dx + math.sin(yaw)*dy, -math.sin(yaw)*dx + math.cos(yaw)*dy, dyaw
 
 
 class OdomTf(Node):
     def __init__(self) -> None:
         super().__init__("go2_odom_tf")
+        self.declare_parameter("sensor_from_base", [0., 0., 0., 0., 0., 0., 1.])
+        self.declare_parameter("best_effort", False)
+        self.declare_parameter("sensor_frame", "")
+        self._sensor_frame = self.get_parameter("sensor_frame").value
+        self._sensor_from_base = self.get_parameter("sensor_from_base").value
         self.declare_parameter("odom_topic", "/utlidar/robot_odom_sync")
         self.declare_parameter("odom_frame", "odom")
         self.declare_parameter("base_frame", "base_link")
@@ -29,6 +59,11 @@ class OdomTf(Node):
         self.declare_parameter("max_jump_xy", 0.5)
         self.declare_parameter("max_jump_yaw", 0.8)
         self.declare_parameter("publish_odom", True)
+        self.declare_parameter("derive_planar_twist", False)
+        self.declare_parameter("publish_tf", True)
+        self._publish_tf_enabled = self.get_parameter("publish_tf").value
+        self._derive_twist = self.get_parameter("derive_planar_twist").value
+        self._previous_body = None
         self.declare_parameter("odom_out_topic", "/odom")
         # Acquisition time has already been translated by the shared clock node.
         self.declare_parameter("use_current_stamp", False)
@@ -53,7 +88,8 @@ class OdomTf(Node):
         self._odom_pub = (
             self.create_publisher(Odometry, odom_out, 10) if self._publish_odom else None
         )
-        self._sub = self.create_subscription(Odometry, topic, self._on_odom, 50)
+        self._sub = self.create_subscription(Odometry, topic, self._on_odom,
+            qos_profile_sensor_data if self.get_parameter("best_effort").value else 50)
         self._have_state = False
         self._got_odom = False
         self._x = self._y = self._z = 0.0
@@ -61,6 +97,8 @@ class OdomTf(Node):
         # No timer: old poses must never masquerade as fresh measurements.
 
     def _publish_tf(self) -> None:
+        if not self._publish_tf_enabled:
+            return
         if self._stamp is None:
             return
         t = TransformStamped()
@@ -91,6 +129,22 @@ class OdomTf(Node):
         qy = msg.pose.pose.orientation.y
         qz = msg.pose.pose.orientation.z
         qw = msg.pose.pose.orientation.w
+
+        # Registered clouds are in the world frame. Costmap ray tracing needs
+        # the actual sensor origin, separately from the transformed robot body.
+        if getattr(self, "_sensor_frame", ""):
+            sensor_tf = TransformStamped()
+            sensor_tf.header.stamp = self._stamp
+            sensor_tf.header.frame_id = self._odom_frame
+            sensor_tf.child_frame_id = self._sensor_frame
+            sensor_tf.transform.translation.x = x
+            sensor_tf.transform.translation.y = y
+            sensor_tf.transform.translation.z = z
+            sensor_tf.transform.rotation = msg.pose.pose.orientation
+            self._br.sendTransform(sensor_tf)
+
+        offset = getattr(self, "_sensor_from_base", (0., 0., 0., 0., 0., 0., 1.))
+        (x, y, z), (qx, qy, qz, qw) = compose_pose((x, y, z), (qx, qy, qz, qw), offset)
 
         if self._alpha >= 1.0:
             self._x, self._y, self._z = x, y, z
@@ -150,6 +204,18 @@ class OdomTf(Node):
             out.pose.pose.orientation.z = self._qz
             out.pose.pose.orientation.w = self._qw
             out.twist = msg.twist
+            if self._derive_twist:
+                yaw = math.atan2(2*(self._qw*self._qz+self._qx*self._qy),
+                                 1-2*(self._qy*self._qy+self._qz*self._qz))
+                body = (self._x, self._y, yaw)
+                previous = self._previous_body
+                self._previous_body = (incoming_ns, body)
+                if previous is None:
+                    return
+                velocity = planar_body_velocity(previous[1], body, (incoming_ns-previous[0])*1e-9)
+                if velocity is None:
+                    return
+                out.twist.twist.linear.x, out.twist.twist.linear.y, out.twist.twist.angular.z = velocity
             out.pose.covariance = msg.pose.covariance
             self._odom_pub.publish(out)
 

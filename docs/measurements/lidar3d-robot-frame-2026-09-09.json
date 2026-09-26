@@ -1,0 +1,139 @@
+{
+  "body_from_raw_rotation": [
+    [
+      0.5260586877854104,
+      -0.8100801280201871,
+      0.2589062440195242
+    ],
+    [
+      -0.8385243572185935,
+      -0.5448631174371977,
+      -0.0010419250161294356
+    ],
+    [
+      0.14191250599089075,
+      -0.21655107813959787,
+      -0.96590189522537
+    ]
+  ],
+  "body_from_raw_translation": [
+    0.2812775691608151,
+    -0.00046171124506249526,
+    -0.0006751630768806374
+  ],
+  "inlier_fraction": 0.8053375196232339,
+  "inlier_rmse_m": 0.006983018973630275,
+  "note": "Static raw-to-factory-deskewed cloud registration, then factory pose inverse; visualization extrinsic only, not SLAM input or ground truth.",
+  "held_out_inlier_fraction": 0.7684092186621697,
+  "held_out_rmse_m": 0.007093516849256911,
+  "live_verification": {
+    "counts": {
+      "odom": 154,
+      "joints": 127
+    },
+    "duration_s": 10.03799435000019,
+    "joint_positions": {
+      "FR_hip_joint": 0.0730522871017456,
+      "FR_thigh_joint": 0.7814167737960815,
+      "FR_calf_joint": -1.5779207944869995,
+      "FL_hip_joint": -0.08386138826608658,
+      "FL_thigh_joint": 0.7193478345870972,
+      "FL_calf_joint": -1.5995469093322754,
+      "RR_hip_joint": 0.17144909501075745,
+      "RR_thigh_joint": 0.742383599281311,
+      "RR_calf_joint": -1.4834074974060059,
+      "RL_hip_joint": -0.14721131324768066,
+      "RL_thigh_joint": 0.735813319683075,
+      "RL_calf_joint": -1.472017765045166
+    },
+    "resources": [
+      {
+        "command": "/opt/ros/humble/lib/rviz2/rviz2 -d /ws/src/go2_nav2/rviz/lidar3d.rviz ",
+        "cpu_percent_one_core": 204.82179291124638,
+        "rss_mib": 328.1171875
+      },
+      {
+        "command": "/usr/bin/python3 /ws/install/go2_nav2/lib/go2_nav2/go2_odom_tf --ros-args -r __node:=go2_odom_tf --params-file /ws/install/go2_nav2/share/go2_nav2/config/lidar3d_robot_viz.yaml ",
+        "cpu_percent_one_core": 3.685995300445578,
+        "rss_mib": 48.1015625
+      },
+      {
+        "command": "/opt/ros/humble/lib/robot_state_publisher/robot_state_publisher --ros-args -r __node:=robot_state_publisher --params-file /tmp/launch_params_n2mzdv1b ",
+        "cpu_percent_one_core": 0.8965934514597362,
+        "rss_mib": 15.3203125
+      },
+      {
+        "command": "/usr/bin/python3 /ws/install/go2_nav2/lib/go2_nav2/go2_joint_state_bridge --ros-args -r __node:=go2_joint_state_bridge --params-file /tmp/launch_params_r1fspj0v ",
+        "cpu_percent_one_core": 4.1841027734787675,
+        "rss_mib": 47.07421875
+      }
+    ],
+    "base_link": {
+      "p": [
+        -0.03871854073952893,
+        0.04863846875829314,
+        0.35333373264991985
+      ],
+      "q": [
+        -0.0268722152410003,
+        0.014303243486203722,
+        0.9547999264534414,
+        0.2956863231844157
+      ]
+    },
+    "FL_foot": {
+      "p": [
+        -0.2707699950831403,
+        0.06163301340631196,
+        0.03938574419900753
+      ],
+      "q": [
+        0.3711558872279339,
+        -0.14862260611101968,
+        0.8803235960449523,
+        0.25531352211603986
+      ]
+    },
+    "FR_foot": {
+      "p": [
+        -0.11896729024482539,
+        0.24455562475852935,
+        0.034529671658604044
+      ],
+      "q": [
+        0.35497853396632434,
+        -0.06965516596302766,
+        0.8852570449924146,
+        0.29233262316936176
+      ]
+    },
+    "RL_foot": {
+      "p": [
+        0.08103469745228783,
+        -0.15255973364793646,
+        0.04025034080795736
+      ],
+      "q": [
+        0.2976745269712013,
+        -0.15759748397214343,
+        0.9068972270452591,
+        0.25316067746737714
+      ]
+    },
+    "RR_foot": {
+      "p": [
+        0.18396121411894614,
+        -0.0028581688901284236,
+        0.03873511906594901
+      ],
+      "q": [
+        0.3425930303815169,
+        -0.018022885287574706,
+        0.8861536235560041,
+        0.31150753859013375
+      ]
+    }
+  },
+  "tests_passed": 104,
+  "display_snapshot": "ws/log/lidar3d/model-after.png"
+}

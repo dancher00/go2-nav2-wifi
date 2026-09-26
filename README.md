@@ -4,22 +4,28 @@
 [![License: MIT](https://img.shields.io/github/license/dancher00/go2-nav2-wifi)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/dancher00/go2-nav2-wifi)](https://github.com/dancher00/go2-nav2-wifi/releases)
 
-**SLAM mapping and Nav2 on a laptop over Wi‑Fi** — built-in Unitree lidar, no external sensors, Docker ROS 2 Humble, no Ethernet cable, no WebRTC, no CycloneDDS patch on the robot.
+**3D Point-LIO mapping on Unitree Go2 over Wi-Fi** with the built-in lidar,
+Docker ROS 2 Humble and no external sensors. Point-LIO runs on the Go2 Jetson;
+the laptop receives the finished cloud and trajectory for RViz. The existing
+2D slam_toolbox + Nav2 workflow remains available through `./mapping.sh`.
 
-### 3D mapping · Go2 + Point-LIO
+Start with the [3D SLAM quick start](docs/3D-QUICKSTART.md). The verified command is:
+
+```bash
+GO2_RECORD=1 ./mapping.sh --3d
+```
+
+### 3D mapping demo
 
 Built-in LiDAR + IMU · Point-LIO on the onboard Jetson · RViz over Wi-Fi
 
-https://github.com/user-attachments/assets/1047e3c6-c59f-4fdb-b2e1-90f5f6ce2ec8
+[![Watch the Go2 and live 3D map demo](docs/media/go2-3d-slam-demo.jpg)](docs/media/go2-3d-slam-demo.mp4)
 
 Robot and live map side by side, followed by a closer view of the reconstructed
-room. **42 seconds · 2× playback · recorded September 16, 2026.**
+room. The map is visible from the first frame, before the walk begins.
+**37 seconds · 2× playback · recorded September 16, 2026.** Click the preview to watch.
 
-The demo uses the [3D experimental branch](https://github.com/dancher00/go2-nav2-wifi/tree/experiment/lidar-3d-slam).
-The instructions below cover the 2D SLAM + Nav2 workflow on `main`.
-
-[3D setup & results](https://github.com/dancher00/go2-nav2-wifi/blob/experiment/lidar-3d-slam/docs/LIDAR-3D-SLAM.md)
-· [Earlier demos & recording details](docs/DEMOS.md)
+[Earlier 2D mapping and navigation demos](docs/DEMOS.md).
 
 ---
 
@@ -51,6 +57,10 @@ Tested on **Go2 Edu** (Unitree onboard ROS 2 Foxy + laptop Docker Humble).
 
 ## Quick start (Wi‑Fi)
 
+For 3D Point-LIO, use the short [installation and verification guide](docs/3D-QUICKSTART.md).
+It covers both the laptop and Jetson and explains where the validated PCD and
+trajectory are saved.
+
 **Mapping with the handheld remote:** [start/stop/restart guide](docs/MAPPING-SESSION.md)
 uses only the sensor relay, SLAM and RViz; no laptop motion commands.
 
@@ -64,9 +74,15 @@ It starts the sensor-only relay, SLAM and RViz. Close RViz or press Ctrl+C to
 stop its processes. Robot IPs come from the running container; SSH may ask for
 the robot password. Stand with the remote before starting a map for navigation.
 
+For a live 3D LiDAR cloud and front-camera view without SLAM or map output:
+
+```bash
+./mapping.sh --view
+```
+
 [Managed sessions](docs/SESSIONS.md) provide scoped start/stop/status,
 duplicate-start refusal and map-bundle checks. Navigation keeps its direct command path.
-D435i work is reserved for `experiment/d435i-visual-slam`, not `main`.
+D435i experiments are preserved at tag `archive/2026-09-11/d435i-visual-slam`.
 
 Full setup: **[docs/RELAY-WIFI.md](docs/RELAY-WIFI.md)** · Mapping & nav: **[docs/NAVIGATION.md](docs/NAVIGATION.md)**
 
@@ -113,16 +129,21 @@ ros2 launch go2_nav2 sport_bridge.launch.py
 
 | Doc | Content |
 |-----|---------|
+| [3D-QUICKSTART.md](docs/3D-QUICKSTART.md) | Install, run and verify 3D Point-LIO |
+| [POINTLIO-LIVE-VALIDATION.md](docs/POINTLIO-LIVE-VALIDATION.md) | Latest live stability evidence and limitations |
+| [LIDAR-3D-SLAM.md](docs/LIDAR-3D-SLAM.md) | 3D design, measurements and experiments |
 | [RELAY-WIFI.md](docs/RELAY-WIFI.md) | One-time Wi‑Fi install, relay, deploy |
 | [NAVIGATION.md](docs/NAVIGATION.md) | Mapping, save map, nav to goal, troubleshooting |
 | [MAPPING-SESSION.md](docs/MAPPING-SESSION.md) | Handheld mapping: terminal roles, restart and checks |
 | [SESSIONS.md](docs/SESSIONS.md) | Owned processes, startup checks and map validation |
+| [Release notes](docs/releases/v0.2.0.md) | Changes, upgrade steps and validation limits |
+| [Repository audit](docs/REPOSITORY-AUDIT-2026-09-27.md) | Findings, checks and archived branches |
 | [SENSOR-TIMING.md](docs/SENSOR-TIMING.md) | Shared acquisition clock and stationary verification |
 | [ROADMAP.md](docs/ROADMAP.md) | Current-stack acceptance criteria, then optional D435i visual SLAM |
 
 ## Regression tests
 
-After building the Docker image, run on the laptop (also used by CI):
+After `./setup-lidar3d.sh --laptop`, run on the laptop (also used by CI):
 
 ```bash
 bash ws/scripts/test-regressions.sh
@@ -144,3 +165,16 @@ logs. They do not replace supervised walking, navigation or stopping tests.
 ## License
 
 MIT · https://github.com/dancher00/go2-nav2-wifi
+
+### 3D LiDAR
+
+`./mapping.sh --3d` запускает отдельный
+Point-LIO на Jetson (raw L1 + гироскоп, без камеры, ускорений и loop closure);
+на ноутбуке — только RViz через Wi-Fi. `--3d --laptop` сохраняет вычисления на ноутбуке.
+Быстрый запуск: [3D-QUICKSTART.md](docs/3D-QUICKSTART.md). Измерения и ограничения:
+[3D LiDAR SLAM](docs/LIDAR-3D-SLAM.md).
+Обычный `./mapping.sh` сохраняет 2D-профиль.
+
+Проверенный 3D Point-LIO baseline: [снимок сборки и запуск](docs/POINTLIO-BASELINE.md).
+
+Экспериментальный [Point-LIO → Nav2 plan preview](docs/LIDAR-3D-NAV2.md): `./mapping.sh --3d --plan`, без движения.

@@ -14,6 +14,8 @@ fi
 UNITREE_INSTALL="/ws/src/unitree_ros2/cyclonedds_ws/install/setup.bash"
 if [[ -f "$UNITREE_INSTALL" ]]; then
   source "$UNITREE_INSTALL"
+elif [[ -f /opt/go2-unitree-msgs/local_setup.bash ]]; then
+  source /opt/go2-unitree-msgs/local_setup.bash
 else
   echo "WARN: no unitree msgs — run /ws/scripts/build-unitree-msgs.sh"
 fi

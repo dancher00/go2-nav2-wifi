@@ -1,0 +1,27 @@
+{
+  "session": "mapping.6KDQzW",
+  "point_count": 12256,
+  "self_points": 1,
+  "visual_count": 29,
+  "moving_joints": 12,
+  "padding_m": 0.015,
+  "validation": "Stationary capture using latest recorded joints and cloud-to-body TF; no walking validation",
+  "live_processing_p95_ms": [
+    12.5,
+    10.7,
+    12.0,
+    17.1,
+    18.6,
+    18.6,
+    15.3
+  ],
+  "live_reception_to_publication_p95_ms": [
+    30.7,
+    25.8,
+    25.1,
+    27.6,
+    36.0,
+    32.5,
+    31.7
+  ]
+}

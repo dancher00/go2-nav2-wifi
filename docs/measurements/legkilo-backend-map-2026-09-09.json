@@ -1,0 +1,150 @@
+{
+  "date": "2026-09-09",
+  "backend": "Leg-KILO",
+  "upstream_commit": "4b29f2f7d175dcf661f23f01f77918bed2bf0502",
+  "patch_sha256": "2efd35ba5a381b72ddaa594d2a5dc57b9969ed9c497aa8e414e276de329c4151",
+  "images": {
+    "laptop": "sha256:017c210ca1161abdd7130e0257e0fcb54a1cc598e7a9773175d18526cd8aea98",
+    "jetson": "sha256:c83a72353b48fe9d4c9a852b362071699396a10ec53902a849eeb7c7b9456cd6"
+  },
+  "change": {
+    "registered": "complete optimized backend map, packed XYZI float32, 16 bytes/point, about 1 Hz",
+    "path": "complete backend-corrected history, same cadence",
+    "odom": "frontend current pose composed with latest backend correction",
+    "rviz_decay_seconds": 0,
+    "kf_max_num_submap": 5,
+    "new_product_nodes": false,
+    "frontend_estimator_changed_this_step": false
+  },
+  "final_replay": {
+    "run": "run-20260909-150710-msn24hnj",
+    "saved_points": 48505,
+    "published_last_points": 48505,
+    "map_distance_m_p50_p95_max": [
+      0.0,
+      2.9802322387695312e-08,
+      4.805480091749757e-07
+    ],
+    "path_matching_poses": 3063,
+    "path_position_difference_max_m": 3.421997092331204e-09,
+    "published_maps": 193,
+    "sensor_duration_s": 199.18481755256653,
+    "cdr_bytes_max": 776225,
+    "source_map_interval_median_s": 1.0408905744552612,
+    "old_region_point_distance_p50_p95_m": [
+      0.01609717291640149,
+      0.03800996237309453
+    ],
+    "odom_observed": 2492,
+    "saved_poses": 3063
+  },
+  "wall_comparison": {
+    "source_run": "run-20260909-142549-1370vot1",
+    "metric": "p95-p5 horizontal projection on fixed normal, metres",
+    "roi": "0.3<z<1.8, -5<y<-1, abs(x-0.4*y-2)<0.7",
+    "normal_xy": [
+      -0.9016374,
+      0.4324928
+    ],
+    "original_m": 0.5191183,
+    "loop_path_fixed_20_keyframes_m": 0.40418744,
+    "five_keyframes_previous_build_m": 0.3375764,
+    "five_keyframes_final_build_m": 0.33766243,
+    "final_roi_points": 993,
+    "limitation": "Includes physical surface shape/noise; no ground truth, splitting remains."
+  },
+  "other_walk": {
+    "source_run": "run-20260909-132532-3gcg62it",
+    "five_keyframe_replay": "run-20260909-145214-q41le1dd",
+    "duration_s": 199.3994,
+    "floor_tilt_p50_p95_deg_before": [
+      0.68247,
+      1.47547
+    ],
+    "floor_tilt_p50_p95_deg_after": [
+      0.69356,
+      1.43915
+    ],
+    "endpoint_distance_before_after_m": [
+      1.4674115,
+      1.2198896
+    ],
+    "limitation": "User finished approximately nearby; endpoint distance is not return error. Replay on laptop at 2x."
+  },
+  "wifi_payload_test": {
+    "method": "Existing sensor-only relay; temporary diagnostic publisher on Jetson emits 15 copies of recorded full map at 1 Hz. Laptop observes serialized payload and CRC. Backend not concurrently running. Diagnostic files removed from Jetson.",
+    "sent": 15,
+    "received": 15,
+    "points": 48198,
+    "cdr_bytes_per_map": 771313,
+    "nominal_cdr_mbit_s_at_1hz": 6.170504,
+    "arrival_interval_ms": {
+      "min": 864.921078,
+      "median": 1003.3498085,
+      "p95": 1095.474812,
+      "max": 1095.474812
+    },
+    "duplicates": 0,
+    "reordered": 0,
+    "crc_identical": true,
+    "limitation": "Short map-only transport test. CDR bandwidth excludes protocol overhead. Cross-host header ages include clock offset and are NOT true end-to-end latency."
+  },
+  "jetson_live": {
+    "run": "run-20260909-151117-37qwz2o_",
+    "robot": "lying, detected contacts 0",
+    "recording": false,
+    "poses": 818,
+    "duration_s": 53.1460075378418,
+    "max_displacement_from_start_m": 0.10627476720876136,
+    "rviz_global_status": "OK",
+    "robot_model_visible": true,
+    "screenshot": "ws/log/lidar3d/backend-map-live.png",
+    "source_relay_steady_rates_hz": {
+      "registered": 1.0,
+      "path": 1.0,
+      "odom": 15.4
+    },
+    "resource_window_seconds": 30.01521047300048,
+    "processes": [
+      {
+        "name": "robot_relay_wifi.py",
+        "cpu_percent_one_core": 8.67157522555865,
+        "rss_peak_mib": 50.28125
+      },
+      {
+        "name": "go2_cloud_stamp_sync",
+        "cpu_percent_one_core": 49.138926278165684,
+        "rss_peak_mib": 50.78515625
+      },
+      {
+        "name": "legkilo_node",
+        "cpu_percent_one_core": 17.780090288064056,
+        "rss_peak_mib": 44.82421875
+      },
+      {
+        "name": "robot_relay_wifi.py",
+        "cpu_percent_one_core": 5.680217880307798,
+        "rss_peak_mib": 51.1875
+      }
+    ],
+    "archived_to_laptop": true,
+    "sha256_verified_files": 18,
+    "robot_result_removed": true,
+    "own_processes_stopped": true,
+    "limitation": "Static small map only. Live laptop diagnostic observer had incorrect DDS environment and received no topics; excluded from rate/loss assessment. RViz reception verified visually; source rates from relay log."
+  },
+  "checks": {
+    "python_tests_passed": 107,
+    "git_diff_check": "pass",
+    "amd64_build": "pass",
+    "arm64_build": "pass"
+  },
+  "limitations": [
+    "No new walk on final Jetson build yet.",
+    "Double surfaces and static drift remain; trajectory accuracy not established.",
+    "Full map bandwidth/memory grow with mapped area; no long-session stress validation.",
+    "2x replay observer received 2492 odometry messages vs 3063 saved poses; no no-drop claim for this observer.",
+    "Final snapshot delivery was verified in local replay; shutdown-time Wi-Fi delivery is not guaranteed.",
+    "Backend correction may move the displayed pose; no feedback into frontend estimator."
+  ]
+}

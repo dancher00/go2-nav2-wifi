@@ -1,0 +1,14 @@
+services:
+  go2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.lidar3d
+      args:
+        GO2_UID: "${GO2_UID:-1000}"
+        GO2_GID: "${GO2_GID:-1000}"
+    image: go2-lidar3d:local
+    container_name: go2-lidar3d
+    user: "${GO2_UID:-1000}:${GO2_GID:-1000}"
+    environment:
+      - ROS_LOG_DIR=/tmp/go2-lidar3d-ros-log
+      - GO2_AUTO_ENV=0

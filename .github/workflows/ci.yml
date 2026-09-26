@@ -8,15 +8,43 @@ on:
 
 jobs:
   docker-image:
-    name: Docker image
+    name: Docker images (2D + 3D Point-LIO)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
       - name: Build go2-humble image
         run: docker build -t go2-humble:ci -f Dockerfile .
         working-directory: docker
+
+      - name: Build pinned Point-LIO image
+        run: docker build --build-arg BASE_IMAGE=go2-humble:ci -t go2-lidar3d:ci -f docker/Dockerfile.lidar3d .
+
+      - name: Verify Point-LIO install
+        run: |
+          docker run --rm --entrypoint bash go2-lidar3d:ci -lc '
+            source /opt/ros/humble/setup.bash
+            source /opt/go2-lidar3d/local_setup.bash
+            test "$(cat /opt/go2-lidar3d/pointlio-commit.txt)" = 43d5f54b389b251713f0097893c30fa76c870d54
+            ros2 pkg executables point_lio_unilidar | grep -q "point_lio_unilidar pointlio_mapping"
+          '
+
+      - name: Run isolated 2D and 3D regression tests
+        run: bash ws/scripts/test-regressions.sh go2-lidar3d:ci
+
+      - name: Build workspace and test RViz controls without robot access
+        run: |
+          docker run --rm --network none --read-only --tmpfs /tmp:exec \
+            -e ROS_LOG_DIR=/tmp/ros-log --entrypoint bash \
+            -v "${{ github.workspace }}:/repo:ro" go2-lidar3d:ci -c '
+              source /opt/ros/humble/setup.bash &&
+              source /opt/go2-unitree-msgs/local_setup.bash &&
+              cd /tmp &&
+              colcon build --base-paths /repo/go2_nav2 /repo/go2_description /repo/go2_nav2/rviz_plugins/go2_rviz_controls \
+                --packages-select go2_nav2 go2_description go2_rviz_controls --cmake-args -DBUILD_TESTING=ON &&
+              ctest --test-dir build/go2_rviz_controls --output-on-failure --no-tests=error
+            '
 
   colcon-build:
     name: Colcon workspace
@@ -30,13 +58,13 @@ jobs:
         run: docker build -t go2-humble:ci -f Dockerfile .
         working-directory: docker
 
-      - name: Run isolated sensor, watchdog, relay and shutdown regression tests
-        run: bash ws/scripts/test-regressions.sh go2-humble:ci
-
       - name: Fetch unitree_ros2 messages
         run: |
           mkdir -p ws/src debs
-          git clone --depth 1 https://github.com/unitreerobotics/unitree_ros2.git ws/src/unitree_ros2
+          git init ws/src/unitree_ros2
+          git -C ws/src/unitree_ros2 remote add origin https://github.com/unitreerobotics/unitree_ros2.git
+          git -C ws/src/unitree_ros2 fetch --depth 1 origin 5204e6e098ee53f4bd929bd77eb1d387cd0fa842
+          git -C ws/src/unitree_ros2 checkout --detach FETCH_HEAD
 
       - name: Build go2_nav2 and go2_description
         run: |

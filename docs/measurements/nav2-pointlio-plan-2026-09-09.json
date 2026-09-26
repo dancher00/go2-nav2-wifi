@@ -1,0 +1,63 @@
+{
+  "planner_action_status": 4,
+  "path_poses": 34,
+  "path_frame": "lidar3d_map",
+  "goal_xy": [
+    -0.8499997884035118,
+    2.650000265240669
+  ],
+  "path_length_m": 3.6648345006847487,
+  "costmap_cells": 90000,
+  "occupied_cells": 1596,
+  "unknown_cells": 85081,
+  "free_cells": 3068,
+  "costmap_frame": "lidar3d_map",
+  "cloud_stamp_tf_resolved": true,
+  "sensor_tf_frame": "lidar3d_sensor",
+  "observed_cmd_vel_messages": 0,
+  "received_messages": {
+    "costmap": 5,
+    "odom": 41,
+    "cloud": 10
+  },
+  "odom_sample_rate_hz": 15.378795941120787,
+  "nodes": [
+    "go2_odom_tf",
+    "planner_server",
+    "global_costmap",
+    "transform_listener_impl_5ecf5afb5e20",
+    "robot_state_publisher",
+    "go2_joint_state_bridge",
+    "rviz",
+    "transform_listener_impl_5fc28f775030",
+    "lifecycle_manager_lidar3d_planning",
+    "go2_relay_wifi_pub",
+    "lidar3d_plan_diagnostic"
+  ],
+  "start_xy": [
+    -0.13899433521746607,
+    -0.2588857205005698
+  ],
+  "path_sample_costs": {
+    "min": 0,
+    "max": 0,
+    "unknown": 0,
+    "occupied": 0
+  },
+  "scope": "Online rolling 2D plan preview using Point-LIO; not saved-map localization or autonomous navigation",
+  "limitations": [
+    "Controller not launched or tested; no FollowPath, NavigateToPose, sport bridge or command transport.",
+    "Height band 0.15..1.6 m in initial map frame: level-floor preview, no slope/stair/cliff traversability evaluation.",
+    "Robot radius 0.22 m inherited from 2D configuration, not a validated walking envelope.",
+    "Point-LIO twist not validated for controller input; body velocity conversion required before motion.",
+    "Observed zero cmd_vel is a bounded observation, not proof of navigation safety."
+  ],
+  "tests_passed": 113,
+  "session_cleanup": {
+    "stopped": true,
+    "archived_run": "run-20260909-182936-u_wgwx7d",
+    "files_sha256_verified": 10,
+    "bytes": 33959665,
+    "removed_from_jetson": true
+  }
+}

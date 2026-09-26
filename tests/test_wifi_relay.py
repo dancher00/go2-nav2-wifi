@@ -15,6 +15,29 @@ SPEC.loader.exec_module(relay)
 
 
 class DomainTests(unittest.TestCase):
+    def test_jetson_profile_exports_visualization_and_leg_states(self):
+        with patch.dict(os.environ, GO2_RELAY_PROFILE='lidar3d-map'), \
+                patch.object(relay, '_RELAY_TOPICS', None), patch.object(relay, 'get_message'):
+            topics = relay.relay_topics()
+        self.assertEqual([row[0] for row in topics],
+                         ['/lidar3d/registered', '/lidar3d/odom', '/lidar3d/path', '/lf/lowstate'])
+        for _, _, kind in topics[:3]:
+            self.assertEqual(relay._qos(kind).reliability, relay.ReliabilityPolicy.BEST_EFFORT)
+
+    def test_lidar3d_profile_only_relays_native_cloud_imu_and_clock_reference(self):
+        with patch.dict(os.environ, GO2_RELAY_PROFILE='lidar3d'), \
+                patch.object(relay, '_RELAY_TOPICS', None), patch.object(relay, 'get_message'):
+            topics = relay.relay_topics()
+        self.assertEqual([row[0] for row in topics],
+                         ['/utlidar/cloud', '/utlidar/robot_odom', '/utlidar/imu', '/lf/lowstate'])
+        self.assertEqual(relay._qos(topics[2][2]).depth, 200)
+        self.assertEqual(relay._qos(topics[0][2]).depth, 1)
+
+    def test_default_relay_profile_is_preserved(self):
+        with patch.dict(os.environ, GO2_RELAY_PROFILE='default'), \
+                patch.object(relay, '_RELAY_TOPICS', None), patch.object(relay, 'get_message'):
+            self.assertEqual(relay.relay_topics(), relay.RELAY_TOPICS_CANDIDATES)
+
     def test_roles_never_share_a_domain(self):
         for role, expected in (("sub", 0), ("pub_cmd", 0), ("pub", 64), ("sub_cmd", 64)):
             with self.subTest(role=role), patch.dict(os.environ, {"CYCLONEDDS_URI": "wifi"}, clear=True):
@@ -35,6 +58,27 @@ class DomainTests(unittest.TestCase):
 
 
 class TransportTests(unittest.TestCase):
+    def test_visualization_forwards_cdr_unchanged_without_decoding_skipped_paths(self):
+        node, sock = Mock(), Mock()
+        callbacks = []
+        node.create_subscription.side_effect = lambda cls, topic, cb, qos, **kw: callbacks.append((cb, kw))
+        payload = b'original CDR path'
+        def spin(*args, **kwargs):
+            callbacks[0][0](payload)
+            callbacks[0][0](payload)  # Same instant: next Path is visualization-only decimated.
+        with patch.dict(os.environ, GO2_RELAY_PROFILE='lidar3d-map'), \
+                patch.object(relay, 'Node', return_value=node), \
+                patch.object(relay.rclpy, 'init'), patch.object(relay.rclpy, 'ok', side_effect=[True, False]), \
+                patch.object(relay.rclpy, 'spin_once', side_effect=spin), \
+                patch.object(relay, '_wait_for_ready', return_value=True), \
+                patch.object(relay, '_connect', return_value=sock), patch.object(relay, '_shutdown'), \
+                patch.object(relay, '_send_frame') as send, patch.object(relay, 'get_message'), \
+                patch.object(relay, 'serialize_message') as serialize:
+            relay._run_subscriber('socket', 'ready', [('/lidar3d/path', 'nav_msgs/msg/Path', 'sensor')], 'test')
+        send.assert_called_once_with(sock, 0, payload)
+        serialize.assert_not_called()
+        self.assertTrue(callbacks[0][1]['raw'])
+
     def test_all_failed_connections_close_sockets_and_raise(self):
         sockets = [Mock(), Mock(), Mock()]
         for sock in sockets:

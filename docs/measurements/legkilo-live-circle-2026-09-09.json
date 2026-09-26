@@ -1,0 +1,59 @@
+{
+  "run": "run-20260909-170530-z_dptdy9",
+  "user_confirmed_same_endpoint": true,
+  "windows_s": {
+    "start": [
+      0,
+      4
+    ],
+    "end": [
+      100,
+      150
+    ]
+  },
+  "backend": {
+    "start_m": [
+      0.00036572799999999995,
+      -0.0145785295,
+      -0.00047894750000000003
+    ],
+    "end_m": [
+      -0.096430092,
+      0.992385768,
+      0.027757007
+    ],
+    "delta_m": [
+      -0.09679581999999999,
+      1.0069642975,
+      0.0282359545
+    ],
+    "return_3d_m": 1.0119998993753245,
+    "return_xy_m": 1.0116059149733858,
+    "stationary_max_radius_m": 0.016979548044742495
+  },
+  "frontend": {
+    "start_m": [
+      0.00036572799999999995,
+      -0.0145785295,
+      -0.00047894750000000003
+    ],
+    "end_m": [
+      -0.086527637,
+      1.00926181,
+      0.026302111
+    ],
+    "delta_m": [
+      -0.086893365,
+      1.0238403395,
+      0.0267810585
+    ],
+    "return_3d_m": 1.0278699931230986,
+    "return_xy_m": 1.027521044878643,
+    "stationary_max_radius_m": 0.01698174164741489
+  },
+  "duration_s": 158.96934175491333,
+  "poses": 2445,
+  "accepted_loop_edges": 8,
+  "map_points": 56931,
+  "note": "Endpoint discrepancy, not absolute trajectory/map accuracy; start and end medians of stationary intervals."
+}

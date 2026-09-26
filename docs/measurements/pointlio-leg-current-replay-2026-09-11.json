@@ -1,0 +1,87 @@
+{
+  "live-gyro": {
+    "poses": 1361,
+    "duration_s": 88.4088077545166,
+    "points": 725179,
+    "position_range_m": [
+      3.988835292,
+      7.167277739999999,
+      0.13754465700000001
+    ],
+    "endpoint_displacement_m": 3.9606586865763758,
+    "local_plane_spread": {
+      "cells": 869,
+      "median_m": 0.026788036299364514,
+      "p90_m": 0.049814655562642404
+    }
+  },
+  "live-gyro-legs": {
+    "poses": 1361,
+    "duration_s": 88.4088077545166,
+    "points": 725179,
+    "position_range_m": [
+      4.070917761,
+      7.07062073,
+      0.12092657100000001
+    ],
+    "endpoint_displacement_m": 3.9676360684082277,
+    "local_plane_spread": {
+      "cells": 912,
+      "median_m": 0.02650714110296902,
+      "p90_m": 0.04963463487770203
+    },
+    "leg_updates": 3997,
+    "accepted": 3997,
+    "rejected": 0,
+    "last_pairing_counters": [
+      25968,
+      25968,
+      0
+    ],
+    "contact_counts": [
+      1.0,
+      2.0,
+      3.0,
+      4.0
+    ],
+    "median_velocity_residual_mps": 0.04940100088780949
+  },
+  "live-body-legs": {
+    "poses": 1361,
+    "duration_s": 88.4088077545166,
+    "points": 725179,
+    "position_range_m": [
+      7.487219691,
+      1.802562639,
+      0.256039717
+    ],
+    "endpoint_displacement_m": 4.717926817614747,
+    "local_plane_spread": {
+      "cells": 660,
+      "median_m": 0.03298456737134977,
+      "p90_m": 0.059839551604847455
+    },
+    "leg_updates": 4021,
+    "accepted": 4021,
+    "rejected": 0,
+    "last_pairing_counters": [
+      25968,
+      25968,
+      0
+    ],
+    "contact_counts": [
+      1.0,
+      2.0,
+      3.0,
+      4.0
+    ],
+    "median_velocity_residual_mps": 0.028714009018658896
+  },
+  "no_contact_trajectories_bitwise_equal": true,
+  "limitations": [
+    "Walking prefix does not contain a confirmed same-position return. Endpoint displacement is motion, not error.",
+    "Local plane spread is a geometric diagnostic, not independent map accuracy; cell coverage varies.",
+    "Contact thresholds and body/L1 extrinsics are inherited, not newly calibrated.",
+    "No loop-closure backend in this experimental Point-LIO."
+  ]
+}

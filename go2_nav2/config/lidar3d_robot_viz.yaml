@@ -1,0 +1,11 @@
+# Visualization only: measured raw-to-body mount. Never used by SLAM.
+# Static cloud registration 2026-09-09; see docs/measurements/lidar3d-robot-frame-2026-09-09.json
+go2_odom_tf:
+  ros__parameters:
+    odom_topic: /lidar3d/odom
+    odom_frame: lidar3d_map
+    base_frame: base_link
+    best_effort: true
+    publish_odom: false
+    smooth_alpha: 1.0
+    sensor_from_base: [-0.14056185097700238, 0.24211459251444103, -0.08014714132241024, 0.8713242364998213, -0.47301693680109264, 0.11500275477832939, 0.06183379966256489]

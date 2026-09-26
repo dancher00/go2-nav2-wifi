@@ -1,0 +1,268 @@
+--- a/src/laserMapping.cpp
++++ b/src/laserMapping.cpp
+@@ -14,6 +14,8 @@
+ #include <pcl/point_types.h>
+ #include <pcl/filters/voxel_grid.h>
+ #include <pcl/io/pcd_io.h>
++#include <pcl/segmentation/sac_segmentation.h>
++#include <pcl/common/transforms.h>
+ 
+ #include <rclcpp/rclcpp.hpp>
+ #include <tf2/transform_datatypes.h>
+@@ -43,6 +45,82 @@
+ condition_variable sig_buffer;
+ 
+ string root_dir = ROOT_DIR;
++std::ofstream trajectory_file;
++bool use_acceleration = true;
++bool align_output_to_floor = false;
++std::string output_frame = "camera_init";
++Eigen::Matrix3d output_rotation = Eigen::Matrix3d::Identity();
++Eigen::Vector3d output_translation = Eigen::Vector3d::Zero();
++
++// A single rigid output-frame choice. Never modifies filter states, the ikdtree,
++// input measurements, or subsequent scan matching. No continuous floor correction.
++void initialize_output_frame(const PointCloudXYZI::Ptr &initial_cloud)
++{
++    bool applied = false;
++    size_t support = 0;
++    Eigen::Vector3d normal = Eigen::Vector3d::Zero();
++    double distance = 0.0;
++    if (align_output_to_floor)
++    {
++        PointCloudXYZI::Ptr nearby(new PointCloudXYZI());
++        for (const auto &point : initial_cloud->points)
++            if (point.getVector3fMap().norm() < 4.0f)
++                nearby->push_back(point);
++        pcl::SACSegmentation<PointType> segment;
++        segment.setOptimizeCoefficients(true);
++        segment.setModelType(pcl::SACMODEL_PERPENDICULAR_PLANE);
++        segment.setMethodType(pcl::SAC_RANSAC);
++        segment.setAxis(Eigen::Vector3f::UnitZ());
++        segment.setEpsAngle(0.7853981633974483);
++        segment.setDistanceThreshold(0.025);
++        segment.setMaxIterations(300);
++        segment.setInputCloud(nearby);
++        pcl::PointIndices inliers;
++        pcl::ModelCoefficients plane;
++        segment.segment(inliers, plane);
++        support = inliers.indices.size();
++        if (support >= 50 && plane.values.size() == 4)
++        {
++            normal = Eigen::Vector3d(plane.values[0], plane.values[1], plane.values[2]);
++            distance = plane.values[3] / normal.norm();
++            normal.normalize();
++            if (normal.z() < 0.0) { normal = -normal; distance = -distance; }
++            // Go2 L1 points toward the ground. Reject a plane above the sensor.
++            if (distance < -0.02 && distance > -1.5)
++            {
++                Eigen::Vector3d up = -normal;
++                Eigen::Vector3d x = Eigen::Vector3d::UnitX() - up.x() * up;
++                x.normalize();
++                output_rotation.row(0) = x.transpose();
++                output_rotation.row(1) = up.cross(x).transpose();
++                output_rotation.row(2) = up.transpose();
++                output_translation.z() = -distance; // Initial plane is z=0.
++                applied = true;
++            }
++        }
++    }
++    std::ofstream report(root_dir + "output-frame.json");
++    report << std::setprecision(17) << "{\"frame\":\"" << output_frame
++           << "\",\"floor_alignment_requested\":" << (align_output_to_floor ? "true" : "false")
++           << ",\"floor_alignment_applied\":" << (applied ? "true" : "false")
++           << ",\"plane_inliers\":" << support << ",\"initial_points\":" << initial_cloud->size()
++           << ",\"plane_distance\":" << distance << ",\"rotation_row_major\":[";
++    for (int row = 0; row < 3; ++row)
++        for (int col = 0; col < 3; ++col)
++            report << (row || col ? "," : "") << output_rotation(row, col);
++    report << "],\"translation\":[" << output_translation.x() << "," << output_translation.y()
++           << "," << output_translation.z() << "]}\n";
++    std::cout << "Output frame " << output_frame << ": initial floor alignment "
++              << (applied ? "applied" : "not applied") << ", inliers=" << support << std::endl;
++}
++
++void transform_output_cloud(PointCloudXYZI &cloud)
++{
++    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
++    transform.block<3,3>(0,0) = output_rotation.cast<float>();
++    transform.block<3,1>(0,3) = output_translation.cast<float>();
++    pcl::transformPointCloud(cloud, cloud, transform);
++}
+ 
+ int feats_down_size = 0;
+ int time_log_counter = 0;
+@@ -456,6 +534,11 @@
+ 
+     sensor_msgs::msg::Imu::Ptr msg(new sensor_msgs::msg::Imu(*msg_in));
+ 
++    // CMU gyro-only input model: keep the recorded raw IMU unchanged; adapt only
++    // this backend copy. No raw acceleration input; the gravity prior is configured separately.
++    if (!use_acceleration)
++        msg->linear_acceleration = geometry_msgs::msg::Vector3();
++
+     msg->header.stamp = get_ros_time(get_time_in_sec(msg_in->header.stamp) - time_lag_imu_to_lidar);
+ 
+     double timestamp = get_time_in_sec(msg->header.stamp);
+@@ -657,10 +740,11 @@
+     ikdtree.flatten(ikdtree.Root_Node, ikdtree.PCL_Storage, NOT_RECORD);
+ 
+     laserCloudInit->points = ikdtree.PCL_Storage;
++    transform_output_cloud(*laserCloudInit);
+     pcl::toROSMsg(*laserCloudInit, laserCloudmsg);
+ 
+     laserCloudmsg.header.stamp = get_ros_time(lidar_end_time);
+-    laserCloudmsg.header.frame_id = "camera_init";
++    laserCloudmsg.header.frame_id = output_frame;
+     pubLaserCloudFullRes->publish(laserCloudmsg);
+ }
+ 
+@@ -685,10 +769,11 @@
+             laserCloudWorld->points[i].intensity = feats_down_world->points[i].intensity;
+         }
+         sensor_msgs::msg::PointCloud2 laserCloudmsg;
++        transform_output_cloud(*laserCloudWorld);
+         pcl::toROSMsg(*laserCloudWorld, laserCloudmsg);
+ 
+         laserCloudmsg.header.stamp = get_ros_time(lidar_end_time);
+-        laserCloudmsg.header.frame_id = "camera_init";
++        laserCloudmsg.header.frame_id = output_frame;
+         pubLaserCloudFullRes->publish(laserCloudmsg);
+         publish_count -= PUBFRAME_PERIOD;
+     }
+@@ -709,6 +794,7 @@
+             laserCloudWorld->points[i].intensity = feats_down_world->points[i].intensity;
+         }
+ 
++        transform_output_cloud(*laserCloudWorld);
+         *pcl_wait_save += *laserCloudWorld;
+ 
+         static int scan_wait_num = 0;
+@@ -716,7 +802,7 @@
+         if (pcl_wait_save->size() > 0 && pcd_save_interval > 0 && scan_wait_num >= pcd_save_interval)
+         {
+             pcd_index++;
+-            string all_points_dir(string(string(ROOT_DIR) + "PCD/scans_") + to_string(pcd_index) + string(".pcd"));
++            string all_points_dir(string(root_dir + "PCD/scans_") + to_string(pcd_index) + string(".pcd"));
+             pcl::PCDWriter pcd_writer;
+             cout << "current scan saved to /PCD/" << all_points_dir << endl;
+             pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);
+@@ -769,11 +855,16 @@
+         out.orientation.z = kf_input.x_.rot.coeffs()[2];
+         out.orientation.w = kf_input.x_.rot.coeffs()[3];
+     }
++    const Eigen::Vector3d position = output_rotation * Eigen::Vector3d(out.position.x, out.position.y, out.position.z) + output_translation;
++    const Eigen::Quaterniond attitude = Eigen::Quaterniond(output_rotation) * Eigen::Quaterniond(out.orientation.w, out.orientation.x, out.orientation.y, out.orientation.z);
++    out.position.x = position.x(); out.position.y = position.y(); out.position.z = position.z();
++    out.orientation.x = attitude.x(); out.orientation.y = attitude.y();
++    out.orientation.z = attitude.z(); out.orientation.w = attitude.w();
+ }
+ 
+ void publish_odometry(const rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pubOdomAftMapped)
+ {
+-    odomAftMapped.header.frame_id = "camera_init";
++    odomAftMapped.header.frame_id = output_frame;
+     odomAftMapped.child_frame_id = "aft_mapped";
+     if (publish_odometry_without_downsample)
+     {
+@@ -785,6 +876,11 @@
+     }
+     set_posestamp(odomAftMapped.pose.pose);
+ 
++    const auto &p = odomAftMapped.pose.pose.position;
++    const auto &q = odomAftMapped.pose.pose.orientation;
++    trajectory_file << get_time_in_sec(odomAftMapped.header.stamp) << " "
++                    << p.x << " " << p.y << " " << p.z << " "
++                    << q.x << " " << q.y << " " << q.z << " " << q.w << "\n";
+     pubOdomAftMapped->publish(odomAftMapped);
+ 
+     // tf2::Transform transform;
+@@ -816,11 +912,12 @@
+     set_posestamp(msg_body_pose.pose);
+ 
+     msg_body_pose.header.stamp = get_ros_time(lidar_end_time);
+-    msg_body_pose.header.frame_id = "camera_init";
++    msg_body_pose.header.frame_id = output_frame;
+     static int jjj = 0;
+     jjj++;
+ 
+     {
++        path.header = msg_body_pose.header;
+         path.poses.emplace_back(msg_body_pose);
+         pubPath->publish(path);
+     }
+@@ -831,11 +928,21 @@
+     rclcpp::init(argc, argv);
+     auto node = rclcpp::Node::make_shared("laserMapping");
+ 
++    if (const char *result_dir = std::getenv("GO2_LIDAR3D_RESULT_DIR"))
++        root_dir = string(result_dir) + "/";
++    trajectory_file.open(root_dir + "trajectory.tum", std::ios::out);
++    if (!trajectory_file) throw std::runtime_error("Cannot open trajectory output");
++    trajectory_file << std::fixed << std::setprecision(9);
+     readParameters(node);
++    use_acceleration = node->declare_parameter<bool>("mapping.use_acceleration", true);
++    align_output_to_floor = node->declare_parameter<bool>("mapping.align_output_to_floor", false);
++    output_frame = node->declare_parameter<std::string>("mapping.output_frame", "camera_init");
++    RCLCPP_INFO(node->get_logger(), "IMU input: %s",
++                use_acceleration ? "full IMU" : "gyro only; acceleration input disabled");
+     cout << "lidar_type: " << lidar_type << endl << flush;
+ 
+     path.header.stamp = get_ros_time(lidar_end_time);
+-    path.header.frame_id = "camera_init";
++    path.header.frame_id = output_frame;
+ 
+     int frame_num = 0;
+     double aver_time_consu = 0,
+@@ -903,8 +1010,8 @@
+     fp = fopen(pos_log_dir.c_str(), "w");
+ 
+     ofstream fout_out, fout_imu_pbp;
+-    fout_out.open(DEBUG_FILE_DIR("mat_out.txt"), ios::out);
+-    fout_imu_pbp.open(DEBUG_FILE_DIR("imu_pbp.txt"), ios::out);
++    fout_out.open(root_dir + "Log/mat_out.txt", ios::out);
++    fout_imu_pbp.open(root_dir + "Log/imu_pbp.txt", ios::out);
+     if (fout_out && fout_imu_pbp)
+         cout << "~~~~" << ROOT_DIR << " file opened" << endl;
+     else
+@@ -912,9 +1019,9 @@
+ 
+     /*** ROS subscribe initialization ***/
+     
+-    auto sub_pcl = node->create_subscription<sensor_msgs::msg::PointCloud2>(lid_topic, 2000, standard_pcl_cbk);
+-
+-    auto sub_imu = node->create_subscription<sensor_msgs::msg::Imu>(imu_topic, 2000, imu_cbk);
++    auto sub_pcl = node->create_subscription<sensor_msgs::msg::PointCloud2>(lid_topic, rclcpp::SensorDataQoS().keep_last(20), standard_pcl_cbk);
++
++    auto sub_imu = node->create_subscription<sensor_msgs::msg::Imu>(imu_topic, rclcpp::SensorDataQoS().keep_last(2000), imu_cbk);
+ 
+     auto pubLaserCloudFullRes = node->create_publisher<sensor_msgs::msg::PointCloud2>("/cloud_registered", 1000);
+ 
+@@ -1067,6 +1174,7 @@
+             if (init_feats_world->size() < init_map_size)
+                 continue;
+ 
++            initialize_output_frame(init_feats_world);
+             ikdtree.Build(init_feats_world->points);
+             init_map = true;
+ 
+@@ -1085,8 +1193,8 @@
+ 
+         /*** iterated state estimation ***/
+ 
+-        crossmat_list.reserve(feats_down_size);
+-        pbody_list.reserve(feats_down_size);
++        crossmat_list.resize(feats_down_size);
++        pbody_list.resize(feats_down_size);
+ 
+         for (size_t i = 0; i < feats_down_body->size(); i++)
+         {
+@@ -1459,7 +1567,7 @@
+     if (pcl_wait_save->size() > 0 && pcd_save_en)
+     {
+         string file_name = string("scans.pcd");
+-        string all_points_dir(string(string(ROOT_DIR) + "PCD/") + file_name);
++        string all_points_dir(string(root_dir + "PCD/") + file_name);
+         std::cout << "Saving map to file: " << all_points_dir << std::endl;
+         pcl::PCDWriter pcd_writer;
+         pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);

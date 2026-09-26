@@ -1,0 +1,81 @@
+--- a/src/laserMapping.cpp
++++ b/src/laserMapping.cpp
+@@ -563,6 +563,8 @@
+ }
+ 
+ 
++#include "go2_input.hpp"
++
+ bool sync_packages(MeasureGroup &meas)
+ {
+ 
+@@ -1021,7 +1023,10 @@
+     
+     auto sub_pcl = node->create_subscription<sensor_msgs::msg::PointCloud2>(lid_topic, rclcpp::SensorDataQoS().keep_last(20), standard_pcl_cbk);
+ 
+-    auto sub_imu = node->create_subscription<sensor_msgs::msg::Imu>(imu_topic, rclcpp::SensorDataQoS().keep_last(2000), imu_cbk);
++    go2_leg::input.start(node);
++    rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr sub_imu;
++    if (!go2_leg::input.replaces_imu())
++        sub_imu = node->create_subscription<sensor_msgs::msg::Imu>(imu_topic, rclcpp::SensorDataQoS().keep_last(2000), imu_cbk);
+ 
+     auto pubLaserCloudFullRes = node->create_publisher<sensor_msgs::msg::PointCloud2>("/cloud_registered", 1000);
+ 
+@@ -1296,6 +1301,7 @@
+                                 propag_time += omp_get_wtime() - propag_imu_start;
+                                 double solve_imu_start = omp_get_wtime();
+                                 kf_output.update_iterated_dyn_share_IMU();
++                                go2_leg::input.update(get_time_in_sec(imu_last.header.stamp));
+                                 solve_time += omp_get_wtime() - solve_imu_start;
+                             }
+                         }
+@@ -1314,6 +1320,7 @@
+                     }
+                 }
+                 kf_output.predict(dt, Q_output, input_in, true, false);
++                go2_leg::input.update(time_current);
+                 propag_time += omp_get_wtime() - propag_state_start;
+                 time_predict_last_const = time_current;
+ 
+@@ -1429,6 +1436,7 @@
+                         time_update_last = get_time_in_sec(imu_last.header.stamp);
+                     }
+                     kf_input.predict(dt, Q_input, input_in, true, false);
++                    go2_leg::input.update(get_time_in_sec(imu_last.header.stamp));
+                     t_last = get_time_in_sec(imu_last.header.stamp);
+                     imu_prop_cov = true;
+                 }
+@@ -1447,6 +1455,7 @@
+                     }
+                 }
+                 kf_input.predict(dt, Q_input, input_in, true, false);
++                go2_leg::input.update(time_current);
+ 
+                 propag_time += omp_get_wtime() - propag_start;
+ 
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -50,6 +50,7 @@
+ find_package(geometry_msgs REQUIRED)
+ find_package(nav_msgs REQUIRED)
+ find_package(sensor_msgs REQUIRED)
++find_package(unitree_go REQUIRED)
+ find_package(rclcpp REQUIRED)
+ find_package(rclcpp_components REQUIRED)
+ find_package(std_msgs REQUIRED)
+@@ -69,6 +70,7 @@
+ message(Eigen: ${EIGEN3_INCLUDE_DIR})
+ 
+ set(dependencies
++  unitree_go
+   rclcpp
+   rclcpp_components
+   geometry_msgs
+--- a/package.xml
++++ b/package.xml
+@@ -42,4 +42,5 @@
+   <export>
+     <build_type>ament_cmake</build_type>
+   </export>
++  <depend>unitree_go</depend>
+ </package>
