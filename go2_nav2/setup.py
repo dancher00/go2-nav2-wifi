@@ -42,6 +42,8 @@ setup(
                 "config/pointcloud_to_laserscan.yaml",
                 "config/slam_toolbox_mapping.yaml",
                 "config/pointlio_go2.yaml",
+                "config/pointlio_leg_go2.yaml",
+                "config/pointlio_leg_gyro_go2.yaml",
                 "config/lidar3d_planner.yaml",
                 "config/go2_footprint.yaml",
                 "config/legkilo_go2.yaml",

@@ -5,12 +5,15 @@
   ros__parameters:
     use_sim_time: false
     # CMU mapping_utlidar.launch overrides its YAML to the output model.
-    # With zero raw acceleration, the input model distorted the recorded walk.
+    # Acceleration is disabled inside the backend; the recorded raw IMU has acceleration.
     use_imu_as_input: false
     prop_at_freq_of_imu: true
     check_satu: true
     runtime_pos_log_enable: false
-    init_map_size: 2000
+    # Accumulate a dense seed before point-wise matching. On the controlled L1
+    # recording, 2000 points produced >1 m of false motion at a stationary start;
+    # 20000 limited it to 1.7 cm. Keep the robot still until the first map appears.
+    init_map_size: 20000
     point_filter_num: 1
     space_down_sample: true
     filter_size_surf: 0.1

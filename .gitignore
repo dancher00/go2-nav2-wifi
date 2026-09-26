@@ -13,6 +13,7 @@ ws/maps/room_rtab.*
 ws/maps/rtabmap*
 ws/maps/lidar3d/
 ws/lidar3d/
+ws/pointlio-leg/
 ws/frames_*.gv
 ws/frames_*.pdf
 ref/
@@ -27,3 +28,8 @@ __pycache__/
 # Separate local worktrees and Telegram bridge (includes local credentials).
 /.worktrees/
 /telecodex/
+
+# Local demo source recordings and editing intermediates; keep render-demo.sh.
+/demo3d/*.mkv
+/demo3d/*.mp4
+/demo3d/edit/

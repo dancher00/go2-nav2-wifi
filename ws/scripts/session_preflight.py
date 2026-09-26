@@ -17,7 +17,7 @@ MOTION_NODES = {'go2_cmd_vel_tcp_client', 'teleop_twist_keyboard', 'go2_goal_pos
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=('mapping', 'lidar3d', 'navigation', 'teleop', 'transport'))
+    parser.add_argument('mode', choices=('sensors-viz', 'mapping', 'lidar3d', 'navigation', 'teleop', 'transport'))
     args = parser.parse_args()
     rclpy.init()
     node = rclpy.create_node('go2_session_preflight')
@@ -40,7 +40,7 @@ def main():
             rclpy.spin_once(node, timeout_sec=.05)
         names = set(node.get_node_names())
         forbidden = set()
-        if args.mode in ('mapping', 'lidar3d', 'navigation'):
+        if args.mode in ('sensors-viz', 'mapping', 'lidar3d', 'navigation'):
             forbidden |= STACK_NODES
         # Mapping may coexist with this package's managed keyboard teleop.
         if args.mode not in ('mapping', 'lidar3d'):

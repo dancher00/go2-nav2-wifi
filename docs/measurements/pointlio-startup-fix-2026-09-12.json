@@ -1,0 +1,189 @@
+{
+  "run": "run-20260911-233529-h3i_gtpx",
+  "initialization_sweep": {
+    "2000": {
+      "first_pose_after_first_cloud_s": 0.5162572860717773,
+      "first_stationary_window_end_s": 8,
+      "max_displacement_from_first_pose_m": 1.061264155566478,
+      "end_displacement_m": 1.008357913258039,
+      "end_rotation_deg": 18.219406646178243
+    },
+    "5000": {
+      "first_pose_after_first_cloud_s": 0.8411521911621094,
+      "first_stationary_window_end_s": 8,
+      "max_displacement_from_first_pose_m": 0.04440601496535704,
+      "end_displacement_m": 0.0437513297494202,
+      "end_rotation_deg": 0.7622071150403872
+    },
+    "10000": {
+      "first_pose_after_first_cloud_s": 1.3593380451202393,
+      "first_stationary_window_end_s": 8,
+      "max_displacement_from_first_pose_m": 0.02771107460625623,
+      "end_displacement_m": 0.007839876868744941,
+      "end_rotation_deg": 0.2551875169656379
+    },
+    "20000": {
+      "first_pose_after_first_cloud_s": 2.3976223468780518,
+      "first_stationary_window_end_s": 8,
+      "max_displacement_from_first_pose_m": 0.016231916742527417,
+      "end_displacement_m": 0.005218944660521894,
+      "end_rotation_deg": 0.5181715187625705
+    }
+  },
+  "timing_audit": {
+    "cloud_header_step_min_median_max_s": [
+      0.06085014343261719,
+      0.06489086151123047,
+      0.07010269165039062
+    ],
+    "between_scan_point_time_gap_min_median_max_s": [
+      0.001514531672000885,
+      0.0023797862231731415,
+      0.0070832259953022
+    ],
+    "all_point_times_finite": true,
+    "note": "No overlapping cloud acquisition intervals found in this prefix. This does not establish absolute hardware synchronization."
+  },
+  "raw_cloud_stationary_check": [
+    {
+      "windows": [
+        0,
+        2.5
+      ],
+      "seed": "identity",
+      "translation_m": [
+        0.002253968292145747,
+        0.006898358822447659,
+        -0.0006644098872811699
+      ],
+      "rotation_deg": 0.5219815344275754,
+      "overlap": 0.9841531858699241,
+      "rmse_m": 0.045786541278349135,
+      "lio_translation_m": [
+        -0.9518805030445334,
+        0.19468913358682596,
+        -0.1843614727742841
+      ],
+      "lio_rotation_deg": 17.556351433790812,
+      "translation_disagreement_m": 0.989637598008908,
+      "rotation_disagreement_deg": 18.009082726351792
+    },
+    {
+      "windows": [
+        0,
+        2.5
+      ],
+      "seed": "lio",
+      "translation_m": [
+        -0.0037040627214121047,
+        0.012880917106957324,
+        -0.0034012322950122686
+      ],
+      "rotation_deg": 0.5259966356560585,
+      "overlap": 0.9825024760647079,
+      "rmse_m": 0.045336561913089685,
+      "lio_translation_m": [
+        -0.9518805030445334,
+        0.19468913358682596,
+        -0.1843614727742841
+      ],
+      "lio_rotation_deg": 17.556351433790812,
+      "translation_disagreement_m": 0.9822623876529796,
+      "rotation_disagreement_deg": 18.027306737920487
+    }
+  ],
+  "limitations": [
+    "Displacement during the confirmed initial stop is an estimator stability measurement, not surveyed position accuracy.",
+    "Each configuration begins output at a different acquisition time; the dense seed delays first output by about 1.9 s.",
+    "The initial map assumes the robot stays still during collection.",
+    "Gyroscope calibration and loop closure are not added.",
+    "Local plane spread is a map consistency diagnostic using populated 0.5 m cells, not surveyed accuracy. Cell selection and coverage differ. On the previous 90 s recording it slightly increased."
+  ],
+  "full_route": {
+    "full-debug": {
+      "poses": 4031,
+      "duration_s": 261.6360824108124,
+      "points": 2435507,
+      "plane_cells": 802,
+      "median_plane_spread_mm": 26.01135515182156,
+      "p90_plane_spread_mm": 43.727374800208864
+    },
+    "full-init20000": {
+      "poses": 4002,
+      "duration_s": 259.7547173500061,
+      "points": 2417426,
+      "plane_cells": 848,
+      "median_plane_spread_mm": 22.16511537661722,
+      "p90_plane_spread_mm": 38.85046217249176
+    }
+  },
+  "previous_recording": {
+    "live-stock-control": {
+      "poses": 1361,
+      "duration_s": 88.4088077545166,
+      "points": 725179,
+      "plane_cells": 869,
+      "median_plane_spread_mm": 26.788036299364514,
+      "p90_plane_spread_mm": 49.81465556264241
+    },
+    "previous-init20000": {
+      "poses": 1322,
+      "duration_s": 85.87347722053528,
+      "points": 707198,
+      "plane_cells": 837,
+      "median_plane_spread_mm": 27.083628463303583,
+      "p90_plane_spread_mm": 51.16470332379998
+    }
+  },
+  "closure_diagnostic": {
+    "raw_endpoint_cloud_alignment": {
+      "translation_m": [
+        -0.0410287363368691,
+        0.028408850405740038,
+        -0.003674613000284821
+      ],
+      "angle_deg": 4.991630085866836,
+      "overlap": 0.9153347732181425,
+      "rmse_m": 0.09601825314956045
+    },
+    "estimators": {
+      "full-debug": {
+        "final_lidar_translation_in_initial_lidar_frame_m": [
+          -0.9732713083647248,
+          0.25875085495855177,
+          -0.20538482042887074
+        ],
+        "angle_deg": 15.169073130621214,
+        "translation_disagreement_with_raw_clouds_m": 0.9812342533479976,
+        "rotation_disagreement_with_raw_clouds_deg": 19.37799590243294
+      },
+      "full-init20000": {
+        "final_lidar_translation_in_initial_lidar_frame_m": [
+          -0.03257888463511749,
+          0.06928053508663504,
+          -0.012007181053105897
+        ],
+        "angle_deg": 5.580354071495008,
+        "translation_disagreement_with_raw_clouds_m": 0.04255967919041444,
+        "rotation_disagreement_with_raw_clouds_deg": 0.5906324235377168
+      }
+    },
+    "limitation": "ICP is not ground truth. Comparison uses the stationary initial map frame and compensates the constant output transform and nominal lidar/IMU lever arm. Initial raw clouds and map seed acquisition windows differ; small initial rocking can affect results."
+  },
+  "prefix_full_consistency": {
+    "debug": {
+      "prefix_poses": 301,
+      "bitwise_equal_to_full_prefix": true
+    },
+    "init20000": {
+      "prefix_poses": 272,
+      "bitwise_equal_to_full_prefix": true
+    }
+  },
+  "validation": {
+    "mapping_launcher_tests_passed": 9,
+    "bash_syntax": "passed",
+    "git_diff_check": "passed",
+    "robot_live_validation": "not yet run; YAML transfers on next mapping.sh --3d launch"
+  }
+}

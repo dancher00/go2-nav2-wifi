@@ -9,11 +9,11 @@
 namespace go2_rviz_controls {
 SpeedPanel::SpeedPanel(QWidget * parent) : rviz_common::Panel(parent) {
   auto * layout = new QVBoxLayout(this);
-  layout->addWidget(new QLabel(QString::fromUtf8("Maximum speed")));
+  layout->addWidget(new QLabel(QString::fromUtf8("Linear speed limit")));
   auto * row = new QHBoxLayout();
   speed_ = new QDoubleSpinBox(this);
   speed_->setObjectName("speed_value");
-  speed_->setRange(0.10, 0.60);
+  speed_->setRange(0.10, 1.20);
   speed_->setDecimals(2);
   speed_->setSingleStep(0.05);
   speed_->setValue(0.30);
@@ -22,8 +22,22 @@ SpeedPanel::SpeedPanel(QWidget * parent) : rviz_common::Panel(parent) {
   apply->setObjectName("apply_speed");
   row->addWidget(speed_); row->addWidget(apply); layout->addLayout(row);
   slider_ = new QSlider(Qt::Horizontal, this);
-  slider_->setRange(10, 60); slider_->setValue(30); slider_->setSingleStep(5);
+  slider_->setRange(10, 120); slider_->setValue(30); slider_->setSingleStep(5);
   layout->addWidget(slider_);
+  layout->addWidget(new QLabel("Angular speed limit"));
+  angular_ = new QDoubleSpinBox(this);
+  angular_->setObjectName("angular_value");
+  angular_->setRange(0.10, 1.50);
+  angular_->setDecimals(2);
+  angular_->setSingleStep(0.10);
+  angular_->setValue(0.70);
+  angular_->setSuffix(" rad/s");
+  layout->addWidget(angular_);
+  angular_slider_ = new QSlider(Qt::Horizontal, this);
+  angular_slider_->setRange(10, 150);
+  angular_slider_->setValue(70);
+  angular_slider_->setSingleStep(10);
+  layout->addWidget(angular_slider_);
   status_ = new QLabel(QString::fromUtf8("Waiting for Nav2…"), this);
   status_->setObjectName("speed_status");
   status_->setWordWrap(true); layout->addWidget(status_);
@@ -41,6 +55,15 @@ SpeedPanel::SpeedPanel(QWidget * parent) : rviz_common::Panel(parent) {
   });
   connect(slider_, &QSlider::sliderReleased, this, &SpeedPanel::requestApply);
   connect(speed_, &QDoubleSpinBox::editingFinished, this, &SpeedPanel::requestApply);
+  connect(angular_slider_, &QSlider::valueChanged, this, [this](int value) {
+    QSignalBlocker blocked(angular_); angular_->setValue(value / 100.0);
+  });
+  connect(angular_, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this](double value) {
+    QSignalBlocker blocked(angular_slider_);
+    angular_slider_->setValue(static_cast<int>(std::round(value * 100)));
+  });
+  connect(angular_slider_, &QSlider::sliderReleased, this, &SpeedPanel::requestApply);
+  connect(angular_, &QDoubleSpinBox::editingFinished, this, &SpeedPanel::requestApply);
   connect(apply, &QPushButton::clicked, this, &SpeedPanel::requestApply);
   timer_ = new QTimer(this);
   connect(timer_, &QTimer::timeout, this, &SpeedPanel::tick);
@@ -68,6 +91,7 @@ void SpeedPanel::onInitialize() {
 
 void SpeedPanel::requestApply() {
   requested_ = speed_->value();
+  requested_angular_ = angular_->value();
   pending_ = true;
   status_->setText(QString::fromUtf8("Applying…"));
 }
@@ -84,16 +108,19 @@ void SpeedPanel::tick() {
   if (++refresh_ticks_ >= 20) { refresh_ticks_ = 0; pending_ = true; }
   if (!pending_ || in_flight_) return;
   const double value = requested_;
+  const double angular = requested_angular_;
   pending_ = false; in_flight_ = true;
   try {
     client_->set_parameters_atomically({rclcpp::Parameter("FollowPath.max_vel_x", value),
-                                       rclcpp::Parameter("FollowPath.max_speed_xy", value)},
-      [this, value](std::shared_future<rcl_interfaces::msg::SetParametersResult> future) {
+                                       rclcpp::Parameter("FollowPath.max_speed_xy", value),
+                                       rclcpp::Parameter("FollowPath.max_vel_theta", angular),
+                                       rclcpp::Parameter("FollowPath.rotate_to_heading_angular_vel", angular)},
+      [this, value, angular](std::shared_future<rcl_interfaces::msg::SetParametersResult> future) {
         in_flight_ = false;
         try {
           const auto result = future.get();
           if (result.successful) {
-            status_->setText(QString::fromUtf8("Nav2: limit %1 m/s").arg(value, 0, 'f', 2));
+            status_->setText(QString::fromUtf8("Nav2: %1 m/s · %2 rad/s").arg(value, 0, 'f', 2).arg(angular, 0, 'f', 2));
           } else {
             status_->setText(QString::fromUtf8("Not applied: ") + QString::fromStdString(result.reason));
           }

@@ -12,6 +12,10 @@ shift
 : "${GO2_ROBOT_IP:?Set GO2_ROBOT_IP to the robot Wi-Fi address}"
 : "${GO2_HOST_IP:?Set GO2_HOST_IP to the laptop Wi-Fi address}"
 export GO2_UID="$(id -u)" GO2_GID="$(id -g)"
+if ! docker image inspect go2-humble:local >/dev/null 2>&1; then
+  echo 'Building the base ROS 2 image on the laptop...'
+  docker build -t go2-humble:local -f "$LIO_ROOT/docker/Dockerfile" "$LIO_ROOT/docker"
+fi
 docker compose -p go2-lidar3d -f "$LIO_ROOT/docker/docker-compose.yml" \
   -f "$LIO_ROOT/docker/docker-compose.lidar3d.yml" up -d --build
 docker exec go2-lidar3d bash -c 'source /opt/ros/humble/setup.bash && cd /ws && colcon build --symlink-install --base-paths src/go2_nav2 src/go2_description --packages-select go2_nav2 go2_description'

@@ -25,6 +25,8 @@ def configure(context):
     recording = not bag and os.environ.get('GO2_RECORD', '0') == '1'
     parameters = yaml.safe_load(Path(config).read_text())['/**']['ros__parameters']
     settings = parameters['mapping']
+    body_imu = parameters.get('leg', {}).get('body_imu', False)
+    kinematic_input = body_imu or parameters.get('leg', {}).get('enabled', False)
     replay_rate = os.environ.get('GO2_REPLAY_RATE', '0.5')
     shutil.copyfile(config, result / 'pointlio.yaml')
     (result / 'input.json').write_text(json.dumps({
@@ -36,6 +38,10 @@ def configure(context):
         'imu_as_input': parameters.get('use_imu_as_input', True),
         'replay_rate': float(replay_rate) if bag else None,
         'imu_acceleration_used': settings.get('use_acceleration', True),
+        'imu_source': 'body SportModeState' if body_imu else 'L1 IMU',
+        'kinematics_used': parameters.get('leg', {}).get('enabled', False),
+        'factory_body_pose_used': False,
+        'loop_closure': False,
     }, indent=2) + '\n')
     clock = None if bag else Node(
         package='go2_nav2', executable='go2_cloud_stamp_sync',
@@ -44,6 +50,9 @@ def configure(context):
             'odom_in': '/utlidar/robot_odom',
             'odom_out': '/lidar3d/factory_odom_clock_reference',
             'imu_in': '/utlidar/imu', 'imu_out': '/lidar3d/imu_sync',
+            'kinematic_in': '/sportmodestate' if kinematic_input else '',
+            'kinematic_out': '/lidar3d/kinematic_sync' if kinematic_input else '',
+            'lowstate_record_in': '/lowstate' if kinematic_input and recording else '',
             'trace_path': str(result / 'sensor-clock.jsonl'),
             'bag_path': str(result / 'sensors') if recording else '',
         }])
@@ -63,7 +72,8 @@ def configure(context):
         playback = ExecuteProcess(cmd=[
             'ros2', 'bag', 'play', bag, '--clock', '100', '--rate', replay_rate,
             '--delay', '2', '--disable-keyboard-controls', '--topics',
-            '/lidar3d/cloud_sync', '/lidar3d/imu_sync'], output='screen')
+            '/lidar3d/cloud_sync', '/lidar3d/imu_sync',
+            *(['/lidar3d/kinematic_sync', '/lowstate'] if kinematic_input else [])], output='screen')
 
         def finish_replay(event, _context):
             if event.returncode != 0:
@@ -80,5 +90,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('result_dir', description='New session output directory'),
         DeclareLaunchArgument('bag', default_value='', description='Recorded inputs; empty for live Wi-Fi'),
-        DeclareLaunchArgument('config', default_value=get_package_share_directory('go2_nav2') + '/config/pointlio_go2.yaml'),
+        DeclareLaunchArgument('config', default_value=get_package_share_directory('go2_nav2') +
+            ('/config/pointlio_leg_gyro_go2.yaml' if os.environ.get('GO2_LIDAR3D_BACKEND') == 'pointlio_leg'
+             else '/config/pointlio_go2.yaml')),
         OpaqueFunction(function=configure)])

@@ -15,8 +15,8 @@ import sys
 import tempfile
 import time
 
-MODES = ('mapping', 'lidar3d', 'lidar3d-viz', 'navigation', 'teleop', 'transport')
-RESOURCES = {'mapping': ('stack',), 'lidar3d': ('stack',), 'lidar3d-viz': ('stack',), 'navigation': ('stack', 'motion'),
+MODES = ('sensors-viz', 'mapping', 'lidar3d', 'lidar3d-viz', 'navigation', 'teleop', 'transport')
+RESOURCES = {'sensors-viz': ('stack',), 'mapping': ('stack',), 'lidar3d': ('stack',), 'lidar3d-viz': ('stack',), 'navigation': ('stack', 'motion'),
              'teleop': ('motion',), 'transport': ('motion',)}
 
 
@@ -170,7 +170,9 @@ def session_commands(mode, map_path, output_dir=None, bag=None, config=None):
     if odom != 'utlidar':
         raise ValueError('Managed sessions require GO2_ODOM_SOURCE=utlidar (shared sensor clock)')
     commands = []
-    if mode == 'mapping':
+    if mode == 'sensors-viz':
+        commands.append(['ros2', 'launch', 'go2_nav2', 'bringup_viz.launch.py'])
+    elif mode == 'mapping':
         commands.append(['ros2', 'launch', 'go2_nav2', 'slam_mapping.launch.py', 'odom_source:=utlidar'])
     elif mode == 'lidar3d':
         if output_dir is None:
@@ -207,7 +209,7 @@ def session_commands(mode, map_path, output_dir=None, bag=None, config=None):
                          f'map:={map_path}', 'odom_source:=utlidar'])
     elif mode == 'teleop':
         commands.append(['ros2', 'run', 'teleop_twist_keyboard', 'teleop_twist_keyboard'])
-    if mode not in ('mapping', 'lidar3d', 'lidar3d-viz') and os.environ.get('GO2_NET', 'wifi') == 'wifi':
+    if mode not in ('sensors-viz', 'mapping', 'lidar3d', 'lidar3d-viz') and os.environ.get('GO2_NET', 'wifi') == 'wifi':
         host = os.environ.get('GO2_ROBOT_IP')
         if not host:
             raise ValueError('Set GO2_ROBOT_IP before starting a motion session')
@@ -278,7 +280,7 @@ def main():
         if args.bag or args.mode == 'lidar3d-viz':
             preflight = None
         result = supervise(root, args.mode, commands, preflight, owner=args.owner,
-                           normal_exit_command=commands[-1] if args.rviz or args.bag or args.mode == 'lidar3d-viz' else None)
+                           normal_exit_command=commands[-1] if args.rviz or args.bag or args.mode in ('sensors-viz', 'lidar3d-viz') else None)
         if output_dir is not None:
             saved = subprocess.run([sys.executable, str(Path(__file__).with_name('export-lidar3d.py')),
                                     str(output_dir)], check=False)

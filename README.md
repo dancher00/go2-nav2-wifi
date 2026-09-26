@@ -4,25 +4,27 @@
 [![License: MIT](https://img.shields.io/github/license/dancher00/go2-nav2-wifi)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/dancher00/go2-nav2-wifi)](https://github.com/dancher00/go2-nav2-wifi/releases)
 
-**SLAM mapping and Nav2 on a laptop over Wi‑Fi** — built-in Unitree lidar, no external sensors, Docker ROS 2 Humble, no Ethernet cable, no WebRTC, no CycloneDDS patch on the robot.
+**3D Point-LIO mapping on Unitree Go2 over Wi-Fi** with the built-in lidar,
+Docker ROS 2 Humble and no external sensors. Point-LIO runs on the Go2 Jetson;
+the laptop receives the finished cloud and trajectory for RViz. The existing
+2D slam_toolbox + Nav2 workflow remains available through `./mapping.sh`.
 
-**3D experiment branch:** `./mapping.sh --3d` computes Point-LIO on the Jetson;
-the laptop runs RViz. `./mapping.sh --3d --laptop` keeps the raw-sensor Wi-Fi
-experiment. The 2D workflow below is preserved. See [3D setup and results](docs/LIDAR-3D-SLAM.md).
+Start with the [3D SLAM quick start](docs/3D-QUICKSTART.md). The verified command is:
 
-Robot + RViz in the demos below.
+```bash
+GO2_RECORD=1 ./mapping.sh --3d
+```
 
-### Nav A → B
+### 3D mapping demo
 
-https://github.com/user-attachments/assets/44ae54a9-09f1-490c-ab3b-6291595e3324
+Built-in LiDAR + IMU · Point-LIO on the onboard Jetson · RViz over Wi-Fi
 
-### LiDAR + RViz
+https://github.com/user-attachments/assets/1047e3c6-c59f-4fdb-b2e1-90f5f6ce2ec8
 
-https://github.com/user-attachments/assets/2c817478-9fc5-4000-8211-b8b47e07eafb
+Robot and live map side by side, followed by a closer view of the reconstructed
+room. **42 seconds · 2× playback · recorded September 16, 2026.**
 
-### SLAM mapping
-
-https://github.com/user-attachments/assets/16ffa9da-6469-4384-a56e-00d0343bb375
+[Earlier 2D mapping and navigation demos](docs/DEMOS.md).
 
 ---
 
@@ -54,6 +56,10 @@ Tested on **Go2 Edu** (Unitree onboard ROS 2 Foxy + laptop Docker Humble).
 
 ## Quick start (Wi‑Fi)
 
+For 3D Point-LIO, use the short [installation and verification guide](docs/3D-QUICKSTART.md).
+It covers both the laptop and Jetson and explains where the validated PCD and
+trajectory are saved.
+
 **Mapping with the handheld remote:** [start/stop/restart guide](docs/MAPPING-SESSION.md)
 uses only the sensor relay, SLAM and RViz; no laptop motion commands.
 
@@ -66,6 +72,12 @@ After the one-time setup, run from the laptop repository:
 It starts the sensor-only relay, SLAM and RViz. Close RViz or press Ctrl+C to
 stop its processes. Robot IPs come from the running container; SSH may ask for
 the robot password. Stand with the remote before starting a map for navigation.
+
+For a live 3D LiDAR cloud and front-camera view without SLAM or map output:
+
+```bash
+./mapping.sh --view
+```
 
 [Managed sessions](docs/SESSIONS.md) provide scoped start/stop/status,
 duplicate-start refusal and map-bundle checks. Navigation keeps its direct command path.
@@ -116,6 +128,9 @@ ros2 launch go2_nav2 sport_bridge.launch.py
 
 | Doc | Content |
 |-----|---------|
+| [3D-QUICKSTART.md](docs/3D-QUICKSTART.md) | Install, run and verify 3D Point-LIO |
+| [POINTLIO-LIVE-VALIDATION.md](docs/POINTLIO-LIVE-VALIDATION.md) | Latest live stability evidence and limitations |
+| [LIDAR-3D-SLAM.md](docs/LIDAR-3D-SLAM.md) | 3D design, measurements and experiments |
 | [RELAY-WIFI.md](docs/RELAY-WIFI.md) | One-time Wi‑Fi install, relay, deploy |
 | [NAVIGATION.md](docs/NAVIGATION.md) | Mapping, save map, nav to goal, troubleshooting |
 | [MAPPING-SESSION.md](docs/MAPPING-SESSION.md) | Handheld mapping: terminal roles, restart and checks |
@@ -125,7 +140,7 @@ ros2 launch go2_nav2 sport_bridge.launch.py
 
 ## Regression tests
 
-After building the Docker image, run on the laptop (also used by CI):
+After `./setup-lidar3d.sh --laptop`, run on the laptop (also used by CI):
 
 ```bash
 bash ws/scripts/test-regressions.sh
@@ -148,12 +163,13 @@ logs. They do not replace supervised walking, navigation or stopping tests.
 
 MIT · https://github.com/dancher00/go2-nav2-wifi
 
-### Эксперимент 3D LiDAR
+### 3D LiDAR
 
-В ветке `experiment/lidar-3d-slam`: `./mapping.sh --3d` запускает отдельный
+`./mapping.sh --3d` запускает отдельный
 Point-LIO на Jetson (raw L1 + гироскоп, без камеры, ускорений и loop closure);
 на ноутбуке — только RViz через Wi-Fi. `--3d --laptop` сохраняет вычисления на ноутбуке.
-Установка, измерения и ограничения: [3D LiDAR SLAM](docs/LIDAR-3D-SLAM.md).
+Быстрый запуск: [3D-QUICKSTART.md](docs/3D-QUICKSTART.md). Измерения и ограничения:
+[3D LiDAR SLAM](docs/LIDAR-3D-SLAM.md).
 Обычный `./mapping.sh` сохраняет 2D-профиль.
 
 Проверенный 3D Point-LIO baseline: [снимок сборки и запуск](docs/POINTLIO-BASELINE.md).

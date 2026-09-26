@@ -28,6 +28,11 @@ raise SystemExit(supervise(Path(root), mode, commands, preflight, owner='test-ow
 
 
 class SessionTests(unittest.TestCase):
+    def test_sensor_view_launches_rviz_without_slam_or_motion(self):
+        with patch.dict(os.environ, GO2_NET='wifi', GO2_ODOM_SOURCE='utlidar'):
+            commands = sessions.session_commands('sensors-viz', None)
+        self.assertEqual(commands, [['ros2', 'launch', 'go2_nav2', 'bringup_viz.launch.py']])
+
     def test_3d_navigation_owns_motion(self):
         with patch.dict(os.environ, GO2_LIDAR3D_NAV='1', GO2_LIDAR3D_PLAN='1',
                         GO2_ROBOT_IP='192.0.2.2'):

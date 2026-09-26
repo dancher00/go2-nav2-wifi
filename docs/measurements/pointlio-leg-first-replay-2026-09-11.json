@@ -1,0 +1,107 @@
+{
+  "static-gyro": {
+    "poses": 499,
+    "duration_s": 32.39506483078003,
+    "points": 112284,
+    "position_range_m": [
+      0.014074226,
+      0.01824924,
+      0.011627701000000004
+    ],
+    "endpoint_displacement_m": 0.0018326840707827998,
+    "local_plane_spread": {
+      "cells": 107,
+      "median_m": 0.008546696507222026,
+      "p90_m": 0.024046703633658614
+    }
+  },
+  "static-body": {
+    "poses": 499,
+    "duration_s": 32.39506483078003,
+    "points": 112284,
+    "position_range_m": [
+      0.017121071,
+      0.027689188,
+      0.036369029
+    ],
+    "endpoint_displacement_m": 0.014103704048719223,
+    "local_plane_spread": {
+      "cells": 90,
+      "median_m": 0.013057429848153059,
+      "p90_m": 0.024801463610452653
+    },
+    "leg_updates": 0
+  },
+  "static-legs": {
+    "poses": 499,
+    "duration_s": 32.39506483078003,
+    "points": 112284,
+    "position_range_m": [
+      0.017121071,
+      0.027689188,
+      0.036369029
+    ],
+    "endpoint_displacement_m": 0.014103704048719223,
+    "local_plane_spread": {
+      "cells": 90,
+      "median_m": 0.013057429848153059,
+      "p90_m": 0.024801463610452653
+    },
+    "leg_updates": 0
+  },
+  "walk-body": {
+    "poses": 897,
+    "duration_s": 58.283504486083984,
+    "points": 411060,
+    "position_range_m": [
+      5.351243338,
+      1.3797587409999998,
+      0.308649277
+    ],
+    "endpoint_displacement_m": 3.664882655891193,
+    "local_plane_spread": {
+      "cells": 601,
+      "median_m": 0.025455699353859492,
+      "p90_m": 0.04624024935750405
+    },
+    "leg_updates": 0
+  },
+  "walk-legs": {
+    "poses": 897,
+    "duration_s": 58.283504486083984,
+    "points": 411060,
+    "position_range_m": [
+      5.366086944,
+      1.368043332,
+      0.3084579
+    ],
+    "endpoint_displacement_m": 3.6846809395702684,
+    "local_plane_spread": {
+      "cells": 613,
+      "median_m": 0.025981967408509728,
+      "p90_m": 0.04797992331928745
+    },
+    "leg_updates": 1339,
+    "accepted": 1339,
+    "rejected": 0,
+    "last_pairing_counters": [
+      17443,
+      16411,
+      1032
+    ],
+    "contact_counts": [
+      1.0,
+      2.0,
+      3.0,
+      4.0
+    ],
+    "median_velocity_residual_mps": 0.05916555927543308
+  },
+  "no_contact_trajectories_bitwise_equal": true,
+  "limitations": [
+    "Walking prefix does not contain a confirmed same-position return. Endpoint displacement is motion, not error.",
+    "Local plane spread is a geometric diagnostic, not independent map accuracy; cell coverage varies.",
+    "Contact thresholds and body/L1 extrinsics are inherited, not newly calibrated.",
+    "No loop-closure backend in this experimental Point-LIO."
+  ]
+}

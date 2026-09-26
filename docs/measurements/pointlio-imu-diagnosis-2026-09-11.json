@@ -1,0 +1,31 @@
+{
+  "source_run": "run-20260911-181720-bj8yn462; first 90s",
+  "samples": 22259,
+  "static_selected_samples": 14120,
+  "lidar_acceleration_norm_p05_p50_p95": [
+    8.921871599886858,
+    10.210592099564153,
+    15.910960602845348
+  ],
+  "body_acceleration_norm_p05_p50_p95": [
+    7.999539576550427,
+    9.497045870143761,
+    10.583449842084603
+  ],
+  "body_frame_gyro_difference_static_median_rad_s": [
+    0.014827776228299309,
+    -0.019125621301716727,
+    -0.001989334962262169
+  ],
+  "active_samples": 5585,
+  "training_gyro_singular_values": [
+    29.81967080564062,
+    6.353902339075641,
+    3.1912315147015904
+  ],
+  "fitted_extra_rotation_deg": 1.7051072431497758,
+  "held_out_rms_before_rad_s": 0.20280303981778525,
+  "held_out_rms_bias_only_rad_s": 0.2009027719259911,
+  "held_out_rms_fit_rad_s": 0.20036756615323517,
+  "note": "Body IMU is a comparison sensor, not ground truth; this is not an accepted full extrinsic/time calibration. No live parameters changed."
+}

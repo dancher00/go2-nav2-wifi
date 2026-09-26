@@ -31,8 +31,16 @@ if [[ "${1:-}" == start ]]; then
   if [[ -f /opt/go2-unitree-msgs/local_setup.bash ]]; then
     source /opt/go2-unitree-msgs/local_setup.bash
   fi
+  if [[ "${2:-}" == lidar3d-viz ]]; then
+    python3 -c 'from unitree_go.msg import LowState; from scipy.spatial.transform import Rotation' || {
+      echo 'Cannot start 3D visualization: unitree_go and scipy are required.' >&2
+      exit 1
+    }
+  fi
   if [[ "${2:-}" == lidar3d ]]; then
-    if [[ "${GO2_LIDAR3D_BACKEND:-pointlio}" == legkilo ]]; then
+    if [[ "${GO2_LIDAR3D_BACKEND:-pointlio}" == pointlio_leg ]]; then
+      source "${GO2_POINTLIO_LEG_INSTALL:-/ws/pointlio-leg/install}/local_setup.bash"
+    elif [[ "${GO2_LIDAR3D_BACKEND:-pointlio}" == legkilo ]]; then
       source /opt/go2-legkilo/local_setup.bash
     elif [[ -f /opt/go2-lidar3d/local_setup.bash ]]; then
       source /opt/go2-lidar3d/local_setup.bash

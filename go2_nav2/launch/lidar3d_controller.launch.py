@@ -25,17 +25,17 @@ def configure(context):
     params['progress_checker']['movement_time_allowance'] = 35.0
     params['general_goal_checker']['xy_goal_tolerance'] = 0.25
     params['FollowPath'].update(min_vel_x=0.0, max_vel_x=0.30, min_vel_y=0.0,
-        max_vel_y=0.0, max_vel_theta=0.35, max_speed_xy=0.30,
-        acc_lim_x=0.3, decel_lim_x=-0.3, acc_lim_y=0.3, decel_lim_y=-0.3,
-        acc_lim_theta=0.5, decel_lim_theta=-0.5, vy_samples=1,
+        max_vel_y=0.0, max_vel_theta=0.70, max_speed_xy=0.30,
+        acc_lim_x=0.6, decel_lim_x=-0.6, acc_lim_y=0.3, decel_lim_y=-0.3,
+        acc_lim_theta=1.0, decel_lim_theta=-1.0, vy_samples=1,
         transform_tolerance=0.3, xy_goal_tolerance=0.25,
         critics=['Oscillation', 'ObstacleFootprint', 'PathAlign', 'GoalAlign', 'PathDist', 'GoalDist'])
     params['FollowPath'].update(
         plugin='nav2_rotation_shim_controller::RotationShimController',
         primary_controller='dwb_core::DWBLocalPlanner',
         angular_dist_threshold=0.5, angular_disengage_threshold=0.25,
-        forward_sampling_distance=0.5, rotate_to_heading_angular_vel=0.35,
-        max_angular_accel=0.5, simulate_ahead_time=2.0,
+        forward_sampling_distance=0.5, rotate_to_heading_angular_vel=0.70,
+        max_angular_accel=1.0, simulate_ahead_time=2.0,
         rotate_to_goal_heading=False, closed_loop=False)
     # Heading critics from the community Go2 DWB profile: turning toward a path
     # must improve its score even when the body centre has not translated yet.

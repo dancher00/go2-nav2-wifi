@@ -15,6 +15,10 @@ cleanup() { ssh -S "$socket" -O exit "$target" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 ssh -o ConnectTimeout=8 -o ControlMaster=yes -o ControlPersist=60 -S "$socket" "$target" true
 tar -czf "$stage/runtime.tar.gz" -C "$LIO_ROOT" go2_nav2 \
+  docker/Dockerfile docker/entrypoint.sh docker/install-deps.sh \
+  docker/setup-robot-net.sh docker/setup-robot-eth.sh docker/setup-robot-wifi.sh \
+  docker/check-robot.sh docker/source-unitree.sh docker/source-go2-ws.sh \
+  docker/cyclonedds.xml docker/cyclonedds-eth.xml docker/go2-bashrc.snippet \
   docker/Dockerfile.lidar3d docker/Dockerfile.lidar3d.dockerignore \
   docker/Dockerfile.legkilo docker/Dockerfile.legkilo.dockerignore ws/scripts/legkilo-go2.patch \
   ws/scripts/build-lidar3d.sh ws/scripts/pointlio-wifi.patch ws/scripts/go2-session.sh \
@@ -28,6 +32,10 @@ cd ~/go2-nav2-lidar3d-onboard
 tar xzf runtime.tar.gz
 rm runtime.tar.gz
 mkdir -p ws/src
+if ! docker image inspect go2-humble:local >/dev/null 2>&1; then
+  echo 'Building the base ROS 2 image on the Jetson...'
+  docker build -t go2-humble:local -f docker/Dockerfile docker
+fi
 docker build --build-arg GO2_UID="$(id -u)" --build-arg GO2_GID="$(id -g)" \
   -f docker/Dockerfile.lidar3d -t go2-lidar3d:local .
 onboard_image=go2-lidar3d:local

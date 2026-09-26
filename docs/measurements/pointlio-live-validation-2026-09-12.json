@@ -1,0 +1,231 @@
+{
+  "run": "run-20260911-235721-kv1ccv14",
+  "windows": [
+    {
+      "seconds": [
+        0,
+        30
+      ],
+      "lio_position_median": [
+        -0.0012155125,
+        -0.001011119,
+        0.332026248
+      ],
+      "lio_endpoint_delta_m": 0.014822816998104981,
+      "factory_endpoint_delta_m": 0.0017873191432594155,
+      "gyro_median_rad_s": [
+        0.017415709793567657,
+        0.000558670493774116,
+        0.000550330791156739
+      ],
+      "gyro_norm_p95_rad_s": 0.027976951947328847
+    },
+    {
+      "seconds": [
+        30,
+        55
+      ],
+      "lio_position_median": [
+        -0.000943786,
+        -0.000565887,
+        0.332948897
+      ],
+      "lio_endpoint_delta_m": 0.0037897403374207647,
+      "factory_endpoint_delta_m": 0.0019323740186488968,
+      "gyro_median_rad_s": [
+        0.017208613455295563,
+        0.0005865953862667084,
+        0.0003396255197003484
+      ],
+      "gyro_norm_p95_rad_s": 0.028029537996753832
+    },
+    {
+      "seconds": [
+        100,
+        130
+      ],
+      "lio_position_median": [
+        -0.0661877775,
+        0.0087810355,
+        0.3455312025
+      ],
+      "lio_endpoint_delta_m": 0.014743129269122957,
+      "factory_endpoint_delta_m": 0.002070836285200213,
+      "gyro_median_rad_s": [
+        0.01665053516626358,
+        0.0004690477508120239,
+        0.0004644628061214462
+      ],
+      "gyro_norm_p95_rad_s": 0.027768079858635043
+    }
+  ],
+  "icp": [
+    {
+      "windows": [
+        5,
+        45
+      ],
+      "seed": "identity",
+      "translation_m": [
+        -0.005758802349119518,
+        -0.000900071013249848,
+        -0.0010682613155325038
+      ],
+      "rotation_deg": 0.08743890290501594,
+      "overlap": 0.9995677544845473,
+      "rmse_m": 0.036710272716060234,
+      "lio_translation_m": [
+        0.0028428529763814656,
+        -0.0019869930869039734,
+        -0.0008992839397807057
+      ],
+      "lio_rotation_deg": 0.13435329321105022,
+      "translation_disagreement_m": 0.008671702675163165,
+      "rotation_disagreement_deg": 0.11816110526632322
+    },
+    {
+      "windows": [
+        5,
+        45
+      ],
+      "seed": "lio",
+      "translation_m": [
+        -0.005754589925996534,
+        -0.0009054974367013191,
+        -0.0010670147921009177
+      ],
+      "rotation_deg": 0.08754342158811117,
+      "overlap": 0.9995677544845473,
+      "rmse_m": 0.03671027292937569,
+      "lio_translation_m": [
+        0.0028428529763814656,
+        -0.0019869930869039734,
+        -0.0008992839397807057
+      ],
+      "lio_rotation_deg": 0.13435329321105022,
+      "translation_disagreement_m": 0.008666821270793414,
+      "rotation_disagreement_deg": 0.11819594647565779
+    },
+    {
+      "windows": [
+        5,
+        125
+      ],
+      "seed": "identity",
+      "translation_m": [
+        -0.06501190378373045,
+        -0.009370147176009813,
+        -0.017024117577525755
+      ],
+      "rotation_deg": 3.775290414348441,
+      "overlap": 0.9816117487350364,
+      "rmse_m": 0.05629788250208763,
+      "lio_translation_m": [
+        -0.057202067575223954,
+        -0.02078461397153903,
+        -0.017174041283299503
+      ],
+      "lio_rotation_deg": 3.9415047899366615,
+      "translation_disagreement_m": 0.013831343786758071,
+      "rotation_disagreement_deg": 0.20685939508501133
+    },
+    {
+      "windows": [
+        5,
+        125
+      ],
+      "seed": "lio",
+      "translation_m": [
+        -0.06501190378372601,
+        -0.009370147176018251,
+        -0.017024117577523812
+      ],
+      "rotation_deg": 3.77529041434847,
+      "overlap": 0.9816117487350364,
+      "rmse_m": 0.05629788250208702,
+      "lio_translation_m": [
+        -0.057202067575223954,
+        -0.02078461397153903,
+        -0.017174041283299503
+      ],
+      "lio_rotation_deg": 3.9415047899366615,
+      "translation_disagreement_m": 0.013831343786748622,
+      "rotation_disagreement_deg": 0.20685939508500295
+    },
+    {
+      "windows": [
+        100,
+        125
+      ],
+      "seed": "identity",
+      "translation_m": [
+        -0.004156685088529066,
+        0.0003960325723907365,
+        -0.002652704266268402
+      ],
+      "rotation_deg": 0.06689430628581179,
+      "overlap": 0.998765889176848,
+      "rmse_m": 0.043059896978831974,
+      "lio_translation_m": [
+        -0.003946622901418356,
+        -0.0028328389011183226,
+        -0.001139616936798326
+      ],
+      "lio_rotation_deg": 0.36713881341366217,
+      "translation_disagreement_m": 0.0035719980937141027,
+      "rotation_disagreement_deg": 0.34642445621691753
+    },
+    {
+      "windows": [
+        100,
+        125
+      ],
+      "seed": "lio",
+      "translation_m": [
+        -0.004156685088521073,
+        0.00039603257238995937,
+        -0.0026527042662669587
+      ],
+      "rotation_deg": 0.06689430628579113,
+      "overlap": 0.998765889176848,
+      "rmse_m": 0.04305989697883154,
+      "lio_translation_m": [
+        -0.003946622901418356,
+        -0.0028328389011183226,
+        -0.001139616936798326
+      ],
+      "lio_rotation_deg": 0.36713881341366217,
+      "translation_disagreement_m": 0.003571998093712319,
+      "rotation_disagreement_deg": 0.34642445621688395
+    }
+  ],
+  "limitations": "ICP is a geometric consistency check, not ground truth. Nominal lidar/IMU lever arm compensated. Absolute map accuracy and absence of all double surfaces are not established. Plane-cell spread is not directly comparable across different routes.",
+  "stationary_start": {
+    "window_s": [
+      0,
+      55
+    ],
+    "max_displacement_from_first_pose_m": 0.02917918552411117,
+    "p95_distance_from_median_position_m": 0.007054382975408945
+  },
+  "return_between_stationary_medians": {
+    "distance_m": 0.06742439295692455,
+    "angle_deg": 4.083141820101204
+  },
+  "map_diagnostic": {
+    "run-20260911-235721-kv1ccv14": {
+      "poses": 2023,
+      "duration_s": 131.4231836795807,
+      "points": 1268914,
+      "plane_cells": 789,
+      "median_plane_spread_mm": 22.28272191704015,
+      "p90_plane_spread_mm": 40.52343583971856
+    }
+  },
+  "archive": {
+    "files_verified_sha256": 12,
+    "bytes": 350506236,
+    "method": "Recovered completed run from Jetson using fetch-lidar3d.py after automatic transfer did not occur."
+  },
+  "applied_init_map_size": 20000
+}

@@ -1,0 +1,207 @@
+{
+  "run": "run-20260911-233529-h3i_gtpx",
+  "windows": [
+    {
+      "seconds": [
+        0,
+        3
+      ],
+      "lio_position_median": [
+        -0.742865376,
+        -0.151370706,
+        0.343019902
+      ],
+      "lio_endpoint_delta_m": 0.9715341330419396,
+      "factory_endpoint_delta_m": 0.00012037275516640583,
+      "gyro_median_rad_s": [
+        0.01731570065021515,
+        0.0016107765259221196,
+        0.00011126979370601475
+      ],
+      "gyro_norm_p95_rad_s": 0.02916704592949953
+    },
+    {
+      "seconds": [
+        12,
+        15
+      ],
+      "lio_position_median": [
+        -1.359275445,
+        -0.214372928,
+        0.344484485
+      ],
+      "lio_endpoint_delta_m": 0.5239352145785854,
+      "factory_endpoint_delta_m": 0.036524889889327686,
+      "gyro_median_rad_s": [
+        0.16334319859743118,
+        -0.2143484726548195,
+        -0.9984515905380249
+      ],
+      "gyro_norm_p95_rad_s": 1.4235945503956164
+    },
+    {
+      "seconds": [
+        52,
+        55
+      ],
+      "lio_position_median": [
+        -1.0431966154999999,
+        -0.237573476,
+        0.33818247199999996
+      ],
+      "lio_endpoint_delta_m": 0.013925810050702443,
+      "factory_endpoint_delta_m": 0.00039715644387704516,
+      "gyro_median_rad_s": [
+        0.01721196062862873,
+        0.0004902896471321583,
+        0.0007527576526626945
+      ],
+      "gyro_norm_p95_rad_s": 0.028515500699464316
+    },
+    {
+      "seconds": [
+        60,
+        90
+      ],
+      "lio_position_median": [
+        -1.050738148,
+        -0.248019441,
+        0.338206726
+      ],
+      "lio_endpoint_delta_m": 0.03382097786090411,
+      "factory_endpoint_delta_m": 0.0004189467617732894,
+      "gyro_median_rad_s": [
+        0.017793720588088036,
+        0.0008398564532399178,
+        0.00032347251544706523
+      ],
+      "gyro_norm_p95_rad_s": 0.028189458700829412
+    },
+    {
+      "seconds": [
+        230,
+        260
+      ],
+      "lio_position_median": [
+        -1.0626285535,
+        -0.258954565,
+        0.3414064425
+      ],
+      "lio_endpoint_delta_m": 0.022626670924583717,
+      "factory_endpoint_delta_m": 0.00025034902155771587,
+      "gyro_median_rad_s": [
+        0.01681360974907875,
+        0.0007213106437120587,
+        0.000442068325355649
+      ],
+      "gyro_norm_p95_rad_s": 0.02800396402848032
+    }
+  ],
+  "icp": [
+    {
+      "windows": [
+        0,
+        250
+      ],
+      "seed": "identity",
+      "translation_m": [
+        -0.0286439692131506,
+        0.03957742917962892,
+        -0.0026698539587084458
+      ],
+      "rotation_deg": 5.37402618195137,
+      "overlap": 0.9913606911447084,
+      "rmse_m": 0.054581630905954644,
+      "lio_translation_m": [
+        -0.2618433656853066,
+        0.23105219466428947,
+        -0.08331075182892493
+      ],
+      "lio_rotation_deg": 3.2946422504477226,
+      "translation_disagreement_m": 0.31232594951700415,
+      "rotation_disagreement_deg": 2.8532924998952187
+    },
+    {
+      "windows": [
+        0,
+        250
+      ],
+      "seed": "lio",
+      "translation_m": [
+        -0.02943429908067574,
+        0.041124864600538436,
+        -0.0030740565244741225
+      ],
+      "rotation_deg": 5.3852086772371965,
+      "overlap": 0.9912526997840173,
+      "rmse_m": 0.05452238904900474,
+      "lio_translation_m": [
+        -0.2618433656853066,
+        0.23105219466428947,
+        -0.08331075182892493
+      ],
+      "lio_rotation_deg": 3.2946422504477226,
+      "translation_disagreement_m": 0.31068358858903383,
+      "rotation_disagreement_deg": 2.865218173436516
+    },
+    {
+      "windows": [
+        52,
+        250
+      ],
+      "seed": "identity",
+      "translation_m": [
+        -0.0011644611816066242,
+        0.002907307206712506,
+        -0.004609969636193201
+      ],
+      "rotation_deg": 0.08291265465736185,
+      "overlap": 0.9935205183585313,
+      "rmse_m": 0.043331257956848016,
+      "lio_translation_m": [
+        -0.0014005407040389942,
+        0.010917549222026915,
+        -0.007689011868002887
+      ],
+      "lio_rotation_deg": 0.25451144384619817,
+      "translation_disagreement_m": 0.008584882745273095,
+      "rotation_disagreement_deg": 0.24303165855166595
+    },
+    {
+      "windows": [
+        52,
+        250
+      ],
+      "seed": "lio",
+      "translation_m": [
+        -0.001164461181605736,
+        0.002907307206713061,
+        -0.004609969636193312
+      ],
+      "rotation_deg": 0.08291265465726949,
+      "overlap": 0.9935205183585313,
+      "rmse_m": 0.043331257956848585,
+      "lio_translation_m": [
+        -0.0014005407040389942,
+        0.010917549222026915,
+        -0.007689011868002887
+      ],
+      "lio_rotation_deg": 0.25451144384619817,
+      "translation_disagreement_m": 0.008584882745272561,
+      "rotation_disagreement_deg": 0.24303165855170117
+    }
+  ],
+  "limitations": "Cloud ICP is a geometric consistency diagnostic, not ground truth. First 3 seconds show low raw gyro and stationary factory odometry. Do not interpret the full trajectory endpoint distance as route closure accuracy because initialization already drifts. Offline replay and live trajectories are not identical.",
+  "initialization_replays": [
+    {
+      "mode": "stock",
+      "poses": 301,
+      "displacement_first_3s_m": 0.947203330404126
+    },
+    {
+      "mode": "init10",
+      "poses": 304,
+      "displacement_first_3s_m": 0.9857727524035503
+    }
+  ]
+}

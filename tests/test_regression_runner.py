@@ -36,7 +36,7 @@ class RegressionRunnerTests(unittest.TestCase):
         self.assertIn('ROS_LOCALHOST_ONLY=1', args)
         self.assertIn('ROS_DOMAIN_ID=87', args)
         self.assertIn('CYCLONEDDS_URI=', args)
-        self.assertIn('go2-humble:local', args)
+        self.assertIn('go2-lidar3d:local', args)
         self.assertNotIn('--privileged', args)
 
     def test_ci_image_override_and_failure_are_preserved(self):

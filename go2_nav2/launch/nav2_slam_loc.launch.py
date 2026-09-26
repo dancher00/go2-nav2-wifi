@@ -41,7 +41,9 @@ def _localization_launch(context, *args, **kwargs):
             PythonLaunchDescriptionSource(
                 os.path.join(slam_share, "launch", "localization_launch.py")
             ),
-            launch_arguments={"slam_params_file": temp_path}.items(),
+            # Upstream localization_launch defaults to simulation time and
+            # overrides the YAML. Live navigation has no /clock publisher.
+            launch_arguments={"slam_params_file": temp_path, "use_sim_time": "false"}.items(),
         )
     ]
 
